@@ -57,3 +57,7 @@ dist-ssr
 *.ntvs*
 *.njsproj
 *.sw?
+# SQLite
+*.db
+*.db-shm
+*.db-wal

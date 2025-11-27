@@ -1,36 +1,56 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using SocialNetwork.Entity;
+using SocialNetwork.Entityframework;
+using Microsoft.OpenApi.Models;
 
-namespace SocialNetwork
+var builder = WebApplication.CreateBuilder(args);
+
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+                       ?? "Data Source=socialnetwork.db";
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlite(connectionString));
+
+
+builder.Services.AddAuthorization();
+
+builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
+    .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
 {
-    public class Program
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        public static void Main(string[] args)
+        In = ParameterLocation.Header,
+        Description = "Skriv in 'Bearer [din-token]' här",
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+    {
+        new OpenApiSecurityScheme
         {
-            var builder = WebApplication.CreateBuilder(args);
+            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+        },
+        new string[] { }
+    }});
+});
 
-            // Add services to the container.
-
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-
-            var app = builder.Build();
-
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
-
-            app.UseHttpsRedirection();
-
-            app.UseAuthorization();
+var app = builder.Build();
 
 
-            app.MapControllers();
-
-            app.Run();
-        }
-    }
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
+
+app.UseHttpsRedirection();
+app.UseAuthorization();
+
+
+
+app.Run();
