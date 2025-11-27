@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { authService } from './AuthService';
+import { error } from 'console';
 
 const fetchMock = vi.fn();
 global.fetch = fetchMock;
@@ -32,23 +33,24 @@ describe('AuthService', () => {
     });
   });
 
-  it('should call the correct register endpoint successfully', async () => {
+  it('should throw formatted error when registration fails', async () => {
     // Arrange
     fetchMock.mockResolvedValue({
-      ok: true,
-      json: async () => ({}),
+      ok: false,
+      json: async () => ({
+        errors: {
+          Password: ['Passwords must have at least one digit.']
+        }
+      }),
     });
 
-    // Act
-    await authService.register('test@test.se', 'Password123!');
-
-    // Assert
-    expect(fetchMock).toHaveBeenCalledWith('http://localhost:5131/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: 'test@test.se', password: 'Password123!' }),
-    });
+    // Act & Assert
+    await expect(authService.register('test@test.se', 'weak'))
+      .rejects
+      .toThrow('Passwords must have at least one digit.');
   });
+
+
 
   it('should throw an error when login fails', async () => {
     // ARRANGE
