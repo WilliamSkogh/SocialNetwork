@@ -22,4 +22,8 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SocialNetwork.Entity\SocialNetwork.Entity.csproj" />
+  </ItemGroup>
+
 </Project>
