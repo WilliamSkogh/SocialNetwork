@@ -56,6 +56,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         navigate("/");
     };
 
+    const register = async (email: string, password: string) => {
+        await authService.register(email, password);
+
+        navigate("/login");
+    };
+
     return (
         <AuthContext.Provider value={{ user, login, register, logout, loading }}>
             {!loading && children}
