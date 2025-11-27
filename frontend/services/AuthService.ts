@@ -23,6 +23,11 @@ export const authService = {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password }),
         });
+        if (!response.ok) {
+            const errorData = await response.json();
+            const errorMessages = Object.values(errorData.errors).flat().join(" ");
+            throw new Error(errorMessages);
+        }
     },
 
 
