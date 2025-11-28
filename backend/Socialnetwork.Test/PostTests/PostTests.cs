@@ -103,4 +103,21 @@ public class PostTests
         // Assert
         post.Content.Should().HaveLength(500);
     }
+     [Fact]
+    public void Post_Content_With1Character_ShouldSucceed()
+    {
+        // Arrange
+        var content = "x";
+
+        // Act
+        var post = new Post
+        {
+            AuthorId = "William",
+            RecipientId = "Pelle",
+            Content = content
+        };
+
+        // Assert
+        post.Content.Should().Be(content);
+    }
 }
