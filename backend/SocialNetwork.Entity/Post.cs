@@ -14,6 +14,8 @@ public class Post
         {
             if (string.IsNullOrWhiteSpace(value))
                 throw new ArgumentException("Content cannot be empty");
+            if (value.Length > 500)  
+                throw new ArgumentException("Content cannot exceed 500 characters");
             _content = value;
         }
     }
