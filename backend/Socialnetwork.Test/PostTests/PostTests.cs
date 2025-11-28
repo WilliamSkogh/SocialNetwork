@@ -27,4 +27,25 @@ public class PostTests
         post.RecipientId.Should().Be(recipientId);
         post.Content.Should().Be(content);
     }
+
+    [Fact]
+    public void Post_CreatedAt_ShouldBeSetAutomatically()
+    {
+        // Arrange
+        var beforeCreation = DateTime.UtcNow;
+
+        // Act
+        var post = new Post
+        {
+            AuthorId = "William",
+            RecipientId = "Pelle",
+            Content = "Test"
+        };
+        var afterCreation = DateTime.UtcNow;
+
+        // Assert
+        post.CreatedAt.Should().BeOnOrAfter(beforeCreation);
+        post.CreatedAt.Should().BeOnOrBefore(afterCreation);
+    }
+
 }
