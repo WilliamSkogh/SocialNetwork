@@ -2,6 +2,7 @@ import { createContext, useState, useEffect, useContext, ReactNode } from "react
 import { useNavigate } from "react-router-dom";
 import { User } from "./types/types";
 import { authService } from "./services/AuthService";
+import { storage } from "./utils/storage";
 
 interface AuthContextType {
     user: User | null;
@@ -19,8 +20,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const navigate = useNavigate();
 
     const logout = () => {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
+        storage.removeToken();
+        storage.removeRefreshToken();
         setUser(null);
         navigate("/login");
     };
@@ -37,7 +38,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     useEffect(() => {
         const initAuth = async () => {
-            const token = localStorage.getItem("accessToken");
+            const token = storage.getToken();
             if (token) {
                 await loadUserProfile(token);
             }
@@ -49,8 +50,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const login = async (email: string, password: string) => {
         const data = await authService.login(email, password);
 
-        localStorage.setItem("accessToken", data.accessToken);
-        localStorage.setItem("refreshToken", data.refreshToken);
+        storage.setToken(data.accessToken);
+        storage.setRefreshToken(data.refreshToken);
 
         await loadUserProfile(data.accessToken);
         navigate("/");
