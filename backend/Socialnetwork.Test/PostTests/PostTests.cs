@@ -67,4 +67,22 @@ public class PostTests
         act.Should().Throw<ArgumentException>()
             .WithMessage("*Content cannot be empty*");
     }
+    [Fact]
+    public void Post_Content_CannotExceed500Characters()
+    {
+        // Arrange
+        var longContent = new string('x', 501);
+
+        // Act
+        Action act = () => new Post
+        {
+            AuthorId = "William",
+            RecipientId = "Pelle",
+            Content = longContent
+        };
+
+        // Assert
+        act.Should().Throw<ArgumentException>()
+            .WithMessage("*Content cannot exceed 500 characters*");
+    }
 }
