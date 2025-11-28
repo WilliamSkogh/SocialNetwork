@@ -85,4 +85,22 @@ public class PostTests
         act.Should().Throw<ArgumentException>()
             .WithMessage("*Content cannot exceed 500 characters*");
     }
+
+    [Fact]
+    public void Post_Content_With500Characters_ShouldSucceed()
+    {
+        // Arrange
+        var content = new string('x', 500);
+
+        // Act
+        var post = new Post
+        {
+            AuthorId = "William",
+            RecipientId = "Pelle",
+            Content = content
+        };
+
+        // Assert
+        post.Content.Should().HaveLength(500);
+    }
 }
