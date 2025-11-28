@@ -7,4 +7,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\backend\SocialNetwork.Entity\SocialNetwork.Entity.csproj" />
+    <ProjectReference Include="..\backend\Socialnetwork.Repository\Socialnetwork.Repository.csproj" />
+  </ItemGroup>
+
 </Project>
