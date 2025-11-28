@@ -31,8 +31,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             const userData = await authService.getProfile();
             setUser(userData);
         } catch (error) {
-            console.error(error);
-            logout();
+            console.error("kunde inte ladda användarprofil:", error);
+            setUser(null);
         }
     };
 

@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { storage } from "../utils/storage";
 
 export const apiClient = axios.create({
@@ -14,7 +14,24 @@ apiClient.interceptors.request.use((config) => {
         config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
-}, (error: unknown) => {
-    return Promise.reject(error);
-});
+},
+    (error: unknown) => Promise.reject(error)
+);
+
+apiClient.interceptors.response.use(
+    (response) => {
+        return response;
+    },
+    async (error: AxiosError) => {
+
+        if (error.response?.status === 401) {
+            console.warn("Token har gått ut eller är ogiltig. Loggar ut...");
+            storage.removeToken();
+            storage.removeRefreshToken();
+            window.location.href = "/login";
+        }
+        return Promise.reject(error);
+    }
+);
+
 export default apiClient;
