@@ -57,4 +57,22 @@ public class PostEndpointTests : IClassFixture<WebApplicationFactory<Program>>
         response.Headers.Location.Should().NotBeNull();
         response.Headers.Location!.ToString().Should().Contain("/api/posts/");
     }
+    [Fact]
+    public async Task CreatePost_WithEmptyContent_ReturnsBadRequest()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var request = new
+        {
+            AuthorId = "William",
+            RecipientId = "Pelle",
+            Content = ""
+        };
+
+        // Act
+        var response = await client.PostAsJsonAsync("/api/posts", request);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
 }
