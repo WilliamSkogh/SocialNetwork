@@ -1,11 +1,7 @@
+import { RouterProvider } from "react-router-dom";
+import { router } from "../router";
 
 function App() {
-  return (
-    <div className="app-container">
-      <h1>Social Network</h1>
-      <p>Dags att börja bygga!</p>
-    </div>
-  )
+  return (<RouterProvider router={router} />);
 }
-
 export default App

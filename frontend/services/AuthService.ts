@@ -1,4 +1,4 @@
-import { AuthResponse, User } from "../types/types";
+import type { AuthResponse, User } from "../types/types";
 import apiClient from "./axiosClient";
 import axios from "axios";
 
