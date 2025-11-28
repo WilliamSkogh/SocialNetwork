@@ -7,14 +7,26 @@ import { useState } from "react";
 export default function RegisterPage() {
     const { register } = useAuth();
     const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setError(null);
+
         const formData = new FormData(e.currentTarget);
         const email = formData.get("email") as string;
         const password = formData.get("password") as string;
+        const confirmPassword = formData.get("confirmPassword") as string;
 
+        if (password !== confirmPassword) {
+            return setError("Lösenorden matchar inte.");
+        }
+        if (password.length < 6) {
+            return setError("Lösenordet måste vara minst 6 tecken långt.");
+        }
         try {
+            setError(null);
+            setLoading(true);
             await register(email, password);
         }
         catch (err: unknown) {
@@ -24,6 +36,9 @@ export default function RegisterPage() {
             else {
                 setError("Ett okänt fel inträffade.");
             }
+        }
+        finally {
+            setLoading(false);
         }
     }
 
@@ -46,7 +61,13 @@ export default function RegisterPage() {
                                 <Form.Control type="password" name="password" required></Form.Control>
                             </Form.Group>
 
-                            <Button className="w-100" type="submit">Registrera</Button>
+                            <Form.Group id="confirmPassword" className="mb-3">
+                                <Form.Label>Bekräfta lösenord:</Form.Label>
+                                <Form.Control type="password" name="confirmPassword" required></Form.Control>
+                            </Form.Group>
+
+                            <Button disabled={loading} className="w-100" type="submit">
+                                {loading ? 'Registrerar..' : 'Registrera'}</Button>
                         </Form>
                     </Card.Body>
                 </Card>
