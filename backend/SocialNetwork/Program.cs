@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using SocialNetwork.Api.Extensions;
+using SocialNetwork.Api.Endpoints;
 using SocialNetwork.Entity;
 using SocialNetwork.Entityframework;
 
@@ -39,7 +40,7 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Skriv in din token här"
+        Description = "Skriv in din token hï¿½r"
     });
 
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -79,6 +80,7 @@ app.UseAuthorization();
 app.MapGroup("/auth").MapIdentityApi<ApplicationUser>();
 
 app.MapEndpoints<Program>();
+app.MapPostEndpoints();
 
 app.Run();
 
