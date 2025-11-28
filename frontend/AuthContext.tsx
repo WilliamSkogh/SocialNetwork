@@ -26,9 +26,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         navigate("/login");
     };
 
-    const loadUserProfile = async (token: string) => {
+    const loadUserProfile = async () => {
         try {
-            const userData = await authService.getProfile(token);
+            const userData = await authService.getProfile();
             setUser(userData);
         } catch (error) {
             console.error(error);
@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const initAuth = async () => {
             const token = storage.getToken();
             if (token) {
-                await loadUserProfile(token);
+                await loadUserProfile();
             }
             setLoading(false);
         };
@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         storage.setToken(data.accessToken);
         storage.setRefreshToken(data.refreshToken);
 
-        await loadUserProfile(data.accessToken);
+        await loadUserProfile();
         navigate("/");
     };
 

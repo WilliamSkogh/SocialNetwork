@@ -1,47 +1,34 @@
 import { AuthResponse, User } from "../types/types";
-
-const API_URL = "http://localhost:5131";
+import apiClient from "./axiosClient";
+import axios from "axios";
 
 export const authService = {
     async login(email: string, password: string): Promise<AuthResponse> {
-        const response = await fetch(`${API_URL}/auth/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password }),
+        const response = await apiClient.post<AuthResponse>("/auth/login", {
+            email,
+            password
         });
-
-        if (!response.ok) {
-            throw new Error("Inloggning misslyckades. Kontrollera uppgifterna.");
-        }
-
-        return await response.json();
+        return response.data;
     },
 
     async register(email: string, password: string): Promise<void> {
-        const response = await fetch(`${API_URL}/auth/register`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password }),
-        });
-        if (!response.ok) {
-            const errorData = await response.json();
-            const errorMessages = Object.values(errorData.errors).flat().join(" ");
-            throw new Error(errorMessages);
+        try {
+            await apiClient.post("/auth/register", { email, password });
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                const errorData = error.response.data;
+                if (errorData.errors) {
+                    const errorMessages = Object.values(errorData.errors).flat().join(" ");
+                    throw new Error(errorMessages);
+                }
+                throw new Error(errorData.title || "Registrering misslyckades");
+            }
+            throw error;
         }
     },
 
-
-    async getProfile(token: string): Promise<User> {
-        const response = await fetch(`${API_URL}/api/profile`, {
-            headers: {
-                "Authorization": `Bearer ${token}`
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error("Kunde inte hämta profil");
-        }
-
-        return await response.json();
+    async getProfile(): Promise<User> {
+        const response = await apiClient.get<User>("/auth/profile");
+        return response.data;
     }
 };
