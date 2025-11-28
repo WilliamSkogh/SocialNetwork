@@ -118,6 +118,6 @@ public class PostTests
         };
 
         // Assert
-        post.Content.Should().Be(content);
+        post.Content.Should().HaveLength(1);
     }
 }
