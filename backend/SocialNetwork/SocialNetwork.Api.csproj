@@ -19,8 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Socialnetwork.Entityframework\Socialnetwork.Entityframework.csproj" />
-    <ProjectReference Include="..\SocialNetwork.Entity\SocialNetwork.Entity.csproj" />
+    <ProjectReference Include="..\..\SocialNetwork.Service\SocialNetwork.Service.csproj" />
   </ItemGroup>
 
 </Project>
