@@ -47,5 +47,24 @@ public class PostTests
         post.CreatedAt.Should().BeOnOrAfter(beforeCreation);
         post.CreatedAt.Should().BeOnOrBefore(afterCreation);
     }
+    
+    [Fact]
+    public void Post_Content_CannotBeEmpty()
+    {
+        // Arrange
+        var authorId = "William";
+        var recipientId = "Pelle";
 
+        // Act
+        Action act = () => new Post
+        {
+            AuthorId = authorId,
+            RecipientId = recipientId,
+            Content = ""
+        };
+
+        // Assert
+        act.Should().Throw<ArgumentException>()
+            .WithMessage("*Content cannot be empty*");
+    }
 }
