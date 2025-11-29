@@ -4,8 +4,8 @@ import logo from "../assets/sn-high-resolution-logo-transparent.png";
 export default function Header() {
     return (
         <Navbar bg="success" expand="lg" sticky="top">
-            <Container>
-                <Navbar.Brand href="/">
+            <Container fluid>
+                <Navbar.Brand href="/" className="">
                     <img
                         src={logo}
                         alt="Social Network Logo"
@@ -15,6 +15,6 @@ export default function Header() {
                 <Nav>
                 </Nav>
             </Container>
-        </Navbar>
+        </Navbar >
     );
 }
