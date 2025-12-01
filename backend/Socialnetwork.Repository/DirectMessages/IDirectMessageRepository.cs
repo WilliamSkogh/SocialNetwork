@@ -8,7 +8,7 @@ using SocialNetwork.Entity;
 
 namespace SocialNetwork.Repository
 {
-    internal interface IDirectMessageRepository
+    public interface IDirectMessageRepository
     {
         Task<DirectMessage> CreateAsync(DirectMessage message);
         Task<IEnumerable<DirectMessage>> GetConversationAsync(string user1Id, string user2Id);
