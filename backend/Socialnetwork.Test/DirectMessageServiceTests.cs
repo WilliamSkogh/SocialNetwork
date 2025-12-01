@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SocialNetwork.Entity;
 using SocialNetwork.Repository;
+using SocialNetwork.Service;
 using Xunit;
 
 public class DirectMessageServiceTests
@@ -16,14 +17,17 @@ public class DirectMessageServiceTests
         // Arrange
         var repoMock = new Mock<IDirectMessageRepository>();
 
-        var service = new DirectMessageService(repoMock.Object);
-
         var message = new DirectMessage
         {
             SenderId = "user1",
             ReceiverId = "user2",
             Message = ""  
         };
+
+        repoMock.Setup(r => r.CreateAsync(message)).ReturnsAsync(message);
+
+        var service = new DirectMessageService(repoMock.Object);
+
 
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentException>(() =>
