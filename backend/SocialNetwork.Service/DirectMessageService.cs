@@ -44,6 +44,9 @@ namespace SocialNetwork.Service
             if (string.IsNullOrWhiteSpace(otherUserId))
                 throw new ArgumentException("OtherUserId cannot be null or empty");
 
+            if (currentUserId == otherUserId)
+                throw new ArgumentException("CurrentUserId and OtherUserId cannot be the same");
+
             return _repo.GetConversationAsync(currentUserId, otherUserId);
         }
     }
