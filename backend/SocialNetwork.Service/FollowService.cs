@@ -47,7 +47,7 @@ public class FollowService
         if (follow == null)
             return;
 
-       var (follower, following) = await GetUserOrThrowAsync(followerId, followingId);
+        var (follower, following) = await GetUserOrThrowAsync(followerId, followingId);
 
         follower.Unfollow(following);
 
