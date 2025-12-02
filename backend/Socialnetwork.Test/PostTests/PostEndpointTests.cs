@@ -37,7 +37,6 @@ public class PostEndpointTests : IClassFixture<WebApplicationFactory<Program>>
                 var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 db.Database.EnsureCreated();
                 
-               
                 db.Users.RemoveRange(db.Users);
                 db.Posts.RemoveRange(db.Posts);
                 db.SaveChanges();
@@ -147,6 +146,25 @@ public class PostEndpointTests : IClassFixture<WebApplicationFactory<Program>>
         {
             AuthorId = "nonexistent-user-id",
             RecipientId = "Pelle",
+            Content = "Test message"
+        };
+
+        // Act
+        var response = await client.PostAsJsonAsync("/api/posts", request);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task CreatePost_WithNonExistentRecipientId_ReturnsBadRequest()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var request = new
+        {
+            AuthorId = "William",
+            RecipientId = "nonexistent-recipient-id",
             Content = "Test message"
         };
 
