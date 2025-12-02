@@ -174,5 +174,25 @@ public class PostEndpointTests : IClassFixture<WebApplicationFactory<Program>>
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
+
+    [Fact]
+    public async Task CreatePost_WithWhitespaceContent_ReturnsBadRequest()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var request = new
+        {
+            AuthorId = "William",
+            RecipientId = "Pelle",
+            Content = "   "
+        };
+
+        // Act
+        var response = await client.PostAsJsonAsync("/api/posts", request);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
 }
+
 
