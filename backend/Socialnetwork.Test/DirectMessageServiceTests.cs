@@ -198,4 +198,52 @@ public class DirectMessageServiceTests
         Assert.Equal(expected, result);
     }
 
+    [Fact]
+    public async Task GetConversationShouldReturnEmptyListWhenNoMessages()
+    {
+        _directMessageRepoMock
+            .Setup(r => r.GetConversationAsync("user1", "user2"))
+            .ReturnsAsync(new List<DirectMessage>());
+
+        var result = await _directMessageService.GetConversationAsync("user1", "user2");
+
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    public async Task GetConversationShouldReturnAllMessages()
+    {
+        var messages = Enumerable.Range(1, 100)
+            .Select(i => new DirectMessage { SenderId = "user1", ReceiverId = "user2", Message = $"Msg {i}" })
+            .ToList();
+
+        _directMessageRepoMock
+            .Setup(r => r.GetConversationAsync("user1", "user2"))
+            .ReturnsAsync(messages);
+
+        var result = await _directMessageService.GetConversationAsync("user1", "user2");
+
+        Assert.Equal(100, result.Count());
+        Assert.Equal(messages, result);
+    }
+
+    [Fact]
+    public async Task GetConversationShouldReturnMessagesInCorrectOrder()
+    {
+        var messages = new List<DirectMessage>
+    {
+        new DirectMessage { SenderId = "user1", ReceiverId = "user2", Message = "Second", Timestamp = DateTime.UtcNow.AddMinutes(1) },
+        new DirectMessage { SenderId = "user2", ReceiverId = "user1", Message = "First", Timestamp = DateTime.UtcNow }
+    };
+
+        _directMessageRepoMock
+            .Setup(r => r.GetConversationAsync("user1", "user2"))
+            .ReturnsAsync(messages);
+
+        var result = (await _directMessageService.GetConversationAsync("user1", "user2")).ToList();
+
+        Assert.Equal("Second", result[0].Message); 
+    }
+
+
 }
