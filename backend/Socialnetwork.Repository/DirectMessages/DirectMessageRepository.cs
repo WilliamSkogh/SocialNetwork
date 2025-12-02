@@ -5,11 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using SocialNetwork.Entity;
 using SocialNetwork.Entityframework;
-using SocialNetwork.Repository;
 
-namespace Socialnetwork.Repository
+namespace SocialNetwork.Repository
 {
-    internal class DirectMessageRepository : IDirectMessageRepository
+    public class DirectMessageRepository : IDirectMessageRepository
     {
         private readonly ApplicationDbContext _context;
 

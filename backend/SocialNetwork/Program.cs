@@ -3,6 +3,9 @@ using Microsoft.OpenApi.Models;
 using SocialNetwork.Api.Extensions;
 using SocialNetwork.Entity;
 using SocialNetwork.Entityframework;
+using SocialNetwork.Repository;
+using SocialNetwork.Service;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +21,9 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.AddScoped<IDirectMessageRepository, DirectMessageRepository>();
+builder.Services.AddScoped<IDirectMessageService, DirectMessageService>();
 
 builder.Services.AddCors(options =>
 {
