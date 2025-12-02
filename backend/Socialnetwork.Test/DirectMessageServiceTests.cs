@@ -133,4 +133,27 @@ public class DirectMessageServiceTests
         );
     }
 
+    [Fact]
+    public async Task GetConversationShouldThrowWhenCurrentUserIdIsNullOrEmpty()
+    {
+        await Assert.ThrowsAsync<ArgumentException>(() =>
+            _directMessageService.GetConversationAsync(null, "user2")
+        );
+        await Assert.ThrowsAsync<ArgumentException>(() =>
+            _directMessageService.GetConversationAsync("", "user2")
+        );
+    }
+
+    [Fact]
+    public async Task GetConversationShouldThrowWhenOtherUserIdIsNullOrEmpty()
+    {
+        await Assert.ThrowsAsync<ArgumentException>(() =>
+            _directMessageService.GetConversationAsync("user1", null)
+        );
+        await Assert.ThrowsAsync<ArgumentException>(() =>
+            _directMessageService.GetConversationAsync("user1", "")
+        );
+    }
+
+
 }
