@@ -5,8 +5,8 @@ namespace Socialnetwork.Repository
     public interface IFollowRepository
     {
         Task<bool> IsFollowingAsync(string followerId, string followingId);
-        Task<bool> AddFollowAsync(Follow follow);
-        Task<bool> SaveChangesAsync();
+        Task AddFollowAsync(Follow follow);
+        Task SaveChangesAsync();
         Task<ApplicationUser?> GetUserByIdAsync(string userId);
 
         Task<Follow?> GetFollowAsync(string followerId, string followingId);
