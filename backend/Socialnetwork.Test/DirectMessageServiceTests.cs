@@ -91,6 +91,22 @@ public class DirectMessageServiceTests
         );
     }
 
+    [Fact]
+    public async Task CreateMessageShouldThrowWhenMessageTooLong()
+    {
+        var message = new DirectMessage
+        {
+            SenderId = "user1",
+            ReceiverId = "user2",
+            Message = new string('a', 1000) 
+        };
+        await Assert.ThrowsAsync<ArgumentException>(() =>
+            _directMessageService.CreateMessageAsync(message)
+        );
+    }
+
+
+
 
 
 
