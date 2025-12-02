@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.13.36105.23
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11217.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork.Api", "SocialNetwork\SocialNetwork.Api.csproj", "{B9E0A399-C835-49E4-9596-47D21C67C4B7}"
 EndProject
@@ -14,6 +14,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Socialnetwork.Test", "Socialnetwork.Test\Socialnetwork.Test.csproj", "{B702391D-3754-4C22-A5B2-60C27D0DE1FE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SocialNetwork", "SocialNetwork", "{0937D1DA-0B60-A921-F694-348F75BD325C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork.Service", "SocialNetwork.Service\SocialNetwork.Service.csproj", "{1B7ACF62-893E-4E80-4050-3FD19310C525}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -85,6 +87,18 @@ Global
 		{B702391D-3754-4C22-A5B2-60C27D0DE1FE}.Release|x64.Build.0 = Release|Any CPU
 		{B702391D-3754-4C22-A5B2-60C27D0DE1FE}.Release|x86.ActiveCfg = Release|Any CPU
 		{B702391D-3754-4C22-A5B2-60C27D0DE1FE}.Release|x86.Build.0 = Release|Any CPU
+		{1B7ACF62-893E-4E80-4050-3FD19310C525}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B7ACF62-893E-4E80-4050-3FD19310C525}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B7ACF62-893E-4E80-4050-3FD19310C525}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1B7ACF62-893E-4E80-4050-3FD19310C525}.Debug|x64.Build.0 = Debug|Any CPU
+		{1B7ACF62-893E-4E80-4050-3FD19310C525}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1B7ACF62-893E-4E80-4050-3FD19310C525}.Debug|x86.Build.0 = Debug|Any CPU
+		{1B7ACF62-893E-4E80-4050-3FD19310C525}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B7ACF62-893E-4E80-4050-3FD19310C525}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B7ACF62-893E-4E80-4050-3FD19310C525}.Release|x64.ActiveCfg = Release|Any CPU
+		{1B7ACF62-893E-4E80-4050-3FD19310C525}.Release|x64.Build.0 = Release|Any CPU
+		{1B7ACF62-893E-4E80-4050-3FD19310C525}.Release|x86.ActiveCfg = Release|Any CPU
+		{1B7ACF62-893E-4E80-4050-3FD19310C525}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Socialnetwork.Entityframework\Socialnetwork.Entityframework.csproj" />
     <ProjectReference Include="..\SocialNetwork.Entity\SocialNetwork.Entity.csproj" />
   </ItemGroup>
 
