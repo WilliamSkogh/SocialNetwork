@@ -17,12 +17,13 @@ namespace SocialNetwork.Service
         }
 
         public async Task<DirectMessage> CreateMessageAsync(DirectMessage message)
-        {
+        {  
             if (string.IsNullOrWhiteSpace(message.Message))
                 throw new ArgumentException("Message content cannot be empty");
 
             return await _repo.CreateAsync(message);
         }
+
 
     }
 }
