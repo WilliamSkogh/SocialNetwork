@@ -17,15 +17,18 @@ namespace SocialNetwork.Service
         }
 
         public async Task<DirectMessage> CreateMessageAsync(DirectMessage message)
-        {  
+        {
             if (string.IsNullOrWhiteSpace(message.Message))
                 throw new ArgumentException("Message content cannot be empty");
-            
+
             if (message.SenderId == null)
                 throw new ArgumentException("SenderId cannot be null");
 
             if (message.ReceiverId == null)
                 throw new ArgumentException("SenderId cannot be null");
+
+            if (message.ReceiverId == message.SenderId)
+                throw new ArgumentException("SenderId and ReceiverId cannot be the same");
 
             return await _repo.CreateAsync(message);
         }
