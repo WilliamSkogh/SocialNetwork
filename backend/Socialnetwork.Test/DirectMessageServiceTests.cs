@@ -156,7 +156,7 @@ public class DirectMessageServiceTests
     }
 
     [Fact]
-    public async Task GetConversationShouldThrowWhenUserIdsAreEqual() 
+    public async Task GetConversationShouldThrowWhenUserIdsAreEqual()
     {
         await Assert.ThrowsAsync<ArgumentException>(() =>
             _directMessageService.GetConversationAsync("user1", "user1")
@@ -164,9 +164,38 @@ public class DirectMessageServiceTests
 
     }
 
+    [Fact]
+    public async Task GetConversationShouldCallRepositoryWithCorrectIds()
+    {
 
+        var expectedMessages = new List<DirectMessage>();
+        _directMessageRepoMock
+            .Setup(r => r.GetConversationAsync("user1", "user2"))
+            .ReturnsAsync(expectedMessages);
 
+        await _directMessageService.GetConversationAsync("user1", "user2");
 
+        _directMessageRepoMock.Verify(
+            r => r.GetConversationAsync("user1", "user2"),
+            Times.Once
+        );
+    }
 
+    [Fact]
+    public async Task GetConversationShouldReturnMessagesFromRepository()
+    {
+        var expected = new List<DirectMessage>
+    {
+        new DirectMessage { SenderId = "user1", ReceiverId = "user2", Message = "Hello" }
+    };
+
+        _directMessageRepoMock
+            .Setup(r => r.GetConversationAsync("user1", "user2"))
+            .ReturnsAsync(expected);
+
+        var result = await _directMessageService.GetConversationAsync("user1", "user2");
+
+        Assert.Equal(expected, result);
+    }
 
 }
