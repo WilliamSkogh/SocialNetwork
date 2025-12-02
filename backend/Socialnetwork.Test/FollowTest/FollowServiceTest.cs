@@ -75,6 +75,31 @@ public async Task FollowUser_Should_AddFollow_And_IncrementCounts_When_Not_Alrea
         // Assert
         await action.Should().ThrowAsync<Exception>().WithMessage("You cannot follow yourself.");
     }
+    [Fact]
+
+    public async Task UnfollowUser_Should_RemoveFollow_And_DecrementCounts_When_Following_Exists()
+    {
+        // Arrange
+        var followerId = "user-a";
+        var followingId = "user-b";
+
+        var followerUser = new ApplicationUser { Id = followerId, FollowingCount = 1 };
+        var followingUser = new ApplicationUser { Id = followingId, FollowerCount = 1 };
+
+        var existingFollow = new Follow { FollowerId = followerId, FollowingId = followingId  };
+
+        _mockRepo.Setup(r => r.GetUserByIdAsync(followerId)).ReturnsAsync(followerUser);
+        _mockRepo.Setup(r => r.GetUserByIdAsync(followingId)).ReturnsAsync(followingUser);
+
+        // Act
+        await _sut.UnfollowUserAsync(followerId, followingId);
+
+        // Assert
+        _mockRepo.Verify(r => r.RemoveFollowAsync(existingFollow), Times.Once);
+        followerUser.FollowingCount.Should().Be(0);
+        followingUser.FollowerCount.Should().Be(0);
+        _mockRepo.Verify(r => r.SaveChangesAsync(), Times.Once);
+    }
 }
 
 
