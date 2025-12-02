@@ -44,8 +44,6 @@ public async Task FollowUser_Should_AddFollow_And_IncrementCounts_When_Not_Alrea
     followingUser.FollowerCount.Should().Be(1);
 
     _mockRepo.Verify(r => r.SaveChangesAsync(), Times.Once);
-
-
     }
 }
 

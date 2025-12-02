@@ -1,4 +1,5 @@
 ﻿using Socialnetwork.Repository;
+using SocialNetwork.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,27 @@ public class FollowService
     }
     public async Task FollowUserAsync(string followerId, string followingId)
     {
-        throw new NotImplementedException();
+        bool alreadyFolllowing = await _repo.IsFollowingAsync(followerId, followingId);
+        if (alreadyFolllowing)
+            return;
+
+        var follower = await _repo.GetUserByIdAsync(followerId);
+        var following = await _repo.GetUserByIdAsync(followingId);
+
+        if (follower == null || following == null)
+            throw new Exception("Invalid user IDs.");
+
+        var newFollow = new Follow
+        {
+            FollowerId = followerId,
+            FollowingId = followingId,
+            FollowedAt = DateTime.UtcNow
+        };
+        await _repo.AddFollowAsync(newFollow);
+
+        follower.FollowingCount++;
+        following.FollowerCount++;
+
+        await _repo.SaveChangesAsync();
     }
 }
