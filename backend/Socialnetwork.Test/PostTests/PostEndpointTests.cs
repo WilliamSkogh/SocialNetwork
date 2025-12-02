@@ -1,11 +1,13 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SocialNetwork.Entityframework;
 using Xunit;
+
 
 namespace Socialnetwork.Test.EndpointTests;
 
@@ -84,7 +86,7 @@ public class PostEndpointTests : IClassFixture<WebApplicationFactory<Program>>
         {
             AuthorId = "William",
             RecipientId = "Pelle",
-            Content = new string('x', 501)  // 501 tecken (över max 500)
+            Content = new string('x', 501)  
         };
 
         // Act
@@ -93,4 +95,36 @@ public class PostEndpointTests : IClassFixture<WebApplicationFactory<Program>>
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
+    
+    [Fact]
+    public async Task CreatePost_ValidData_PostIsSavedToDatabase()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var request = new
+        {
+            AuthorId = "William",
+            RecipientId = "Pelle",
+            Content = "Test meddelande"
+        };
+
+        // Act
+        var response = await client.PostAsJsonAsync("/api/posts", request);
+        var content = await response.Content.ReadAsStringAsync();
+        
+        // Deserialize to dynamic object
+        using var jsonDoc = JsonDocument.Parse(content);
+        var root = jsonDoc.RootElement;
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        root.GetProperty("id").GetInt32().Should().BeGreaterThan(0);
+        root.GetProperty("authorId").GetString().Should().Be("William");
+        root.GetProperty("recipientId").GetString().Should().Be("Pelle");
+        root.GetProperty("content").GetString().Should().Be("Test meddelande");
+        
+        var createdAt = root.GetProperty("createdAt").GetDateTime();
+        createdAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
+    }
 }
+
