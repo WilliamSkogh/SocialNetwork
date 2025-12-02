@@ -47,4 +47,23 @@ public class FollowService
         };
         await _repo.AddFollowAsync(follow);
     }
+
+    public async Task UnfollowUserAsync(string followerId, string followingId)
+    {
+        var follow = await _repo.GetFollowAsync(followerId, followingId);
+
+        if (follow == null)
+            return;
+
+        var follower = await _repo.GetUserByIdAsync(followerId);
+        var following = await _repo.GetUserByIdAsync(followingId);
+
+        if (follower == null || following == null)
+            throw new Exception("Invalid user ID.");
+
+        follower.Unfollow(following);
+
+        await _repo.RemoveFollowAsync(follow);
+        await _repo.SaveChangesAsync();
+    }
 }
