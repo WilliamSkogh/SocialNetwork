@@ -20,7 +20,11 @@ namespace SocialNetwork.Service
         {  
             if (string.IsNullOrWhiteSpace(message.Message))
                 throw new ArgumentException("Message content cannot be empty");
+            
             if (message.SenderId == null)
+                throw new ArgumentException("SenderId cannot be null");
+
+            if (message.ReceiverId == null)
                 throw new ArgumentException("SenderId cannot be null");
 
             return await _repo.CreateAsync(message);
