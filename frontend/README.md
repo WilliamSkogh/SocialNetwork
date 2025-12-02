@@ -1,73 +1,57 @@
-# React + TypeScript + Vite
+# Social Network - Frontend
+Detta är frontend-applikationen för Social Network, byggd med React 19, TypeScript och Vite.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Applikationen använder en ren arkitektur med separerad logik för autentisering (JWT), API-anrop och state-hantering.
 
-Currently, two official plugins are available:
+## Tech Stack
+- Core: React 19, TypeScript
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Build Tool: Vite
 
-## React Compiler
+- Routing: React Router DOM
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- HTTP Client: Axios (med interceptors för token-hantering)
 
-## Expanding the ESLint configuration
+- Testing: Vitest
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Linting: ESLint
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Kom igång
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Följ dessa steg för att köra projektet lokalt.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+1. Förberedelser
+Se till att du har Node.js installerat. Du bör även ha Backend-API:et igång lokalt för att inloggning och registrering ska fungera (vanligtvis på port 7166 eller 5131).
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. Installera beroenden
+Installera alla nödvändiga paket från package.json:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+`npm install`
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+3. Starta utvecklingsservern
+Starta applikationen i dev-läge med Hot Module Replacement (HMR):
+
+```npm run dev```
+
+Applikationen startar normalt på http://localhost:5173.
+
+## Tester
+Vi använder Vitest för enhetstester. Testerna täcker bland annat AuthService och logik kring inloggning/registrering.
+
+```npm run test ```
+
+## Tillgängliga scripts
+```npm run dev ``` Startar lokal utvecklingsmiljö
+
+```npm run test``` Kör alla enhetstester med Vitest.
+
+```npm run build``` Kompilerar Typescript och bygger applikationen för 
+produktion.
+
+```npm run preview``` Förhandsgranskar produktionsbygget lokalt.
+
+```npm run lint``` Kör ESLint för att hitta kodfel och stilproblem
+
+
+
+
