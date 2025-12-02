@@ -11,27 +11,26 @@ using Xunit;
 
 public class DirectMessageServiceTests
 {
+    private readonly Mock<IDirectMessageRepository> _directMessageRepoMock;
+    private readonly DirectMessageService _directMessageService;
+    public DirectMessageServiceTests()
+    {
+        _directMessageRepoMock = new Mock<IDirectMessageRepository>();
+        _directMessageService = new DirectMessageService(_directMessageRepoMock.Object);
+    }
+
     [Fact]
     public async Task CreateMessageShouldThrowWhenMessageIsEmpty()
     {
-        // Arrange
-        var repoMock = new Mock<IDirectMessageRepository>();
-
         var message = new DirectMessage
         {
             SenderId = "user1",
             ReceiverId = "user2",
-            Message = ""  
+            Message = ""
         };
 
-        repoMock.Setup(r => r.CreateAsync(message)).ReturnsAsync(message);
-
-        var service = new DirectMessageService(repoMock.Object);
-
-
-        // Act & Assert
         await Assert.ThrowsAsync<ArgumentException>(() =>
-            service.CreateMessageAsync(message)
+            _directMessageService.CreateMessageAsync(message)
         );
     }
 }
