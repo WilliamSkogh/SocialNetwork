@@ -18,9 +18,10 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\SocialNetwork.Entity\SocialNetwork.Entity.csproj" />
-    <ProjectReference Include="..\SocialNetwork.Service\SocialNetwork.Service.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\SocialNetwork.Service\SocialNetwork.Service.csproj" />
+		<ProjectReference Include="..\SocialNetwork.Entity\SocialNetwork.Entity.csproj" />
+		<ProjectReference Include="..\SocialNetwork.Repository\SocialNetwork.Repository.csproj" />
+	</ItemGroup>
 
 </Project>

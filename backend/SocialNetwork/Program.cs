@@ -1,8 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Socialnetwork.Repository;
 using SocialNetwork.Api.Extensions;
 using SocialNetwork.Entity;
 using SocialNetwork.Entityframework;
+using SocialNetwork.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,9 +17,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddAuthorization();
 
-
 builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.AddScoped<IFollowRepository, FollowRepository>();
+builder.Services.AddScoped<FollowService>();
 
 builder.Services.AddCors(options =>
 {
@@ -41,6 +45,7 @@ builder.Services.AddSwaggerGen(options =>
         In = ParameterLocation.Header,
         Description = "Skriv in din token här"
     });
+
 
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
