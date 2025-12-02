@@ -22,11 +22,18 @@ public static class PostEndpoints
 {
     try
     {
-        // Validate AuthorId exists
+        
         var authorExists = await context.Users.AnyAsync(u => u.Id == request.AuthorId);
         if (!authorExists)
         {
             return Results.BadRequest(new { error = "Author not found" });
+        }
+
+        
+        var recipientExists = await context.Users.AnyAsync(u => u.Id == request.RecipientId);
+        if (!recipientExists)
+        {
+            return Results.BadRequest(new { error = "Recipient not found" });
         }
 
         var post = new Post
