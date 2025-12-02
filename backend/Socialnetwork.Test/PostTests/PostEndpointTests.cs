@@ -126,5 +126,23 @@ public class PostEndpointTests : IClassFixture<WebApplicationFactory<Program>>
         var createdAt = root.GetProperty("createdAt").GetDateTime();
         createdAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
     }
+    [Fact]
+    public async Task CreatePost_WithNonExistentAuthorId_ReturnsBadRequest()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var request = new
+        {
+            AuthorId = "nonexistent-user-id",
+            RecipientId = "Pelle",
+            Content = "Test message"
+        };
+
+        // Act
+        var response = await client.PostAsJsonAsync("/api/posts", request);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
 }
 
