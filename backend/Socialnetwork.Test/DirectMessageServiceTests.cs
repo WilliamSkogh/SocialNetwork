@@ -49,5 +49,23 @@ public class DirectMessageServiceTests
     }
 
 
+    [Fact]
+    public async Task CreateMessageShouldThrowWhenSenderIdIsNull()
+    {
+        var message = new DirectMessage
+        {
+            SenderId = null,
+            ReceiverId = "user2",
+            Message = "Hello"
+        };
+        await Assert.ThrowsAsync<ArgumentException>(() =>
+            _directMessageService.CreateMessageAsync(message)
+        );
+
+    }
+
+    
+
+
 
 }
