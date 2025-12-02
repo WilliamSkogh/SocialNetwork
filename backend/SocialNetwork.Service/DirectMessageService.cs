@@ -21,11 +21,11 @@ namespace SocialNetwork.Service
             if (string.IsNullOrWhiteSpace(message.Message))
                 throw new ArgumentException("Message content cannot be empty");
 
-            if (message.SenderId == null)
-                throw new ArgumentException("SenderId cannot be null");
+            if (string.IsNullOrWhiteSpace(message.SenderId))
+                throw new ArgumentException("SenderId cannot be null or empty");
 
-            if (message.ReceiverId == null)
-                throw new ArgumentException("SenderId cannot be null");
+            if (string.IsNullOrWhiteSpace(message.ReceiverId))
+                throw new ArgumentException("ReceiverId cannot be null or empty");
 
             if (message.ReceiverId == message.SenderId)
                 throw new ArgumentException("SenderId and ReceiverId cannot be the same");
