@@ -49,9 +49,17 @@ namespace Socialnetwork.Repository
                 .ToListAsync();
         }
 
-        public Task<IEnumerable<DirectMessage>> GetMessagesForUserAsync(string userId)
+        public async Task<IEnumerable<DirectMessage>> GetMessagesForUserAsync(string userId)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new ArgumentException("UserId cannot be null or empty");
+
+            return await _context.DirectMessages
+                .Where(m => m.ReceiverId == userId)
+                .Include(m => m.Sender)
+               
+                .OrderByDescending(m => m.Timestamp)
+                .ToListAsync();
         }
     }
 }
