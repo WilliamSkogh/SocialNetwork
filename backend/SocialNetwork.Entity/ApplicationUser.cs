@@ -12,11 +12,17 @@ public class ApplicationUser : IdentityUser
 
     public void Follow(ApplicationUser targetUser)
     {
-        if (targetUser == null)
-            throw new ArgumentNullException(nameof(targetUser), "Cannot follow a null user.");
+        ArgumentNullException.ThrowIfNull(targetUser);
 
         this.FollowingCount++;
         targetUser.FollowerCount++;
+    }
+    public void Unfollow(ApplicationUser targetUser)
+    {
+        ArgumentNullException.ThrowIfNull(targetUser);
+
+        if (this.FollowingCount > 0) this.FollowingCount--;
+        if (targetUser.FollowerCount > 0) targetUser.FollowerCount--;
     }
 
 }
