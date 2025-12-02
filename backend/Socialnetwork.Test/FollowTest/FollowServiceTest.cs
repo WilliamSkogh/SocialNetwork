@@ -45,6 +45,25 @@ public async Task FollowUser_Should_AddFollow_And_IncrementCounts_When_Not_Alrea
 
     _mockRepo.Verify(r => r.SaveChangesAsync(), Times.Once);
     }
+    [Fact]
+    public async Task FollowUser_Should_ThrowException_When_User_Does_Not_Exist()
+    {
+        // Arrange
+        var followerId = "user-a";
+        var followingId = "ghost-user";
+
+        _mockRepo.Setup(r => r.IsFollowingAsync(followerId, followingId)).ReturnsAsync(false);
+
+        _mockRepo.Setup(r => r.GetUserByIdAsync(followingId)).ReturnsAsync(new ApplicationUser());
+
+        _mockRepo.Setup(r => r.GetUserByIdAsync(followingId)).ReturnsAsync((ApplicationUser?)null);
+
+        // Act
+        // Assert
+        var action = async () => await _sut.FollowUserAsync(followerId, followingId);
+
+        await action.Should().ThrowAsync<Exception>().WithMessage("Invalid user ID");
+    }
 }
 
 

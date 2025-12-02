@@ -26,7 +26,7 @@ public class FollowService
         var following = await _repo.GetUserByIdAsync(followingId);
 
         if (follower == null || following == null)
-            throw new Exception("Invalid user IDs.");
+            throw new Exception("Invalid user ID");
 
         var newFollow = new Follow
         {
