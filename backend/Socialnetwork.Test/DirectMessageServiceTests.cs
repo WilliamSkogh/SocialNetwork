@@ -92,6 +92,20 @@ public class DirectMessageServiceTests
         );
     }
     [Fact]
+    public async Task CreateMessageShouldThrowWhenReceiverIdIsEmpty()
+    {
+        var message = new DirectMessage
+        {
+            SenderId = "user1",
+            ReceiverId = "",
+            Message = "Hello"
+        };
+        await Assert.ThrowsAsync<ArgumentException>(() =>
+            _directMessageService.CreateMessageAsync(message)
+        );
+    }
+
+    [Fact]
     public async Task CreateMessageShouldThrowWhenRecieverIdEqualSenderId()
     {
         var message = new DirectMessage
@@ -112,17 +126,11 @@ public class DirectMessageServiceTests
         {
             SenderId = "user1",
             ReceiverId = "user2",
-            Message = new string('a', 1001) 
+            Message = new string('a', 1001)
         };
         await Assert.ThrowsAsync<ArgumentException>(() =>
             _directMessageService.CreateMessageAsync(message)
         );
     }
-
-
-
-
-
-
 
 }
