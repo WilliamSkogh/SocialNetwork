@@ -5,6 +5,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using SocialNetwork.Entity;
 using SocialNetwork.Entityframework;
 using Xunit;
 
@@ -28,13 +29,24 @@ public class PostEndpointTests : IClassFixture<WebApplicationFactory<Program>>
 
                 services.AddDbContext<ApplicationDbContext>(options =>
                 {
-                    options.UseInMemoryDatabase($"TestDb_{Guid.NewGuid()}");
+                    options.UseInMemoryDatabase("PostEndpointTestsDb");
                 });
 
                 var sp = services.BuildServiceProvider();
                 using var scope = sp.CreateScope();
                 var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 db.Database.EnsureCreated();
+                
+               
+                db.Users.RemoveRange(db.Users);
+                db.Posts.RemoveRange(db.Posts);
+                db.SaveChanges();
+                
+                db.Users.AddRange(
+                    new ApplicationUser { Id = "William", UserName = "William", Email = "william@test.com", NormalizedUserName = "WILLIAM", NormalizedEmail = "WILLIAM@TEST.COM" },
+                    new ApplicationUser { Id = "Pelle", UserName = "Pelle", Email = "pelle@test.com", NormalizedUserName = "PELLE", NormalizedEmail = "PELLE@TEST.COM" }
+                );
+                db.SaveChanges();
             });
         });
     }

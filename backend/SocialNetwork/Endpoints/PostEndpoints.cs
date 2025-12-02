@@ -17,34 +17,43 @@ public static class PostEndpoints
     }
 
     private static async Task<IResult> CreatePost(
-        ApplicationDbContext context,
-        PostRequest request)
+    ApplicationDbContext context,
+    PostRequest request)
+{
+    try
     {
-        try
+        // Validate AuthorId exists
+        var authorExists = await context.Users.AnyAsync(u => u.Id == request.AuthorId);
+        if (!authorExists)
         {
-            var post = new Post
-            {
-                AuthorId = request.AuthorId,
-                RecipientId = request.RecipientId,
-                Content = request.Content
-            };
-
-            context.Posts.Add(post);
-            await context.SaveChangesAsync();
-
-            var response = new PostResponse(
-                post.Id,
-                post.AuthorId,
-                post.RecipientId,
-                post.Content,
-                post.CreatedAt
-            );
-
-            return Results.Created($"/api/posts/{post.Id}", response);
+            return Results.BadRequest(new { error = "Author not found" });
         }
-        catch (ArgumentException ex)
+
+        var post = new Post
         {
-            return Results.BadRequest(new { error = ex.Message });
-        }
+            AuthorId = request.AuthorId,
+            RecipientId = request.RecipientId,
+            Content = request.Content
+        };
+
+        context.Posts.Add(post);
+        await context.SaveChangesAsync();
+
+        var response = new PostResponse(
+            post.Id,
+            post.AuthorId,
+            post.RecipientId,
+            post.Content,
+            post.CreatedAt
+        );
+
+        return Results.Created($"/api/posts/{post.Id}", response);
+    }
+    catch (ArgumentException ex)
+    {
+        return Results.BadRequest(new { error = ex.Message });
     }
 }
+}
+
+
