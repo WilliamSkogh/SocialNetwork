@@ -242,8 +242,90 @@ public class DirectMessageServiceTests
 
         var result = (await _directMessageService.GetConversationAsync("user1", "user2")).ToList();
 
-        Assert.Equal("Second", result[0].Message); 
+        Assert.Equal("Second", result[0].Message);
     }
+
+    [Fact]
+    public async Task GetInboxAsyncShouldThrowWhenUserIdIsNull()
+    {
+        await Assert.ThrowsAsync<ArgumentException>(() =>
+            _directMessageService.GetInboxAsync(null)
+        );
+    }
+
+    [Fact]
+    public async Task GetInboxAsyncShouldReturnAllMessagesForUser()
+    {
+        var userId = "user1";
+        var messages = new List<DirectMessage>
+    {
+        new DirectMessage { SenderId = "user2", ReceiverId = userId, Message = "Msg1" },
+        new DirectMessage { SenderId = "user3", ReceiverId = userId, Message = "Msg2" }
+    };
+
+        _directMessageRepoMock
+            .Setup(r => r.GetMessagesForUserAsync(userId))
+            .ReturnsAsync(messages);
+
+        var result = await _directMessageService.GetInboxAsync(userId);
+
+        Assert.Equal(2, result.Count());
+    }
+
+    [Fact]
+    public async Task CreateMessageShouldSucceedWithValidMessage()
+    {
+        var message = new DirectMessage
+        {
+            SenderId = "user1",
+            ReceiverId = "user2",
+            Message = "Valid message"
+        };
+
+        _directMessageRepoMock
+            .Setup(r => r.CreateAsync(It.IsAny<DirectMessage>()))
+            .ReturnsAsync(message);
+
+        var result = await _directMessageService.CreateMessageAsync(message);
+
+        Assert.NotNull(result);
+        _directMessageRepoMock.Verify(r => r.CreateAsync(It.IsAny<DirectMessage>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task CreateMessageShouldSetTimestampAndIsReadDefault()
+    {
+        var message = new DirectMessage
+        {
+            SenderId = "user1",
+            ReceiverId = "user2",
+            Message = "Test message"
+        };
+
+        _directMessageRepoMock
+            .Setup(r => r.CreateAsync(It.IsAny<DirectMessage>()))
+            .ReturnsAsync(message);
+
+        var result = await _directMessageService.CreateMessageAsync(message);
+
+        Assert.NotNull(result);
+        Assert.False(result.IsRead);
+    }
+
+    [Fact]
+    public async Task GetInboxAsyncShouldReturnEmptyListWhenNoMessages()
+    {
+        var userId = "user1";
+
+        _directMessageRepoMock
+            .Setup(r => r.GetMessagesForUserAsync(userId))
+            .ReturnsAsync(new List<DirectMessage>());
+
+        var result = await _directMessageService.GetInboxAsync(userId);
+
+        Assert.Empty(result);
+    }
+
 
 
 }

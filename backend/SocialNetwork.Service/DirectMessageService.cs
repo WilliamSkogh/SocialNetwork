@@ -49,5 +49,13 @@ namespace SocialNetwork.Service
 
             return _repo.GetConversationAsync(currentUserId, otherUserId);
         }
+
+        public Task<IEnumerable<DirectMessage>> GetInboxAsync(string userId)
+        {
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new ArgumentException("UserId cannot be null or empty");
+
+            return _repo.GetMessagesForUserAsync(userId);
+        }
     }
 }

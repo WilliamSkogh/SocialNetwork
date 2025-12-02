@@ -8,6 +8,8 @@ namespace SocialNetwork.Service
     {
         Task<DirectMessage> CreateMessageAsync(DirectMessage message);
         Task<IEnumerable<DirectMessage>> GetConversationAsync(string currentUserId, string otherUserId);
+      
+        Task<IEnumerable<DirectMessage>> GetInboxAsync(string userId);
 
     }
 }
