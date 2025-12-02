@@ -18,30 +18,33 @@ public class FollowService
     }
     public async Task FollowUserAsync(string followerId, string followingId)
     {
-        bool alreadyFolllowing = await _repo.IsFollowingAsync(followerId, followingId);
-        if (alreadyFolllowing)
+        if (followerId == followingId)
+            throw new Exception("You cannot follow yourself.");
+
+        if (await _repo.IsFollowingAsync(followerId, followingId))
             return;
 
         var follower = await _repo.GetUserByIdAsync(followerId);
         var following = await _repo.GetUserByIdAsync(followingId);
 
-        if (followerId == followingId)
-            throw new Exception("You cannot follow yourself.");
-
         if (follower == null || following == null)
-            throw new Exception("Invalid user ID");
+            throw new Exception("Invalid user ID.");
 
-        var newFollow = new Follow
-        {
-            FollowerId = followerId,
-            FollowingId = followingId,
-            FollowedAt = DateTime.UtcNow
-        };
-        await _repo.AddFollowAsync(newFollow);
+        await CreateFollowRelationAsync(followerId, followingId);
 
         follower.FollowingCount++;
         following.FollowerCount++;
 
         await _repo.SaveChangesAsync();
+    }
+    private async Task CreateFollowRelationAsync(string followerId, string followingId)
+    {
+        var follow = new Follow
+        {
+            FollowerId = followerId,
+            FollowingId = followingId,
+            FollowedAt = DateTime.UtcNow
+        };
+        await _repo.AddFollowAsync(follow);
     }
 }

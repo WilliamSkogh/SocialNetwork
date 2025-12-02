@@ -62,7 +62,7 @@ public async Task FollowUser_Should_AddFollow_And_IncrementCounts_When_Not_Alrea
         // Assert
         var action = async () => await _sut.FollowUserAsync(followerId, followingId);
 
-        await action.Should().ThrowAsync<Exception>().WithMessage("Invalid user ID");
+        await action.Should().ThrowAsync<Exception>().WithMessage("Invalid user ID.");
     }
     [Fact]
 
