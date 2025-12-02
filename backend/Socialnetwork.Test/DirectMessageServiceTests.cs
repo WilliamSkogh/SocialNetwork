@@ -155,5 +155,18 @@ public class DirectMessageServiceTests
         );
     }
 
+    [Fact]
+    public async Task GetConversationShouldThrowWhenUserIdsAreEqual() 
+    {
+        await Assert.ThrowsAsync<ArgumentException>(() =>
+            _directMessageService.GetConversationAsync("user1", "user1")
+        );
+
+    }
+
+
+
+
+
 
 }
