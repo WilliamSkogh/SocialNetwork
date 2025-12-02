@@ -193,6 +193,27 @@ public class PostEndpointTests : IClassFixture<WebApplicationFactory<Program>>
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
+
+    [Fact]
+    public async Task CreatePost_WithExactly500Characters_ReturnsCreated()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var request = new
+        {
+            AuthorId = "William",
+            RecipientId = "Pelle",
+            Content = new string('x', 500)
+        };
+
+        // Act
+        var response = await client.PostAsJsonAsync("/api/posts", request);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+    }
 }
+
+
 
 
