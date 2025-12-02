@@ -98,7 +98,7 @@ public class DirectMessageServiceTests
         {
             SenderId = "user1",
             ReceiverId = "user2",
-            Message = new string('a', 1000) 
+            Message = new string('a', 1001) 
         };
         await Assert.ThrowsAsync<ArgumentException>(() =>
             _directMessageService.CreateMessageAsync(message)

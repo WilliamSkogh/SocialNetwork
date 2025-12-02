@@ -30,6 +30,9 @@ namespace SocialNetwork.Service
             if (message.ReceiverId == message.SenderId)
                 throw new ArgumentException("SenderId and ReceiverId cannot be the same");
 
+            if (message.Message.Length > 1000)
+                throw new ArgumentException("Message content exceeds maximum length of 1000 characters");
+
             return await _repo.CreateAsync(message);
         }
 
