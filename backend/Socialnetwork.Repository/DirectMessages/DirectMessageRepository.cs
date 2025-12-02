@@ -9,7 +9,7 @@ using SocialNetwork.Repository;
 
 namespace Socialnetwork.Repository
 {
-    internal class DirectMessageRepository:IDirectMessageRepository
+    internal class DirectMessageRepository : IDirectMessageRepository
     {
         private readonly ApplicationDbContext _context;
 
@@ -33,9 +33,20 @@ namespace Socialnetwork.Repository
             return message;
         }
 
-        public Task<IEnumerable<DirectMessage>> GetConversationAsync(string user1Id, string user2Id)
+        public async Task<IEnumerable<DirectMessage>> GetConversationAsync(string user1Id, string user2Id)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(user1Id) || string.IsNullOrWhiteSpace(user2Id))
+                throw new ArgumentException("User IDs cannot be null or empty");
+
+            return await _context.DirectMessages
+                .Where(m =>
+                    (m.SenderId == user1Id && m.ReceiverId == user2Id) ||
+                    (m.SenderId == user2Id && m.ReceiverId == user1Id)
+                )
+                .Include(m => m.Sender)
+                .Include(m => m.Receiver)
+                .OrderBy(m => m.Timestamp)
+                .ToListAsync();
         }
 
         public Task<IEnumerable<DirectMessage>> GetMessagesForUserAsync(string userId)
