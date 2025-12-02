@@ -25,6 +25,9 @@ public class FollowService
         var follower = await _repo.GetUserByIdAsync(followerId);
         var following = await _repo.GetUserByIdAsync(followingId);
 
+        if (followerId == followingId)
+            throw new Exception("You cannot follow yourself.");
+
         if (follower == null || following == null)
             throw new Exception("Invalid user ID");
 
