@@ -64,6 +64,17 @@ public async Task FollowUser_Should_AddFollow_And_IncrementCounts_When_Not_Alrea
 
         await action.Should().ThrowAsync<Exception>().WithMessage("Invalid user ID");
     }
+    [Fact]
+
+    public async Task FollowUser_Should_Not_Allow_Following_Self()
+    {
+        //Arrange
+        var userId = "user-a";
+        // Act
+        var action = async () => await _sut.FollowUserAsync(userId, userId);
+        // Assert
+        await action.Should().ThrowAsync<Exception>().WithMessage("You cannot follow yourself.");
+    }
 }
 
 
