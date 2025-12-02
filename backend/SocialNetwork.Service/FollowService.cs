@@ -30,10 +30,10 @@ public class FollowService
         if (follower == null || following == null)
             throw new Exception("Invalid user ID.");
 
+        follower.Follow(following);
+
         await CreateFollowRelationAsync(followerId, followingId);
 
-        follower.FollowingCount++;
-        following.FollowerCount++;
 
         await _repo.SaveChangesAsync();
     }
