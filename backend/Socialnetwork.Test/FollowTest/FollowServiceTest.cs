@@ -1,15 +1,12 @@
-﻿using Moq;
+﻿using FluentAssertions;
+using Moq;
 using Socialnetwork.Repository;
 using SocialNetwork.Entity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SocialNetwork.Service;
 
 namespace Socialnetwork.Test.FollowTest;
 
-public class FollowServiceTest
+public class FollowServiceTests
 {
     private readonly Mock<IFollowRepository> _mockRepo;
     private readonly FollowService _sut;
