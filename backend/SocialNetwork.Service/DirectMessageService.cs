@@ -36,6 +36,15 @@ namespace SocialNetwork.Service
             return await _repo.CreateAsync(message);
         }
 
+        public Task<IEnumerable<DirectMessage>> GetConversationAsync(string currentUserId, string otherUserId)
+        {
+            if (string.IsNullOrWhiteSpace(currentUserId))
+                throw new ArgumentException("CurrentUserId cannot be null or empty");
 
+            if (string.IsNullOrWhiteSpace(otherUserId))
+                throw new ArgumentException("OtherUserId cannot be null or empty");
+
+            return _repo.GetConversationAsync(currentUserId, otherUserId);
+        }
     }
 }
