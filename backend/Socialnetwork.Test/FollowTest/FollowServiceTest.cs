@@ -91,6 +91,8 @@ public async Task FollowUser_Should_AddFollow_And_IncrementCounts_When_Not_Alrea
         _mockRepo.Setup(r => r.GetUserByIdAsync(followerId)).ReturnsAsync(followerUser);
         _mockRepo.Setup(r => r.GetUserByIdAsync(followingId)).ReturnsAsync(followingUser);
 
+        _mockRepo.Setup(r => r.GetFollowAsync(followerId, followingId)).ReturnsAsync(existingFollow);
+
         // Act
         await _sut.UnfollowUserAsync(followerId, followingId);
 
