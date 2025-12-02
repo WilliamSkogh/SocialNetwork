@@ -7,5 +7,7 @@ namespace SocialNetwork.Service
     internal interface IDirectMessageService
     {
         Task<DirectMessage> CreateMessageAsync(DirectMessage message);
+        Task<IEnumerable<DirectMessage>> GetConversationAsync(string currentUserId, string otherUserId);
+
     }
 }
