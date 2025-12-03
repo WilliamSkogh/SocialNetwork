@@ -1,5 +1,6 @@
 import { Container, Nav, Navbar } from "react-bootstrap";
 import logo from "../assets/sn-high-resolution-logo-transparent.png";
+import LogoutButton from "./logoutButton";
 
 export default function Header() {
     return (
@@ -13,6 +14,7 @@ export default function Header() {
                     />
                 </Navbar.Brand>
                 <Nav>
+                    <LogoutButton />
                 </Nav>
             </Container>
         </Navbar >
