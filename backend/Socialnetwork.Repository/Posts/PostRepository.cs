@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
 using SocialNetwork.Entity;
 using SocialNetwork.Entityframework;
 

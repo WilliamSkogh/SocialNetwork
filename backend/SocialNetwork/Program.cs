@@ -14,6 +14,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
 
+builder.Services.AddScoped<SocialNetwork.Repository.Posts.IPostRepository, SocialNetwork.Repository.Posts.PostRepository>();
 builder.Services.AddScoped<SocialNetwork.Service.IPostService, SocialNetwork.Service.PostService>();
 
 builder.Services.AddAuthorization();

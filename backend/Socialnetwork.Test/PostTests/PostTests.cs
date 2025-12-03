@@ -60,7 +60,8 @@ public class PostTests
             .Options;
 
         using var context = new ApplicationDbContext(options);
-        var service = new PostService(context);
+        var repository = new SocialNetwork.Repository.Posts.PostRepository(context);
+        var service = new PostService(repository, context);
 
         var post = new Post
         {
@@ -84,7 +85,8 @@ public class PostTests
             .Options;
 
         using var context = new ApplicationDbContext(options);
-        var service = new PostService(context);
+        var repository = new SocialNetwork.Repository.Posts.PostRepository(context);
+        var service = new PostService(repository, context);
 
         var post = new Post
         {
