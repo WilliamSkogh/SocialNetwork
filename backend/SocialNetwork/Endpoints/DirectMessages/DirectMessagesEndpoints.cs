@@ -116,7 +116,6 @@ public class DirectMessagesEndpoints : IEndpoint
 
             var messages = await service.GetInboxAsync(userId);
 
-            // Konvertera till DTOs
             var dtoList = messages.Select(m => new DirectMessageDto
             {
                 Id = m.Id,
