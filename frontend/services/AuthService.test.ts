@@ -73,8 +73,8 @@ describe('AuthService', () => {
 
   it('should remove tokens from the storage on logout', () => {
 
-    const removeTokenSpy = vi.spyOn(storage, 'removeToken');
-    const removeRefreshTokenSpy = vi.spyOn(storage, 'removeRefreshToken');
+    const removeTokenSpy = vi.spyOn(storage, 'removeToken').mockImplementation(() => { });
+    const removeRefreshTokenSpy = vi.spyOn(storage, 'removeRefreshToken').mockImplementation(() => { });
 
     //act
     authService.logout();
