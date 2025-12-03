@@ -88,4 +88,22 @@ public class PostRepositoryTests
         posts[1].Content.Should().Be("Second");
         posts[2].Content.Should().Be("First");
     }
+
+    [Fact]
+    public async Task UpdateAsync_WithExistingPost_UpdatesContent()
+    {
+        // Arrange
+        using var context = GetInMemoryDbContext();
+        var repository = new PostRepository(context);
+        var post = new Post { AuthorId = "user1", RecipientId = "user2", Content = "Original" };
+        await repository.CreateAsync(post);
+
+        // Act
+        post.Content = "Updated";
+        var result = await repository.UpdateAsync(post);
+
+        // Assert
+        result.Should().NotBeNull();
+        result!.Content.Should().Be("Updated");
+    }
 }

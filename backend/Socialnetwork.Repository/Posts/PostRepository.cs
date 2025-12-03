@@ -32,4 +32,15 @@ public class PostRepository : IPostRepository
             .OrderByDescending(p => p.CreatedAt)
             .ToListAsync();
     }
+
+    public async Task<Post?> UpdateAsync(Post post)
+    {
+        var existingPost = await _context.Posts.FindAsync(post.Id);
+        if (existingPost == null)
+            return null;
+
+        existingPost.Content = post.Content;
+        await _context.SaveChangesAsync();
+        return existingPost;
+    }
 }
