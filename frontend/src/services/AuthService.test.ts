@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { authService } from './AuthService';
 import apiClient from './axiosClient';
+import { storage } from '../utils/storage';
 
 vi.mock('./axiosClient');
 
@@ -69,4 +70,19 @@ describe('AuthService', () => {
     // Act & Assert
     await expect(authService.login('wrong@email.com', 'badpass')).rejects.toThrow();
   });
+
+  it('should remove tokens from the storage on logout', () => {
+
+    const removeTokenSpy = vi.spyOn(storage, 'removeToken').mockImplementation(() => { });
+    const removeRefreshTokenSpy = vi.spyOn(storage, 'removeRefreshToken').mockImplementation(() => { });
+
+    //act
+    authService.logout();
+
+    //assert
+    expect(removeTokenSpy).toHaveBeenCalled();
+    expect(removeRefreshTokenSpy).toHaveBeenCalled();
+
+  });
+
 });
