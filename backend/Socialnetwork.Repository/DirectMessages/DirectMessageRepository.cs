@@ -50,13 +50,20 @@ namespace SocialNetwork.Repository
 
         public async Task<IEnumerable<DirectMessage>> GetInboxAsync(string userId)
         {
-
-            return await _context.DirectMessages
+            
+            var messages = await _context.DirectMessages
                 .Where(m => m.ReceiverId == userId)
                 .Include(m => m.Sender)
-               
+                .Include(m => m.Receiver)
                 .OrderByDescending(m => m.Timestamp)
                 .ToListAsync();
+
+            return messages
+                .GroupBy(m => m.SenderId)
+                .Select(g => g.First())  
+                .OrderByDescending(m => m.Timestamp)
+                .ToList();
+
         }
     }
 }
