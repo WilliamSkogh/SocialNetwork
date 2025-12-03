@@ -1,7 +1,6 @@
-using Microsoft.EntityFrameworkCore;
 using SocialNetwork.Api.DTOs;
 using SocialNetwork.Entity;
-using SocialNetwork.Entityframework;
+using SocialNetwork.Service;
 
 namespace SocialNetwork.Api.Endpoints;
 
@@ -17,50 +16,34 @@ public static class PostEndpoints
     }
 
     private static async Task<IResult> CreatePost(
-    ApplicationDbContext context,
-    PostRequest request)
-{
-    try
+        IPostService postService,
+        PostRequest request)
     {
-        
-        var authorExists = await context.Users.AnyAsync(u => u.Id == request.AuthorId);
-        if (!authorExists)
+        try
         {
-            return Results.BadRequest(new { error = "Author not found" });
+            var post = new Post
+            {
+                AuthorId = request.AuthorId,
+                RecipientId = request.RecipientId,
+                Content = request.Content
+            };
+
+            var createdPost = await postService.CreatePostAsync(post);
+
+            var response = new PostResponse(
+                createdPost.Id,
+                createdPost.AuthorId,
+                createdPost.RecipientId,
+                createdPost.Content,
+                createdPost.CreatedAt
+            );
+
+            return Results.Created($"/api/posts/{createdPost.Id}", response);
         }
-
-        
-        var recipientExists = await context.Users.AnyAsync(u => u.Id == request.RecipientId);
-        if (!recipientExists)
+        catch (ArgumentException ex)
         {
-            return Results.BadRequest(new { error = "Recipient not found" });
+            return Results.BadRequest(new { error = ex.Message });
         }
-
-        var post = new Post
-        {
-            AuthorId = request.AuthorId,
-            RecipientId = request.RecipientId,
-            Content = request.Content
-        };
-
-        context.Posts.Add(post);
-        await context.SaveChangesAsync();
-
-        var response = new PostResponse(
-            post.Id,
-            post.AuthorId,
-            post.RecipientId,
-            post.Content,
-            post.CreatedAt
-        );
-
-        return Results.Created($"/api/posts/{post.Id}", response);
-    }
-    catch (ArgumentException ex)
-    {
-        return Results.BadRequest(new { error = ex.Message });
     }
 }
-}
-
 

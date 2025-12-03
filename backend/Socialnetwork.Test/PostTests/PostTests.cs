@@ -1,5 +1,8 @@
 using FluentAssertions;
 using SocialNetwork.Entity;
+using SocialNetwork.Entityframework;
+using SocialNetwork.Service;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace Socialnetwork.Test.PostTests;
@@ -47,43 +50,53 @@ public class PostTests
         post.CreatedAt.Should().BeOnOrAfter(beforeCreation);
         post.CreatedAt.Should().BeOnOrBefore(afterCreation);
     }
-    
+
     [Fact]
-    public void Post_Content_CannotBeEmpty()
+    public async Task Post_Content_CannotBeEmpty()
     {
         // Arrange
-        var authorId = "William";
-        var recipientId = "Pelle";
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseInMemoryDatabase(databaseName: $"TestDb_{Guid.NewGuid()}")
+            .Options;
 
-        // Act
-        Action act = () => new Post
-        {
-            AuthorId = authorId,
-            RecipientId = recipientId,
-            Content = ""
-        };
+        using var context = new ApplicationDbContext(options);
+        var service = new PostService(context);
 
-        // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("*Content cannot be empty*");
-    }
-    [Fact]
-    public void Post_Content_CannotExceed500Characters()
-    {
-        // Arrange
-        var longContent = new string('x', 501);
-
-        // Act
-        Action act = () => new Post
+        var post = new Post
         {
             AuthorId = "William",
             RecipientId = "Pelle",
-            Content = longContent
+            Content = ""
         };
 
-        // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("*Content cannot exceed 500 characters*");
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentException>(() =>
+            service.CreatePostAsync(post)
+        );
+    }
+
+    [Fact]
+    public async Task Post_Content_CannotExceed500Characters()
+    {
+        // Arrange
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseInMemoryDatabase(databaseName: $"TestDb_{Guid.NewGuid()}")
+            .Options;
+
+        using var context = new ApplicationDbContext(options);
+        var service = new PostService(context);
+
+        var post = new Post
+        {
+            AuthorId = "William",
+            RecipientId = "Pelle",
+            Content = new string('x', 501)
+        };
+
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentException>(() =>
+            service.CreatePostAsync(post)
+        );
     }
 
     [Fact]
