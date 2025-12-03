@@ -20,6 +20,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\SocialNetwork.Service\SocialNetwork.Service.csproj" />
+    <ProjectReference Include="..\SocialNetwork.Entity\SocialNetwork.Entity.csproj" />
+    <ProjectReference Include="..\Socialnetwork.Entityframework\Socialnetwork.Entityframework.csproj" />
   </ItemGroup>
 
 </Project>
