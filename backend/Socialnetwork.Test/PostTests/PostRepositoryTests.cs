@@ -106,4 +106,22 @@ public class PostRepositoryTests
         result.Should().NotBeNull();
         result!.Content.Should().Be("Updated");
     }
+
+    [Fact]
+    public async Task DeleteAsync_WithExistingPost_ReturnsTrue()
+    {
+        // Arrange
+        using var context = GetInMemoryDbContext();
+        var repository = new PostRepository(context);
+        var post = new Post { AuthorId = "user1", RecipientId = "user2", Content = "Test" };
+        await repository.CreateAsync(post);
+
+        // Act
+        var result = await repository.DeleteAsync(post.Id);
+
+        // Assert
+        result.Should().BeTrue();
+        var deletedPost = await context.Posts.FindAsync(post.Id);
+        deletedPost.Should().BeNull();
+    }
 }
