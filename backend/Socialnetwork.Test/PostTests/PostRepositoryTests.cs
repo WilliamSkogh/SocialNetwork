@@ -68,14 +68,13 @@ public class PostRepositoryTests
         using var context = GetInMemoryDbContext();
         var repository = new PostRepository(context);
         
-        var post1 = new Post { AuthorId = "user1", RecipientId = "user2", Content = "First" };
-        var post2 = new Post { AuthorId = "user2", RecipientId = "user1", Content = "Second" };
-        var post3 = new Post { AuthorId = "user1", RecipientId = "user2", Content = "Third" };
+        var baseTime = DateTime.UtcNow;
+        var post1 = new Post { AuthorId = "user1", RecipientId = "user2", Content = "First", CreatedAt = baseTime };
+        var post2 = new Post { AuthorId = "user2", RecipientId = "user1", Content = "Second", CreatedAt = baseTime.AddSeconds(1) };
+        var post3 = new Post { AuthorId = "user1", RecipientId = "user2", Content = "Third", CreatedAt = baseTime.AddSeconds(2) };
         
         await repository.CreateAsync(post1);
-        await Task.Delay(10);
         await repository.CreateAsync(post2);
-        await Task.Delay(10);
         await repository.CreateAsync(post3);
 
         // Act

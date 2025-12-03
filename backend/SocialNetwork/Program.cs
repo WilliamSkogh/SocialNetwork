@@ -83,7 +83,6 @@ app.UseAuthorization();
 app.MapGroup("/auth").MapIdentityApi<ApplicationUser>();
 
 app.MapEndpoints<Program>();
-app.MapPostEndpoints();
 
 app.Run();
 

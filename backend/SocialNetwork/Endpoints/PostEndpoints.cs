@@ -1,30 +1,17 @@
+using SocialNetwork.Api.Abstractions;
 using SocialNetwork.Api.DTOs;
 using SocialNetwork.Entity;
 using SocialNetwork.Service;
 
 namespace SocialNetwork.Api.Endpoints;
 
-public static class PostEndpoints
+public class CreatePostEndpoint : IEndpoint
 {
-    public static void MapPostEndpoints(this IEndpointRouteBuilder app)
+    public static void MapEndpoint(IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/api/posts")
+        app.MapPost("/api/posts", CreatePost)
+            .WithName("CreatePost")
             .WithTags("Posts");
-
-        group.MapPost("/", CreatePost)
-            .WithName("CreatePost");
-        
-        group.MapGet("/", GetAllPosts)
-            .WithName("GetAllPosts");
-        
-        group.MapGet("/{id}", GetPostById)
-            .WithName("GetPostById");
-        
-        group.MapPut("/{id}", UpdatePost)
-            .WithName("UpdatePost");
-        
-        group.MapDelete("/{id}", DeletePost)
-            .WithName("DeletePost");
     }
 
     private static async Task<IResult> CreatePost(
@@ -57,6 +44,16 @@ public static class PostEndpoints
             return Results.BadRequest(new { error = ex.Message });
         }
     }
+}
+
+public class GetAllPostsEndpoint : IEndpoint
+{
+    public static void MapEndpoint(IEndpointRouteBuilder app)
+    {
+        app.MapGet("/api/posts", GetAllPosts)
+            .WithName("GetAllPosts")
+            .WithTags("Posts");
+    }
 
     private static async Task<IResult> GetAllPosts(IPostService postService)
     {
@@ -69,6 +66,16 @@ public static class PostEndpoints
             p.CreatedAt
         ));
         return Results.Ok(response);
+    }
+}
+
+public class GetPostByIdEndpoint : IEndpoint
+{
+    public static void MapEndpoint(IEndpointRouteBuilder app)
+    {
+        app.MapGet("/api/posts/{id}", GetPostById)
+            .WithName("GetPostById")
+            .WithTags("Posts");
     }
 
     private static async Task<IResult> GetPostById(IPostService postService, int id)
@@ -86,11 +93,18 @@ public static class PostEndpoints
         );
         return Results.Ok(response);
     }
+}
 
-    private static async Task<IResult> UpdatePost(
-        IPostService postService,
-        int id,
-        UpdatePostRequest request)
+public class UpdatePostEndpoint : IEndpoint
+{
+    public static void MapEndpoint(IEndpointRouteBuilder app)
+    {
+        app.MapPut("/api/posts/{id}", UpdatePost)
+            .WithName("UpdatePost")
+            .WithTags("Posts");
+    }
+
+    private static async Task<IResult> UpdatePost(IPostService postService, int id, UpdatePostRequest request)
     {
         try
         {
@@ -111,6 +125,16 @@ public static class PostEndpoints
         {
             return Results.BadRequest(new { error = ex.Message });
         }
+    }
+}
+
+public class DeletePostEndpoint : IEndpoint
+{
+    public static void MapEndpoint(IEndpointRouteBuilder app)
+    {
+        app.MapDelete("/api/posts/{id}", DeletePost)
+            .WithName("DeletePost")
+            .WithTags("Posts");
     }
 
     private static async Task<IResult> DeletePost(IPostService postService, int id)
