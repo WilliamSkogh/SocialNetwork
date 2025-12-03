@@ -3,15 +3,18 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using SocialNetwork.Entity;
 using SocialNetwork.Entityframework;
+using SocialNetwork.Repository.Posts;
 
 namespace SocialNetwork.Service
 {
     public class PostService : IPostService
     {
+        private readonly IPostRepository _postRepository;
         private readonly ApplicationDbContext _db;
 
-        public PostService(ApplicationDbContext db)
+        public PostService(IPostRepository postRepository, ApplicationDbContext db)
         {
+            _postRepository = postRepository;
             _db = db;
         }
 
@@ -35,9 +38,7 @@ namespace SocialNetwork.Service
                 throw new ArgumentException("Recipient not found");
             }
 
-            _db.Posts.Add(post);
-            await _db.SaveChangesAsync();
-            return post;
+            return await _postRepository.CreateAsync(post);
         }
     }
 }
