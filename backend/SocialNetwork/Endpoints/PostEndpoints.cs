@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using SocialNetwork.Api.DTOs;
 using SocialNetwork.Entity;
 using SocialNetwork.Entityframework;
+using SocialNetwork.Service;
 
 namespace SocialNetwork.Api.Endpoints;
 
@@ -17,7 +18,7 @@ public static class PostEndpoints
     }
 
     private static async Task<IResult> CreatePost(
-        ApplicationDbContext context,
+        IPostService postService,
         PostRequest request)
     {
         try
@@ -29,18 +30,17 @@ public static class PostEndpoints
                 Content = request.Content
             };
 
-            context.Posts.Add(post);
-            await context.SaveChangesAsync();
+            var createdPost = await postService.CreatePostAsync(post);
 
             var response = new PostResponse(
-                post.Id,
-                post.AuthorId,
-                post.RecipientId,
-                post.Content,
-                post.CreatedAt
+                createdPost.Id,
+                createdPost.AuthorId,
+                createdPost.RecipientId,
+                createdPost.Content,
+                createdPost.CreatedAt
             );
 
-            return Results.Created($"/api/posts/{post.Id}", response);
+            return Results.Created($"/api/posts/{createdPost.Id}", response);
         }
         catch (ArgumentException ex)
         {
