@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Socialnetwork.Repository;
 using SocialNetwork.Api.Extensions;
+using SocialNetwork.Api.Endpoints;
 using SocialNetwork.Entity;
 using SocialNetwork.Entityframework;
 using SocialNetwork.Repository;
@@ -18,12 +20,14 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddAuthorization();
 
-
 builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddScoped<IDirectMessageRepository, DirectMessageRepository>();
 builder.Services.AddScoped<IDirectMessageService, DirectMessageService>();
+
+builder.Services.AddScoped<IFollowRepository, FollowRepository>();
+builder.Services.AddScoped<FollowService>();
 
 builder.Services.AddCors(options =>
 {
@@ -45,8 +49,9 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Skriv in din token här"
+        Description = "Skriv in din token hï¿½r"
     });
+
 
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
@@ -85,6 +90,7 @@ app.UseAuthorization();
 app.MapGroup("/auth").MapIdentityApi<ApplicationUser>();
 
 app.MapEndpoints<Program>();
+app.MapPostEndpoints();
 
 app.Run();
 
