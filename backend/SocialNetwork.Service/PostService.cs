@@ -32,10 +32,13 @@ namespace SocialNetwork.Service
                 throw new ArgumentException("Author not found");
             }
 
-            var recipientExists = await _db.Users.AnyAsync(u => u.Id == post.RecipientId);
-            if (!recipientExists)
+            if (!string.IsNullOrEmpty(post.RecipientId))
             {
-                throw new ArgumentException("Recipient not found");
+                var recipientExists = await _db.Users.AnyAsync(u => u.Id == post.RecipientId);
+                if (!recipientExists)
+                {
+                    throw new ArgumentException("Recipient not found");
+                }
             }
 
             return await _postRepository.CreateAsync(post);
