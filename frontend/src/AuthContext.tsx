@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useContext, ReactNode } from "react";
+import { createContext, useState, useEffect, useContext, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import type { User } from "./types/types";
 import { authService } from "./services/AuthService";

@@ -1,14 +1,13 @@
 import { Outlet } from "react-router-dom";
 import { AuthProvider } from "../AuthContext";
+import Header from "../components/Header";
 
 export default function AppLayout() {
     return (
         <AuthProvider>
-            <div>
-                <header>
-                    <h1>Social Network</h1>
-                </header>
-                <main>
+            <div className="d-flex flex-column min-vh-100">
+                <Header />
+                <main className="flex-grow-1">
                     {/*outlet renderar den route som matchar URLen :D */}
                     <Outlet />
                 </main>
