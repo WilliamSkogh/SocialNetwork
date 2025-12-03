@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using SocialNetwork.Entity;
 using SocialNetwork.Entityframework;
 
@@ -17,5 +19,10 @@ public class PostRepository : IPostRepository
         _context.Posts.Add(post);
         await _context.SaveChangesAsync();
         return post;
+    }
+
+    public async Task<Post?> GetByIdAsync(int id)
+    {
+        return await _context.Posts.FindAsync(id);
     }
 }

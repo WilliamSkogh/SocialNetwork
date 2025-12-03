@@ -42,4 +42,22 @@ public class PostRepositoryTests
         savedPost.Should().NotBeNull();
         savedPost!.Content.Should().Be("Test post");
     }
+
+    [Fact]
+    public async Task GetByIdAsync_WithExistingId_ReturnsPost()
+    {
+        // Arrange
+        using var context = GetInMemoryDbContext();
+        var repository = new PostRepository(context);
+        var post = new Post { AuthorId = "user1", RecipientId = "user2", Content = "Test" };
+        await repository.CreateAsync(post);
+
+        // Act
+        var result = await repository.GetByIdAsync(post.Id);
+
+        // Assert
+        result.Should().NotBeNull();
+        result!.Id.Should().Be(post.Id);
+        result.Content.Should().Be("Test");
+    }
 }
