@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useContext, ReactNode } from "react";
+import { createContext, useState, useEffect, useContext, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import type { User } from "./types/types";
 import { authService } from "./services/AuthService";
@@ -8,8 +8,8 @@ interface AuthContextType {
     user: User | null;
     loading: boolean;
     login: (email: string, password: string) => Promise<void>;
-    register: (email: string, password: string) => Promise<void>;
-    logout: () => void;
+    register: (email: string, password: string, username: string) => Promise<void>;
+    logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -19,9 +19,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
-    const logout = () => {
-        storage.removeToken();
-        storage.removeRefreshToken();
+    const logout = async () => {
+        await authService.logout();
         setUser(null);
         navigate("/login");
     };
@@ -57,8 +56,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         navigate("/");
     };
 
-    const register = async (email: string, password: string) => {
-        await authService.register(email, password);
+    const register = async (email: string, password: string, username: string) => {
+        await authService.register(email, password, username);
 
         navigate("/login");
     };
