@@ -1,4 +1,5 @@
 import type { AuthResponse, User } from "../types/types";
+import { storage } from "../utils/storage";
 import apiClient from "./axiosClient";
 import axios from "axios";
 
@@ -30,5 +31,10 @@ export const authService = {
     async getProfile(): Promise<User> {
         const response = await apiClient.get<User>("/auth/profile");
         return response.data;
+    },
+
+    async logout(): Promise<void> {
+        storage.removeToken();
+        storage.removeRefreshToken();
     }
 };
