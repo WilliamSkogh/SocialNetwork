@@ -48,7 +48,7 @@ namespace SocialNetwork.Repository
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<DirectMessage>> GetMessagesForUserAsync(string userId)
+        public async Task<IEnumerable<DirectMessage>> GetInboxAsync(string userId)
         {
             if (string.IsNullOrWhiteSpace(userId))
                 throw new ArgumentException("UserId cannot be null or empty");

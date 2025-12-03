@@ -264,7 +264,7 @@ public class DirectMessageServiceTests
     };
 
         _directMessageRepoMock
-            .Setup(r => r.GetMessagesForUserAsync(userId))
+            .Setup(r => r.GetInboxAsync(userId))
             .ReturnsAsync(messages);
 
         var result = await _directMessageService.GetInboxAsync(userId);
@@ -318,7 +318,7 @@ public class DirectMessageServiceTests
         var userId = "user1";
 
         _directMessageRepoMock
-            .Setup(r => r.GetMessagesForUserAsync(userId))
+            .Setup(r => r.GetInboxAsync(userId))
             .ReturnsAsync(new List<DirectMessage>());
 
         var result = await _directMessageService.GetInboxAsync(userId);

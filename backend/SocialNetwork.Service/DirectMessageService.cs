@@ -55,7 +55,7 @@ namespace SocialNetwork.Service
             if (string.IsNullOrWhiteSpace(userId))
                 throw new ArgumentException("UserId cannot be null or empty");
 
-            return _repo.GetMessagesForUserAsync(userId);
+            return _repo.GetInboxAsync(userId);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace SocialNetwork.Repository
     {
         Task<DirectMessage> CreateAsync(DirectMessage message);
         Task<IEnumerable<DirectMessage>> GetConversationAsync(string user1Id, string user2Id);
-        Task<IEnumerable<DirectMessage>> GetMessagesForUserAsync(string userId);
+        Task<IEnumerable<DirectMessage>> GetInboxAsync(string userId);
 
     }
 }
