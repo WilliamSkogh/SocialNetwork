@@ -12,8 +12,10 @@ public class PostRepository : IPostRepository
         _context = context;
     }
 
-    public Task<Post> CreateAsync(Post post)
+    public async Task<Post> CreateAsync(Post post)
     {
-        throw new NotImplementedException();
+        _context.Posts.Add(post);
+        await _context.SaveChangesAsync();
+        return post;
     }
 }
