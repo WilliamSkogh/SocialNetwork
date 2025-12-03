@@ -21,6 +21,10 @@ public class DirectMessagesEndpoints : IEndpoint
         group.MapGet("/conversation/{otherUserId}", GetConversation)
             .WithName("GetConversation")
             .WithDescription("Hämta en konversation med en annan användare");
+        
+        group.MapGet("/inbox", GetInbox)
+                   .WithName("GetInbox")
+                   .WithDescription("Hämta alla mottagna meddelanden");
 
     }
 
@@ -100,5 +104,43 @@ public class DirectMessagesEndpoints : IEndpoint
         }
     }
 
+    private static async Task<IResult> GetInbox(
+       ClaimsPrincipal user,
+       IDirectMessageService service)
+    {
+        try
+        {
+            var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                return Results.Unauthorized();
 
+            var messages = await service.GetInboxAsync(userId);
+
+            // Konvertera till DTOs
+            var dtoList = messages.Select(m => new DirectMessageDto
+            {
+                Id = m.Id,
+                SenderId = m.SenderId,
+                SenderUsername = m.Sender?.UserName,
+                ReceiverId = m.ReceiverId,
+                ReceiverUsername = m.Receiver?.UserName,
+                Message = m.Message,
+                Timestamp = m.Timestamp,
+                IsRead = m.IsRead
+            }).ToList();
+
+            return Results.Ok(dtoList);
+        }
+        catch (ArgumentException ex)
+        {
+            return Results.BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return Results.Problem($"Ett fel uppstod: {ex.Message}");
+        }
+    }
 }
+
+
+
