@@ -60,4 +60,32 @@ public class PostRepositoryTests
         result!.Id.Should().Be(post.Id);
         result.Content.Should().Be("Test");
     }
+
+    [Fact]
+    public async Task GetAllAsync_ReturnsAllPostsOrderedByNewest()
+    {
+        // Arrange
+        using var context = GetInMemoryDbContext();
+        var repository = new PostRepository(context);
+        
+        var post1 = new Post { AuthorId = "user1", RecipientId = "user2", Content = "First" };
+        var post2 = new Post { AuthorId = "user2", RecipientId = "user1", Content = "Second" };
+        var post3 = new Post { AuthorId = "user1", RecipientId = "user2", Content = "Third" };
+        
+        await repository.CreateAsync(post1);
+        await Task.Delay(10);
+        await repository.CreateAsync(post2);
+        await Task.Delay(10);
+        await repository.CreateAsync(post3);
+
+        // Act
+        var result = await repository.GetAllAsync();
+        var posts = result.ToList();
+
+        // Assert
+        posts.Should().HaveCount(3);
+        posts[0].Content.Should().Be("Third");
+        posts[1].Content.Should().Be("Second");
+        posts[2].Content.Should().Be("First");
+    }
 }
