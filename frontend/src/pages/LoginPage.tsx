@@ -12,12 +12,12 @@ export default function LoginPage() {
         setError(null);
 
         const formData = new FormData(e.currentTarget);
-        const email = formData.get("email") as string;
+        const username = formData.get("username") as string;
         const password = formData.get("password") as string;
         try {
             setError(null);
             setLoading(true);
-            await login(email, password);
+            await login(username, password);
         }
         catch (err: unknown) {
             if (err instanceof Error) {
@@ -39,9 +39,9 @@ export default function LoginPage() {
                         <h2 className="text-center mb-4">Logga in</h2>
                         {error && <Alert variant="danger">{error}</Alert>}
                         <Form onSubmit={handleSubmit}>
-                            <Form.Group id="email" className="mb-3">
-                                <Form.Label>Email:</Form.Label>
-                                <Form.Control type="email" name="email" required></Form.Control>
+                            <Form.Group id="username" className="mb-3">
+                                <Form.Label>Användarnamn:</Form.Label>
+                                <Form.Control type="username" name="username" required></Form.Control>
                             </Form.Group>
                             <Form.Group id="password" className="mb-3">
                                 <Form.Label>Lösenord:</Form.Label>
