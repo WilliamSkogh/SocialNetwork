@@ -50,8 +50,6 @@ namespace SocialNetwork.Repository
 
         public async Task<IEnumerable<DirectMessage>> GetInboxAsync(string userId)
         {
-            if (string.IsNullOrWhiteSpace(userId))
-                throw new ArgumentException("UserId cannot be null or empty");
 
             return await _context.DirectMessages
                 .Where(m => m.ReceiverId == userId)
