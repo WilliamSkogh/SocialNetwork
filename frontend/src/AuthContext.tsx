@@ -19,9 +19,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
-    const logout = () => {
-        storage.removeToken();
-        storage.removeRefreshToken();
+    const logout = async () => {
+        await authService.logout();
         setUser(null);
         navigate("/login");
     };
