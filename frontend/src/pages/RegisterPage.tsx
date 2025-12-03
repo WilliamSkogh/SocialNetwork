@@ -16,6 +16,7 @@ export default function RegisterPage() {
         const formData = new FormData(e.currentTarget);
         const email = formData.get("email") as string;
         const password = formData.get("password") as string;
+        const username = formData.get("username") as string;
         const confirmPassword = formData.get("confirmPassword") as string;
 
         if (password !== confirmPassword) {
@@ -27,7 +28,7 @@ export default function RegisterPage() {
         try {
             setError(null);
             setLoading(true);
-            await register(email, password);
+            await register(email, password, username);
         }
         catch (err: unknown) {
             if (err instanceof Error) {
@@ -51,6 +52,11 @@ export default function RegisterPage() {
                         {error && <Alert variant="danger">{error}</Alert>}
 
                         <Form onSubmit={handleSubmit}>
+                            <Form.Group id="username" className="mb-3">
+                                <Form.Label>Användarnamn:</Form.Label>
+                                <Form.Control type="text" name="username" required></Form.Control>
+                            </Form.Group>
+
                             <Form.Group id="email" className="mb-3">
                                 <Form.Label>Email:</Form.Label>
                                 <Form.Control type="email" name="email" required></Form.Control>
