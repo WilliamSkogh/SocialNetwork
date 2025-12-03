@@ -40,5 +40,36 @@ namespace SocialNetwork.Service
 
             return await _postRepository.CreateAsync(post);
         }
+
+        public async Task<Post?> GetPostByIdAsync(int id)
+        {
+            return await _postRepository.GetByIdAsync(id);
+        }
+
+        public async Task<IEnumerable<Post>> GetAllPostsAsync()
+        {
+            return await _postRepository.GetAllAsync();
+        }
+
+        public async Task<Post?> UpdatePostAsync(int id, string content)
+        {
+            if (string.IsNullOrWhiteSpace(content))
+                throw new ArgumentException("Content cannot be empty or whitespace.");
+            
+            if (content.Length > 500)
+                throw new ArgumentException("Content cannot exceed 500 characters.");
+
+            var post = await _postRepository.GetByIdAsync(id);
+            if (post == null)
+                return null;
+
+            post.Content = content;
+            return await _postRepository.UpdateAsync(post);
+        }
+
+        public async Task<bool> DeletePostAsync(int id)
+        {
+            return await _postRepository.DeleteAsync(id);
+        }
     }
 }
