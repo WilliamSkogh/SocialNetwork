@@ -50,20 +50,44 @@ namespace SocialNetwork.Repository
 
         public async Task<IEnumerable<DirectMessage>> GetInboxAsync(string userId)
         {
-            
-            var messages = await _context.DirectMessages
+
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new ArgumentException("UserId cannot be null or empty");
+
+            var latestPerSender = await _context.DirectMessages
                 .Where(m => m.ReceiverId == userId)
-                .Include(m => m.Sender)
-                .Include(m => m.Receiver)
-                .OrderByDescending(m => m.Timestamp)
+                .GroupBy(m => m.SenderId)
+                .Select(g => new
+                {
+                    SenderId = g.Key,
+                    LatestTimestamp = g.Max(m => m.Timestamp),
+                    UnreadCount = g.Count(m => !m.IsRead)  
+                })
                 .ToListAsync();
 
-            return messages
-                .GroupBy(m => m.SenderId)
-                .Select(g => g.First())  
-                .OrderByDescending(m => m.Timestamp)
-                .ToList();
+            var result = new List<DirectMessage>();
 
+            foreach (var item in latestPerSender)
+            {
+                var message = await _context.DirectMessages
+                    .Where(m => m.ReceiverId == userId
+                        && m.SenderId == item.SenderId
+                        && m.Timestamp == item.LatestTimestamp)
+                    .Include(m => m.Sender)
+                    .Include(m => m.Receiver)
+                    .FirstOrDefaultAsync();
+
+                if (message != null)
+                {
+                   
+                    message.UnreadCount = item.UnreadCount;
+                    result.Add(message);
+                }
+            }
+
+            return result.OrderByDescending(m => m.Timestamp).ToList();
         }
     }
 }
+    
+
