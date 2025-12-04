@@ -65,11 +65,19 @@ namespace SocialNetwork.Service
 
         public Task<IEnumerable<DirectMessage>> GetUnreadMessagesAsync(string userId)
         {
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new ArgumentException("UserId cannot be null or empty");
             return _repo.GetUnreadMessagesAsync(userId);
         }
 
         public Task MarkMessageAsReadAsync(int messageId, string userId)
         {
+            if (messageId <= 0)
+                throw new ArgumentException("MessageId must be greater than 0");
+
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new ArgumentException("UserId cannot be null or empty");
+
             return _repo.MarkAsReadAsync(messageId, userId);
 
         }
