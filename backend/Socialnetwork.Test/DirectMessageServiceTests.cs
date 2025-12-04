@@ -591,6 +591,23 @@ public class DirectMessageServiceTests
         );
     }
 
+    [Fact]
+    public async Task MarkMessageAsReadAsyncShouldSucceedWithValidParams()
+    {
+        var messageId = 5;
+        var userId = "user1";
+
+        _directMessageRepoMock
+            .Setup(r => r.MarkAsReadAsync(messageId, userId))
+            .Returns(Task.CompletedTask);
+
+        await _directMessageService.MarkMessageAsReadAsync(messageId, userId);
+
+        _directMessageRepoMock.Verify(
+            r => r.MarkAsReadAsync(messageId, userId),
+            Times.Once
+        );
+    }
 
 
 
