@@ -584,7 +584,7 @@ public class DirectMessageServiceTests
 
         await _directMessageService.MarkMessageAsReadAsync(messageId, userId);
 
-        
+
         _directMessageRepoMock.Verify(
             r => r.MarkAsReadAsync(messageId, userId),
             Times.Once
@@ -619,11 +619,26 @@ public class DirectMessageServiceTests
             .Setup(r => r.GetUnreadCountAsync(userId))
             .ReturnsAsync(expectedCount);
 
-      
+
         var result = await _directMessageService.GetUnreadCountAsync(userId);
 
         Assert.Equal(expectedCount, result);
     }
+
+    [Fact]
+    public async Task GetUnreadCountAsyncShouldReturnZeroWhenNoUnreadMessages()
+    {
+        var userId = "user1";
+
+        _directMessageRepoMock
+            .Setup(r => r.GetUnreadCountAsync(userId))
+            .ReturnsAsync(0);
+
+        var result = await _directMessageService.GetUnreadCountAsync(userId);
+
+        Assert.Equal(0, result);
+    }
+
 
 
 
