@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using SocialNetwork.Entity;
+using SocialNetwork.Service;
 using System.Security.Claims;
 
 namespace SocialNetwork.Api.Hubs;
@@ -7,6 +9,11 @@ namespace SocialNetwork.Api.Hubs;
 [Authorize]
 public class DirectMessageHub : Hub
 {
+    private readonly IDirectMessageService _directMessageService;
+    public DirectMessageHub(IDirectMessageService directMessageService)
+    {
+        _directMessageService = directMessageService;
+    }
 
     public override async Task OnConnectedAsync()
     {
@@ -30,20 +37,48 @@ public class DirectMessageHub : Hub
             return;
         }
 
-        await Clients.Group($"user-{receiverId}").SendAsync("ReceiveDirectMessage", new
+        try
         {
-            senderId = senderId,
-            message = message,
-            timestamp = DateTime.UtcNow
-        });
+            var directMessage = new DirectMessage
+            {
+                SenderId = senderId,
+                ReceiverId = receiverId,
+                Message = message,
+                Timestamp = DateTime.UtcNow,
+                IsRead = false
+            };
 
-        await Clients.Caller.SendAsync("MessageSent", new
+            var savedMessage = await _directMessageService.CreateMessageAsync(directMessage);
+
+            await Clients.Group($"user-{receiverId}").SendAsync("ReceiveDirectMessage", new
+            {
+                id = savedMessage.Id,
+                senderId = savedMessage.SenderId,
+                receiverId = savedMessage.ReceiverId,
+                message = savedMessage.Message,
+                timestamp = savedMessage.Timestamp,
+                isRead = savedMessage.IsRead
+            });
+
+            await Clients.Caller.SendAsync("MessageSent", new
+            {
+                id = savedMessage.Id,
+                receiverId = receiverId,
+                message = message,
+                timestamp = savedMessage.Timestamp,
+                isRead = false
+            });
+        }
+        catch (ArgumentException ex)
         {
-            receiverId = receiverId,
-            message = message,
-            timestamp = DateTime.UtcNow
-        });
+            await Clients.Caller.SendAsync("Error", ex.Message);
+        }
+        catch (Exception ex)
+        {
+            await Clients.Caller.SendAsync("Error", $"Ett fel uppstod: {ex.Message}");
+        }
     }
+    
 
     public async Task UserTyping(string receiverId)
     {
