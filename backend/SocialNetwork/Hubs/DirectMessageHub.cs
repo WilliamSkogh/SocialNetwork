@@ -78,7 +78,7 @@ public class DirectMessageHub : Hub
             await Clients.Caller.SendAsync("Error", $"Ett fel uppstod: {ex.Message}");
         }
     }
-    
+
 
     public async Task UserTyping(string receiverId)
     {
@@ -91,6 +91,18 @@ public class DirectMessageHub : Hub
         var senderId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         await Clients.Group($"user-{receiverId}").SendAsync("UserStoppedTyping", senderId);
     }
+
+    public override async Task OnDisconnectedAsync(Exception? exception)
+    {
+        var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId != null)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"user-{userId}");
+        }
+
+        await base.OnDisconnectedAsync(exception);
+    }
+
 
 
 
