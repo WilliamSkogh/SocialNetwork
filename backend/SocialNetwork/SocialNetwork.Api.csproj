@@ -21,7 +21,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Socialnetwork.Entityframework\Socialnetwork.Entityframework.csproj" />
     <ProjectReference Include="..\SocialNetwork.Entity\SocialNetwork.Entity.csproj" />
->>>>>>> origin/dev
     <ProjectReference Include="..\SocialNetwork.Service\SocialNetwork.Service.csproj" />
   </ItemGroup>
 
