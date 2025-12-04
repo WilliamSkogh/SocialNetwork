@@ -456,7 +456,7 @@ public class DirectMessageServiceTests
                     Timestamp = g.Max(m => m.Timestamp),
                     IsRead = g.OrderByDescending(m => m.Timestamp).First().IsRead,
                     Sender = g.First().Sender,
-                    UnreadCount = g.Count(m => !m.IsRead) 
+                    UnreadCount = g.Count(m => !m.IsRead)
                 })
                 .OrderByDescending(m => m.Timestamp)
                 .ToList());
@@ -465,7 +465,7 @@ public class DirectMessageServiceTests
 
         Assert.Equal(2, result.Count);
 
-        
+
         var user2Message = result.First(m => m.SenderId == "user2");
         Assert.Equal(3, user2Message.UnreadCount);
 
@@ -476,7 +476,7 @@ public class DirectMessageServiceTests
 
     public async Task GetUnreadMessagesAsyncShouldReturnOnlyUnreadMessages()
     {
-        
+
         var userId = "user1";
         var unreadMessages = new List<DirectMessage>
         {
@@ -506,12 +506,31 @@ public class DirectMessageServiceTests
             .Setup(r => r.GetUnreadMessagesAsync(userId))
             .ReturnsAsync(unreadMessages);
 
-    
+
         var result = (await _directMessageService.GetUnreadMessagesAsync(userId)).ToList();
 
         Assert.Equal(2, result.Count);
         Assert.All(result, m => Assert.False(m.IsRead));
     }
+
+    [Fact]
+    public async Task GetUnreadMessagesAsyncShouldReturnEmptyWhenNoUnreadMessages()
+    {
+        // Arrange
+        var userId = "user1";
+
+        _directMessageRepoMock
+            .Setup(r => r.GetUnreadMessagesAsync(userId))
+            .ReturnsAsync(new List<DirectMessage>());
+
+        // Act
+        var result = await _directMessageService.GetUnreadMessagesAsync(userId);
+
+        // Assert
+        Assert.Empty(result);
+    }
+
+   
 
 
 
