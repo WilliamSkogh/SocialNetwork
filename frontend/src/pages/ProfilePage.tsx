@@ -5,14 +5,15 @@ export default function ProfilePage() {
     const { username } = useParams();
     const { user: currentUser } = useAuth();
 
-    const isMyProfile = currentUser && username === String(currentUser.username);
+    const isMyProfile = currentUser && username?.toLocaleLowerCase() === currentUser.username?.toLocaleLowerCase();
 
     return (
-        <div>
-            <h1>{isMyProfile ? "Min profil" : `Profil för användare ${username}`}</h1>
-            <p>Besöker: {username} | Inloggad som: {currentUser?.username}</p>
+        <div className="profile-actions">
+            {isMyProfile ? (
+                <button>Redigera Profil</button>
+            ) : (
+                <button>Följ {username}</button>
+            )}
         </div>
     );
-
 }
-
