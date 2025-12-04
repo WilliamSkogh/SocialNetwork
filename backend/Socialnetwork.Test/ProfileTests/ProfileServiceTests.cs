@@ -48,4 +48,44 @@ public class ProfileServiceTests
 
         _mockRepo.Verify(r => r.GetUserByUsernameAsync(testUsername), Times.Once);
     }
+
+    [Fact]
+    public async Task GetProfileAsync_Should_ReturnNull_When_User_Does_Not_Exist()
+    {
+        // Arrange
+        var username = "nonexistentuser";
+
+        _mockRepo.Setup(r => r.GetUserByUsernameAsync(username))
+                 .ReturnsAsync((ApplicationUser?)null);
+        // Act
+        var result = await _sut.GetUserProfileAsync(username);
+        // Assert
+        result.Should().BeNull();
+        _mockRepo.Verify(r => r.GetUserByUsernameAsync(username), Times.Once);
+    }
+    [Fact]
+    public async Task UpdateProfile_Should_Update_Bio_And_Image_When_User_Exists()
+    {
+        var username = "testuser";
+        var oldUser = new ApplicationUser
+        {
+            UserName = username,
+            Bio = "Old bio",
+            ProfileImageUrl = "oldimage.jpg"
+        };
+
+        var newBio = "New bio";
+        var newImageUrl = "newimage.jpg";
+
+        _mockRepo.Setup(r => r.GetUserByUsernameAsync(username))
+                 .ReturnsAsync(oldUser);
+
+        await _sut.UpdateUserProfileAsync(username, newBio, newImageUrl);
+
+        _mockRepo.Verify(r => r.UpdateUserAsync(It.Is<ApplicationUser>(u =>
+            u.UserName == username &&
+            u.Bio == newBio &&
+            u.ProfileImageUrl == newImageUrl
+        )), Times.Once);
+    }
 }
