@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Socialnetwork.Repository;
-using SocialNetwork.Api.Extensions;
 using SocialNetwork.Api.Endpoints;
+using SocialNetwork.Api.Extensions;
+using SocialNetwork.Api.Hubs;
 using SocialNetwork.Entity;
 using SocialNetwork.Entityframework;
 using SocialNetwork.Repository;
@@ -36,14 +37,15 @@ builder.Services.AddScoped<IDirectMessageService, DirectMessageService>();
 
 builder.Services.AddScoped<IFollowRepository, FollowRepository>();
 builder.Services.AddScoped<FollowService>();
-
+builder.Services.AddSignalR();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-        policy.WithOrigins("http://localhost:5173") 
+        policy.WithOrigins("http://localhost:5173")
               .AllowAnyMethod()
-              .AllowAnyHeader();
+              .AllowAnyHeader()
+              .AllowCredentials();
     });
 });
 
@@ -91,12 +93,12 @@ app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
 
-app.UseAuthentication(); 
+app.UseAuthentication();
 app.UseAuthorization();
 
 
 app.MapGroup("/auth").MapIdentityApi<ApplicationUser>();
-
+app.MapHub<DirectMessageHub>("/hubs/direct-messages");
 app.MapEndpoints<Program>();
 app.MapPostEndpoints();
 
