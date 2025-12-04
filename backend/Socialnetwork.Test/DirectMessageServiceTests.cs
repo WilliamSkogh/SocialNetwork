@@ -326,6 +326,74 @@ public class DirectMessageServiceTests
         Assert.Empty(result);
     }
 
+    [Fact]
+    public async Task GetInboxAsyncShouldReturnLatestPerSender()
+    {
+        var userId = "user1";
+
+        var messages = new List<DirectMessage>
+        {
+            new DirectMessage
+            {
+                Id = 1,
+                SenderId = "user2",
+                ReceiverId = userId,
+                Message = "Första meddelandet",
+                Timestamp = DateTime.UtcNow.AddHours(-2),
+                IsRead = true,
+                Sender = new ApplicationUser { Id = "user2", UserName = "user2" }
+            },
+            new DirectMessage
+            {
+                Id = 2,
+                SenderId = "user2",
+                ReceiverId = userId,
+                Message = "Andra meddelandet",
+                Timestamp = DateTime.UtcNow.AddHours(-1),
+                IsRead = true,
+                Sender = new ApplicationUser { Id = "user2", UserName = "user2" }
+            },
+            new DirectMessage
+            {
+                Id = 3,
+                SenderId = "user2",
+                ReceiverId = userId,
+                Message = "Senaste meddelandet",
+                Timestamp = DateTime.UtcNow,
+                IsRead = false,
+                Sender = new ApplicationUser { Id = "user2", UserName = "user2" }
+            },
+            new DirectMessage
+            {
+                Id = 4,
+                SenderId = "user3",
+                ReceiverId = userId,
+                Message = "Hej från user3",
+                Timestamp = DateTime.UtcNow.AddMinutes(-30),
+                IsRead = false,
+                Sender = new ApplicationUser { Id = "user3", UserName = "user3" }
+            }
+        };
+
+        _directMessageRepoMock
+            .Setup(r => r.GetInboxAsync(userId))
+            .ReturnsAsync(messages.Where(m => m.ReceiverId == userId)
+                .GroupBy(m => m.SenderId)
+                .Select(g => g.OrderByDescending(m => m.Timestamp).First())
+                .OrderByDescending(m => m.Timestamp)
+                .ToList());
+
+        var result = (await _directMessageService.GetInboxAsync(userId)).ToList();
+
+        Assert.Equal(2, result.Count); 
+
+        Assert.Equal("user2", result[0].SenderId);
+        Assert.Equal("Senaste meddelandet", result[0].Message);
+        Assert.Equal(3, result[0].Id);
+
+        Assert.Equal("user3", result[1].SenderId);
+    }
+
 
 
 }
