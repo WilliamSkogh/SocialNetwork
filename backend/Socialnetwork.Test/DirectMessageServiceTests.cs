@@ -472,6 +472,46 @@ public class DirectMessageServiceTests
         var user3Message = result.First(m => m.SenderId == "user3");
         Assert.Equal(0, user3Message.UnreadCount);
     }
+    [Fact]
+
+    public async Task GetUnreadMessagesAsyncShouldReturnOnlyUnreadMessages()
+    {
+        
+        var userId = "user1";
+        var unreadMessages = new List<DirectMessage>
+        {
+            new DirectMessage
+            {
+                Id = 1,
+                SenderId = "user2",
+                ReceiverId = userId,
+                Message = "Unread 1",
+                Timestamp = DateTime.UtcNow,
+                IsRead = false,
+                Sender = new ApplicationUser { Id = "user2", UserName = "user2" }
+            },
+            new DirectMessage
+            {
+                Id = 2,
+                SenderId = "user3",
+                ReceiverId = userId,
+                Message = "Unread 2",
+                Timestamp = DateTime.UtcNow.AddMinutes(-10),
+                IsRead = false,
+                Sender = new ApplicationUser { Id = "user3", UserName = "user3" }
+            }
+        };
+
+        _directMessageRepoMock
+            .Setup(r => r.GetUnreadMessagesAsync(userId))
+            .ReturnsAsync(unreadMessages);
+
+    
+        var result = (await _directMessageService.GetUnreadMessagesAsync(userId)).ToList();
+
+        Assert.Equal(2, result.Count);
+        Assert.All(result, m => Assert.False(m.IsRead));
+    }
 
 
 
