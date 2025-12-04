@@ -516,24 +516,24 @@ public class DirectMessageServiceTests
     [Fact]
     public async Task GetUnreadMessagesAsyncShouldReturnEmptyWhenNoUnreadMessages()
     {
-        // Arrange
+
         var userId = "user1";
 
         _directMessageRepoMock
             .Setup(r => r.GetUnreadMessagesAsync(userId))
             .ReturnsAsync(new List<DirectMessage>());
 
-        // Act
+
         var result = await _directMessageService.GetUnreadMessagesAsync(userId);
 
-        // Assert
+
         Assert.Empty(result);
     }
 
     [Fact]
     public async Task GetUnreadMessagesAsyncShouldReturnSortedByTimestamp()
     {
-        // Arrange
+
         var userId = "user1";
         var now = DateTime.UtcNow;
         var messages = new List<DirectMessage>
@@ -564,12 +564,31 @@ public class DirectMessageServiceTests
             .Setup(r => r.GetUnreadMessagesAsync(userId))
             .ReturnsAsync(messages.OrderByDescending(m => m.Timestamp).ToList());
 
-        // Act
+
         var result = (await _directMessageService.GetUnreadMessagesAsync(userId)).ToList();
 
-        // Assert
+
         Assert.Equal("Newest", result[0].Message);
         Assert.Equal("Oldest", result[1].Message);
+    }
+
+    [Fact]
+    public async Task MarkMessageAsReadAsyncShouldCallRepositoryWithCorrectParams()
+    {
+        var messageId = 5;
+        var userId = "user1";
+
+        _directMessageRepoMock
+            .Setup(r => r.MarkAsReadAsync(messageId, userId))
+            .Returns(Task.CompletedTask);
+
+        await _directMessageService.MarkMessageAsReadAsync(messageId, userId);
+
+        
+        _directMessageRepoMock.Verify(
+            r => r.MarkAsReadAsync(messageId, userId),
+            Times.Once
+        );
     }
 
 
