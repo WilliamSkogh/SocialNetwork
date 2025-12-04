@@ -51,6 +51,12 @@ public class DirectMessageHub : Hub
         await Clients.Group($"user-{receiverId}").SendAsync("UserIsTyping", senderId);
     }
 
+    public async Task UserStoppedTyping(string receiverId)
+    {
+        var senderId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        await Clients.Group($"user-{receiverId}").SendAsync("UserStoppedTyping", senderId);
+    }
+
 
 
 
