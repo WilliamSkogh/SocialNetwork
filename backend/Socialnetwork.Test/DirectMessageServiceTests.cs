@@ -609,6 +609,22 @@ public class DirectMessageServiceTests
         );
     }
 
+    [Fact]
+    public async Task GetUnreadCountAsyncShouldReturnCorrectCount()
+    {
+        var userId = "user1";
+        var expectedCount = 5;
+
+        _directMessageRepoMock
+            .Setup(r => r.GetUnreadCountAsync(userId))
+            .ReturnsAsync(expectedCount);
+
+      
+        var result = await _directMessageService.GetUnreadCountAsync(userId);
+
+        Assert.Equal(expectedCount, result);
+    }
+
 
 
 
