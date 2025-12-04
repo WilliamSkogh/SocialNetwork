@@ -530,7 +530,49 @@ public class DirectMessageServiceTests
         Assert.Empty(result);
     }
 
-   
+    [Fact]
+    public async Task GetUnreadMessagesAsyncShouldReturnSortedByTimestamp()
+    {
+        // Arrange
+        var userId = "user1";
+        var now = DateTime.UtcNow;
+        var messages = new List<DirectMessage>
+        {
+            new DirectMessage
+            {
+                Id = 1,
+                SenderId = "user2",
+                ReceiverId = userId,
+                Message = "Oldest",
+                Timestamp = now.AddHours(-2),
+                IsRead = false,
+                Sender = new ApplicationUser { Id = "user2", UserName = "user2" }
+            },
+            new DirectMessage
+            {
+                Id = 2,
+                SenderId = "user2",
+                ReceiverId = userId,
+                Message = "Newest",
+                Timestamp = now,
+                IsRead = false,
+                Sender = new ApplicationUser { Id = "user2", UserName = "user2" }
+            }
+        };
+
+        _directMessageRepoMock
+            .Setup(r => r.GetUnreadMessagesAsync(userId))
+            .ReturnsAsync(messages.OrderByDescending(m => m.Timestamp).ToList());
+
+        // Act
+        var result = (await _directMessageService.GetUnreadMessagesAsync(userId)).ToList();
+
+        // Assert
+        Assert.Equal("Newest", result[0].Message);
+        Assert.Equal("Oldest", result[1].Message);
+    }
+
+
 
 
 
