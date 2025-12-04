@@ -137,16 +137,35 @@ public class ProfileServiceTests
     [Fact]
     public async Task UpdateUserProfileAsync_Should_ThrowException_When_ImageUrl_Is_Invalid()
     {
-        // ARRANGE
+        // Arrange
         var username = "testuser";
         _mockRepo.Setup(r => r.GetUserByUsernameAsync(username))
                  .ReturnsAsync(new ApplicationUser { UserName = username });
 
-        // ACT
+        // Act
         var action = async () => await _sut.UpdateUserProfileAsync(username, "Bio", "ftp://bad-file.exe");
 
-        // ASSERT
+        // Assert
         await action.Should().ThrowAsync<ArgumentException>()
-            .WithMessage("*Invalid image URL*");
+            .WithMessage("Invalid image format. Only .jpg, .jpeg and .png are allowed.");
     }
+    [Fact]
+    public async Task UpdateUserProfileAsync_Should_ThrowException_When_User_Does_Not_Exist()
+    {
+        // Arrange
+        var username = "ghost-user";
+
+        _mockRepo.Setup(r => r.GetUserByUsernameAsync(username))
+                 .ReturnsAsync((ApplicationUser?)null);
+
+        // Act
+        var action = async () => await _sut.UpdateUserProfileAsync(username, "Ny bio", "bild.jpg");
+
+        // Assert
+        await action.Should().ThrowAsync<Exception>()
+            .WithMessage("User not found");
+
+        _mockRepo.Verify(r => r.UpdateUserAsync(It.IsAny<ApplicationUser>()), Times.Never);
+    }
+
 }
