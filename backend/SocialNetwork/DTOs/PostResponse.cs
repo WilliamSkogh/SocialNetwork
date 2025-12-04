@@ -5,5 +5,6 @@ public record PostResponse(
     string AuthorId,
     string? RecipientId,
     string Content,
+    string? ImageUrl,
     DateTime CreatedAt
 );
