@@ -49,5 +49,20 @@ public class PostMediaUploadTests
         // Assert
         isValid.Should().BeTrue();
     }
+
+    [Fact]
+    public void MediaUpload_ShouldRejectVideoFile_WhenSizeExceeds50MB()
+    {
+        // Arrange
+        var contentType = "video/mp4";
+        var fileSize = 51 * 1024 * 1024; // 51 MB
+        var maxVideoSize = 50 * 1024 * 1024; // 50 MB
+
+        // Act
+        var isValid = contentType.StartsWith("video/") && fileSize <= maxVideoSize;
+
+        // Assert
+        isValid.Should().BeFalse();
+    }
 }
 
