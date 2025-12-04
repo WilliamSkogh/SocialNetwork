@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SocialNetwork.Service;
 
-public class ProfileService
+public class ProfileService : IProfileService
 {
     private readonly IProfileRepository _repo;
     public ProfileService(IProfileRepository repo)
@@ -31,6 +31,19 @@ public async Task<UserProfile?> GetUserProfileAsync(string userName)
             FollowerCount = user.FollowerCount,
             FollowingCount = user.FollowingCount
         };
+    }
+    public async Task UpdateUserProfileAsync(string username, string newBio, string newImageUrl)
+    {
+        var user = await _repo.GetUserByUsernameAsync(username);
+
+        if (user == null)
+            throw new Exception("User not found");
+
+
+        user.Bio = newBio;
+        user.ProfileImageUrl = newImageUrl;
+
+        await _repo.UpdateUserAsync(user); 
     }
 
 }
