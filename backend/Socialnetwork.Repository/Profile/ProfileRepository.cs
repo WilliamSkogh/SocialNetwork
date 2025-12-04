@@ -1,16 +1,27 @@
-﻿using SocialNetwork.Entity;
+﻿using Microsoft.EntityFrameworkCore;
+using SocialNetwork.Entity;
+using SocialNetwork.Entityframework;
+using SQLitePCL;
 
 
 namespace Socialnetwork.Repository.Profile;
 
 public class ProfileRepository : IProfileRepository
 {
-    public Task<ApplicationUser?> GetUserByUsernameAsync(string userName)
+    private readonly ApplicationDbContext _context;
+
+    public ProfileRepository(ApplicationDbContext context)
     {
-        throw new NotImplementedException();
+        _context = context;
     }
-    public Task UpdateUserAsync(ApplicationUser user)
+    
+    public async Task<ApplicationUser?> GetUserByUsernameAsync(string userName)
     {
-        throw new NotImplementedException();
+        return await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+    }
+    public async Task UpdateUserAsync(ApplicationUser user)
+    {
+        _context.Users.Update(user);
+        await _context.SaveChangesAsync();
     }
 }
