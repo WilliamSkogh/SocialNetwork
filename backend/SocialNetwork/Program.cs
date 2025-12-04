@@ -5,7 +5,9 @@ using SocialNetwork.Api.Extensions;
 using SocialNetwork.Api.Endpoints;
 using SocialNetwork.Entity;
 using SocialNetwork.Entityframework;
+using SocialNetwork.Repository;
 using SocialNetwork.Service;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +30,9 @@ builder.Services.AddIdentityApiEndpoints<ApplicationUser>(options =>
     options.User.RequireUniqueEmail = true;
 })
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.AddScoped<IDirectMessageRepository, DirectMessageRepository>();
+builder.Services.AddScoped<IDirectMessageService, DirectMessageService>();
 
 builder.Services.AddScoped<IFollowRepository, FollowRepository>();
 builder.Services.AddScoped<FollowService>();
