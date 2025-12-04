@@ -34,10 +34,14 @@ public async Task<UserProfile?> GetUserProfileAsync(string userName)
     }
     public async Task UpdateUserProfileAsync(string username, string newBio, string newImageUrl)
     {
+        if (newBio.Length > 500)
+        {
+            throw new ArgumentException("Bio cannot exceed 500 characters.");
+        }
+
         var user = await _repo.GetUserByUsernameAsync(username);
 
-        if (user == null)
-            throw new Exception("User not found");
+        if (user == null)throw new Exception("User not found");
 
 
         user.Bio = newBio;
