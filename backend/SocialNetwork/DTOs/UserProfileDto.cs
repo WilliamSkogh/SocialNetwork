@@ -1,2 +1,7 @@
 ﻿namespace SocialNetwork.Api.DTOs;
-public record UpdateProfileRequest(string Bio, string ImageUrl);
+
+public class UpdateProfileDto
+{
+    public string? Bio { get; set; }
+    public IFormFile? ProfileImage { get; set; }
+}
