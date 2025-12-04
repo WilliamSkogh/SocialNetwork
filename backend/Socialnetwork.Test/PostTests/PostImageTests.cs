@@ -1,4 +1,5 @@
 using FluentAssertions;
+using SocialNetwork.Api.DTOs;
 using SocialNetwork.Entity;
 using Xunit;
 
@@ -23,5 +24,23 @@ public class PostImageTests
 
         // Assert
         post.ImageUrl.Should().Be(imageUrl);
+    }
+
+    [Fact]
+    public void PostRequest_ShouldIncludeImageUrl_WhenCreatedWithImage()
+    {
+        // Arrange
+        var imageUrl = "/uploads/posts/test-image.jpg";
+        
+        // Act
+        var request = new PostRequest(
+            AuthorId: "user1",
+            RecipientId: null,
+            Content: "Post with image",
+            ImageUrl: imageUrl
+        );
+
+        // Assert
+        request.ImageUrl.Should().Be(imageUrl);
     }
 }
