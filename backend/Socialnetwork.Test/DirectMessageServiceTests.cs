@@ -385,13 +385,91 @@ public class DirectMessageServiceTests
 
         var result = (await _directMessageService.GetInboxAsync(userId)).ToList();
 
-        Assert.Equal(2, result.Count); 
+        Assert.Equal(2, result.Count);
 
         Assert.Equal("user2", result[0].SenderId);
         Assert.Equal("Senaste meddelandet", result[0].Message);
         Assert.Equal(3, result[0].Id);
 
         Assert.Equal("user3", result[1].SenderId);
+    }
+
+    [Fact]
+    public async Task GetInboxAsyncShouldReturnUnreadCountPerSender()
+    {
+        var userId = "user1";
+
+        var messages = new List<DirectMessage>
+        {
+            new DirectMessage
+            {
+                Id = 1,
+                SenderId = "user2",
+                ReceiverId = userId,
+                Message = "Oläst 1",
+                Timestamp = DateTime.UtcNow.AddHours(-2),
+                IsRead = false,
+                Sender = new ApplicationUser { Id = "user2", UserName = "user2" }
+            },
+            new DirectMessage
+            {
+                Id = 2,
+                SenderId = "user2",
+                ReceiverId = userId,
+                Message = "Oläst 2",
+                Timestamp = DateTime.UtcNow.AddHours(-1),
+                IsRead = false,
+                Sender = new ApplicationUser { Id = "user2", UserName = "user2" }
+            },
+            new DirectMessage
+            {
+                Id = 3,
+                SenderId = "user2",
+                ReceiverId = userId,
+                Message = "Senaste från user2",
+                Timestamp = DateTime.UtcNow,
+                IsRead = false,
+                Sender = new ApplicationUser { Id = "user2", UserName = "user2" }
+            },
+            new DirectMessage
+            {
+                Id = 4,
+                SenderId = "user3",
+                ReceiverId = userId,
+                Message = "Läst meddelande",
+                Timestamp = DateTime.UtcNow.AddMinutes(-30),
+                IsRead = true,
+                Sender = new ApplicationUser { Id = "user3", UserName = "user3" }
+            }
+        };
+
+        _directMessageRepoMock
+            .Setup(r => r.GetInboxAsync(userId))
+            .ReturnsAsync(messages.Where(m => m.ReceiverId == userId)
+                .GroupBy(m => m.SenderId)
+                .Select(g => new DirectMessage
+                {
+                    Id = g.OrderByDescending(m => m.Timestamp).First().Id,
+                    SenderId = g.Key,
+                    ReceiverId = userId,
+                    Message = g.OrderByDescending(m => m.Timestamp).First().Message,
+                    Timestamp = g.Max(m => m.Timestamp),
+                    IsRead = g.OrderByDescending(m => m.Timestamp).First().IsRead,
+                    Sender = g.First().Sender,
+                })
+                .OrderByDescending(m => m.Timestamp)
+                .ToList());
+
+        var result = (await _directMessageService.GetInboxAsync(userId)).ToList();
+
+        Assert.Equal(2, result.Count);
+
+        
+        var user2Message = result.First(m => m.SenderId == "user2");
+        Assert.Equal(3, user2Message.UnreadCount);
+
+        var user3Message = result.First(m => m.SenderId == "user3");
+        Assert.Equal(0, user3Message.UnreadCount);
     }
 
 
