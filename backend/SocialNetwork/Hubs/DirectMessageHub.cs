@@ -45,4 +45,13 @@ public class DirectMessageHub : Hub
         });
     }
 
+    public async Task UserTyping(string receiverId)
+    {
+        var senderId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        await Clients.Group($"user-{receiverId}").SendAsync("UserIsTyping", senderId);
+    }
+
+
+
+
 }
