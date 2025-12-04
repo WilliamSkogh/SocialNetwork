@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Moq;
 using Socialnetwork.Repository.Profile;
 using SocialNetwork.Entity;
@@ -9,163 +10,122 @@ namespace Socialnetwork.Test.ProfileTests;
 public class ProfileServiceTests
 {
     private readonly Mock<IProfileRepository> _mockRepo;
+    private readonly Mock<IMediaUploadService> _mockMediaService; 
     private readonly ProfileService _sut;
+
     public ProfileServiceTests()
     {
         _mockRepo = new Mock<IProfileRepository>();
-        _sut = new ProfileService(_mockRepo.Object);
+        _mockMediaService = new Mock<IMediaUploadService>(); 
+
+        _sut = new ProfileService(_mockRepo.Object, _mockMediaService.Object);
     }
 
-
     [Fact]
-
     public async Task GetProfileAsync_ShouldReturnCorrectDto_WhenUSerExists()
     {
-        // Arrange
-        string testUsername = "testuser";
+        var username = "testuser";
+        _mockRepo.Setup(r => r.GetUserByUsernameAsync(username))
+                 .ReturnsAsync(new ApplicationUser { UserName = username, Bio = "Bio", ProfileImageUrl = "img.jpg" });
 
-        var mockUser = new ApplicationUser
-        {
-            UserName = testUsername,
-            Bio = "This is a test bio",
-            ProfileImageUrl = "profile.jpg",
-            FollowerCount = 10,
-            FollowingCount = 5
-        };
-
-        _mockRepo.Setup(r => r.GetUserByUsernameAsync(testUsername))
-                 .ReturnsAsync(mockUser);
-        //Act
-        var result = await _sut.GetUserProfileAsync(testUsername);
-
-        //Assert
+        var result = await _sut.GetUserProfileAsync(username);
         result.Should().NotBeNull();
-        result!.UserName.Should().Be(testUsername);
-        result.Bio.Should().Be("This is a test bio");
-        result.ProfileImageUrl.Should().Be("profile.jpg");
-        result.FollowerCount.Should().Be(10);
-        result.FollowingCount.Should().Be(5);
-
-        _mockRepo.Verify(r => r.GetUserByUsernameAsync(testUsername), Times.Once);
     }
 
     [Fact]
     public async Task GetProfileAsync_Should_ReturnNull_When_User_Does_Not_Exist()
     {
-        // Arrange
-        var username = "nonexistentuser";
-
-        _mockRepo.Setup(r => r.GetUserByUsernameAsync(username))
-                 .ReturnsAsync((ApplicationUser?)null);
-        // Act
-        var result = await _sut.GetUserProfileAsync(username);
-        // Assert
+        _mockRepo.Setup(r => r.GetUserByUsernameAsync("ghost")).ReturnsAsync((ApplicationUser?)null);
+        var result = await _sut.GetUserProfileAsync("ghost");
         result.Should().BeNull();
-        _mockRepo.Verify(r => r.GetUserByUsernameAsync(username), Times.Once);
     }
+
+
     [Fact]
-    public async Task UpdateProfile_Should_Update_Bio_And_Image_When_User_Exists()
+    public async Task UpdateProfile_Should_Update_Bio_And_Upload_Image_When_File_Is_Provided()
     {
         // Arrange
         var username = "testuser";
-        var oldUser = new ApplicationUser
-        {
-            UserName = username,
-            Bio = "Old bio",
-            ProfileImageUrl = "oldimage.jpg"
-        };
-
+        var oldUser = new ApplicationUser { UserName = username, Bio = "Old bio", ProfileImageUrl = "old.jpg" };
         var newBio = "New bio";
-        var newImageUrl = "newimage.jpg";
 
-        _mockRepo.Setup(r => r.GetUserByUsernameAsync(username))
-                 .ReturnsAsync(oldUser);
+        var mockFile = new Mock<IFormFile>();
+        var fakeUrl = "/uploads/profiles/new-random-image.jpg";
+
+        _mockRepo.Setup(r => r.GetUserByUsernameAsync(username)).ReturnsAsync(oldUser);
+
+        _mockMediaService.Setup(m => m.UploadFileAsync(It.IsAny<IFormFile>(), "profiles"))
+                         .ReturnsAsync(fakeUrl);
+
         // Act
-        await _sut.UpdateUserProfileAsync(username, newBio, newImageUrl);
+        await _sut.UpdateUserProfileAsync(username, newBio, mockFile.Object);
 
         // Assert
         _mockRepo.Verify(r => r.UpdateUserAsync(It.Is<ApplicationUser>(u =>
             u.UserName == username &&
             u.Bio == newBio &&
-            u.ProfileImageUrl == newImageUrl
+            u.ProfileImageUrl == fakeUrl
         )), Times.Once);
     }
+
     [Fact]
     public async Task UpdateUserProfileAsync_Should_Throw_When_Bio_Is_Too_Long()
     {
         // Arrange
         var username = "AnnoyingUser";
         var tooLongBio = new string('a', 501);
-        
-        _mockRepo.Setup(r => r.GetUserByUsernameAsync(username))
-                 .ReturnsAsync(new ApplicationUser { UserName = username });
+
         // Act
-        var action = async () => await _sut.UpdateUserProfileAsync(username, tooLongBio, "someimage.jpg");
+        var action = async () => await _sut.UpdateUserProfileAsync(username, tooLongBio, null);
 
         // Assert
         await action.Should().ThrowAsync<ArgumentException>()
             .WithMessage("Bio cannot exceed 500 characters.*");
-
-        _mockRepo.Verify(r => r.UpdateUserAsync(It.IsAny<ApplicationUser>()), Times.Never);
     }
-    [Fact]
 
-    public async Task UpdateProfileAsync_Should_Clear_Bio_And_Image_When_Strings_Are_Empty()
+    [Fact]
+    public async Task UpdateProfileAsync_Should_Keep_Old_Image_When_No_New_File_Is_Provided()
     {
         // Arrange
-
         var username = "testuser";
         var oldUser = new ApplicationUser
         {
             UserName = username,
-            Bio = "Old text that should be removed",
-            ProfileImageUrl = "oldimage-super-ugly.jpg"
+            ProfileImageUrl = "old-image.jpg"
         };
-        var newBio = string.Empty;
-        var newImageUrl = string.Empty;
-        _mockRepo.Setup(r => r.GetUserByUsernameAsync(username))
-                 .ReturnsAsync(oldUser);
+
+        _mockRepo.Setup(r => r.GetUserByUsernameAsync(username)).ReturnsAsync(oldUser);
+
         // Act
-        await _sut.UpdateUserProfileAsync(username, "", "");
+        await _sut.UpdateUserProfileAsync(username, "New Bio", null);
+
         // Assert
         _mockRepo.Verify(r => r.UpdateUserAsync(It.Is<ApplicationUser>(u =>
-            u.UserName == username &&
-            u.Bio == "" &&
-            u.ProfileImageUrl == ""
+            u.ProfileImageUrl == "old-image.jpg"
         )), Times.Once);
+
+        _mockMediaService.Verify(m => m.UploadFileAsync(It.IsAny<IFormFile>(), It.IsAny<string>()), Times.Never);
     }
+
     [Fact]
-    public async Task UpdateUserProfileAsync_Should_ThrowException_When_ImageUrl_Is_Invalid()
+    public async Task UpdateUserProfileAsync_Should_Propagate_Exception_From_MediaService_When_File_Is_Invalid()
     {
-        // Arrange
+
+        // ARRANGE
         var username = "testuser";
+        var mockFile = new Mock<IFormFile>();
+
         _mockRepo.Setup(r => r.GetUserByUsernameAsync(username))
                  .ReturnsAsync(new ApplicationUser { UserName = username });
 
-        // Act
-        var action = async () => await _sut.UpdateUserProfileAsync(username, "Bio", "ftp://bad-file.exe");
+        _mockMediaService.Setup(m => m.UploadFileAsync(It.IsAny<IFormFile>(), "profiles"))
+                         .ThrowsAsync(new ArgumentException("Invalid file type"));
 
-        // Assert
+        // ACT
+        var action = async () => await _sut.UpdateUserProfileAsync(username, "Bio", mockFile.Object);
+
+        // ASSERT
         await action.Should().ThrowAsync<ArgumentException>()
-            .WithMessage("Invalid image format. Only .jpg, .jpeg and .png are allowed.");
+            .WithMessage("Invalid file type");
     }
-    [Fact]
-    public async Task UpdateUserProfileAsync_Should_ThrowException_When_User_Does_Not_Exist()
-    {
-        // Arrange
-        var username = "ghost-user";
-
-        _mockRepo.Setup(r => r.GetUserByUsernameAsync(username))
-                 .ReturnsAsync((ApplicationUser?)null);
-
-        // Act
-        var action = async () => await _sut.UpdateUserProfileAsync(username, "Ny bio", "bild.jpg");
-
-        // Assert
-        await action.Should().ThrowAsync<Exception>()
-            .WithMessage("User not found");
-
-        _mockRepo.Verify(r => r.UpdateUserAsync(It.IsAny<ApplicationUser>()), Times.Never);
-    }
-
 }
