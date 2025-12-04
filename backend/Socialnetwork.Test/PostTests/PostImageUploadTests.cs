@@ -78,5 +78,23 @@ public class PostMediaUploadTests
         // Assert
         isValid.Should().BeTrue();
     }
+
+    [Fact]
+    public void MediaUpload_ShouldRejectInvalidContentType()
+    {
+        // Arrange
+        var contentType = "application/pdf";
+        var allowedTypes = new[] 
+        { 
+            "image/jpeg", "image/png", "image/gif", "image/webp",
+            "video/mp4", "video/webm", "video/quicktime"
+        };
+
+        // Act
+        var isValid = allowedTypes.Contains(contentType);
+
+        // Assert
+        isValid.Should().BeFalse();
+    }
 }
 
