@@ -43,4 +43,24 @@ public class PostImageTests
         // Assert
         request.ImageUrl.Should().Be(imageUrl);
     }
+
+    [Fact]
+    public void PostResponse_ShouldIncludeImageUrl_WhenPostHasImage()
+    {
+        // Arrange
+        var imageUrl = "/uploads/posts/test-image.jpg";
+        
+        // Act
+        var response = new PostResponse(
+            Id: 1,
+            AuthorId: "user1",
+            RecipientId: null,
+            Content: "Post with image",
+            ImageUrl: imageUrl,
+            CreatedAt: DateTime.UtcNow
+        );
+
+        // Assert
+        response.ImageUrl.Should().Be(imageUrl);
+    }
 }
