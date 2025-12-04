@@ -65,7 +65,7 @@ namespace SocialNetwork.Service
 
         public Task<IEnumerable<DirectMessage>> GetUnreadMessagesAsync(string userId)
         {
-            throw new NotImplementedException();
+            return _repo.GetUnreadMessagesAsync(userId);
         }
 
         public Task MarkMessageAsReadAsync(int messageId, string userId)
