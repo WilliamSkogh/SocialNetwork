@@ -1,4 +1,5 @@
-﻿using SocialNetwork.Api.Abstractions;
+﻿using Microsoft.AspNetCore.Mvc;
+using SocialNetwork.Api.Abstractions;
 using SocialNetwork.Api.DTOs;
 using SocialNetwork.Service;
 using System.Security.Claims;
@@ -11,20 +12,22 @@ public class UpdateProfile : IEndpoint
     {
         app.MapPut("/api/users/{username}", async (
             string username,
-            UpdateProfileRequest request,
+            [FromForm] string? bio,
+            IFormFile? profileImage,
             ClaimsPrincipal user,
             IProfileService profileService) =>
         {
-
             var loggedInUserName = user.FindFirstValue(ClaimTypes.Name);
 
             if (loggedInUserName is null || !loggedInUserName.Equals(username, StringComparison.OrdinalIgnoreCase))
             {
-                return Results.Forbid(); 
+                return Results.Forbid();
             }
+
             try
             {
-                await profileService.UpdateUserProfileAsync(username, request.Bio, request.ImageUrl);
+                await profileService.UpdateUserProfileAsync(username, bio, profileImage);
+
                 return Results.Ok(new { Message = "Profilen har uppdaterats!" });
             }
             catch (ArgumentException ex)
@@ -33,10 +36,11 @@ public class UpdateProfile : IEndpoint
             }
             catch (Exception ex)
             {
-                return Results.Problem("Ett oväntat fel inträffade." +ex);
+                return Results.Problem(ex.Message);
             }
         })
         .WithTags("Profiles")
-        .RequireAuthorization();
+        .RequireAuthorization()
+        .DisableAntiforgery();
     }
 }
