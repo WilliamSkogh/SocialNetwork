@@ -66,6 +66,7 @@ public class ProfileServiceTests
     [Fact]
     public async Task UpdateProfile_Should_Update_Bio_And_Image_When_User_Exists()
     {
+        // Arrange
         var username = "testuser";
         var oldUser = new ApplicationUser
         {
@@ -79,13 +80,40 @@ public class ProfileServiceTests
 
         _mockRepo.Setup(r => r.GetUserByUsernameAsync(username))
                  .ReturnsAsync(oldUser);
-
+        // Act
         await _sut.UpdateUserProfileAsync(username, newBio, newImageUrl);
 
+        // Assert
         _mockRepo.Verify(r => r.UpdateUserAsync(It.Is<ApplicationUser>(u =>
             u.UserName == username &&
             u.Bio == newBio &&
             u.ProfileImageUrl == newImageUrl
+        )), Times.Once);
+    }
+    [Fact]
+
+    public async Task UpdateProfileAsync_Should_Clear_Bio_And_Image_When_Strings_Are_Empty()
+    {
+        // Arrange
+
+        var username = "testuser";
+        var oldUser = new ApplicationUser
+        {
+            UserName = username,
+            Bio = "Old text that should be removed",
+            ProfileImageUrl = "oldimage-super-ugly.jpg"
+        };
+        var newBio = string.Empty;
+        var newImageUrl = string.Empty;
+        _mockRepo.Setup(r => r.GetUserByUsernameAsync(username))
+                 .ReturnsAsync(oldUser);
+        // Act
+        await _sut.UpdateUserProfileAsync(username, "", "");
+        // Assert
+        _mockRepo.Verify(r => r.UpdateUserAsync(It.Is<ApplicationUser>(u =>
+            u.UserName == username &&
+            u.Bio == "" &&
+            u.ProfileImageUrl == ""
         )), Times.Once);
     }
 }
