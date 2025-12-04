@@ -35,4 +35,21 @@ public class MediaUploadServiceTests
         await act.Should().ThrowAsync<ArgumentException>()
             .WithMessage("*Invalid file type*");
     }
+
+    [Fact]
+    public async Task UploadFileAsync_ShouldThrowException_WhenImageSizeExceeds10MB()
+    {
+        // Arrange
+        var service = new MediaUploadService();
+        var mockFile = new Mock<IFormFile>();
+        mockFile.Setup(f => f.ContentType).Returns("image/jpeg");
+        mockFile.Setup(f => f.Length).Returns(11 * 1024 * 1024); // 11 MB
+
+        // Act
+        Func<Task> act = async () => await service.UploadFileAsync(mockFile.Object, "posts");
+
+        // Assert
+        await act.Should().ThrowAsync<ArgumentException>()
+            .WithMessage("*must not exceed*10*MB*");
+    }
 }
