@@ -1,9 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Socialnetwork.Repository;
 using SocialNetwork.Api.Extensions;
 using SocialNetwork.Api.Endpoints;
 using SocialNetwork.Entity;
 using SocialNetwork.Entityframework;
+using SocialNetwork.Repository;
+using SocialNetwork.Service;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,9 +23,22 @@ builder.Services.AddScoped<SocialNetwork.Service.IPostService, SocialNetwork.Ser
 
 builder.Services.AddAuthorization();
 
-
-builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
+builder.Services.AddIdentityApiEndpoints<ApplicationUser>(options =>
+{
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequiredLength = 6;
+    options.User.RequireUniqueEmail = true;
+})
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.AddScoped<IDirectMessageRepository, DirectMessageRepository>();
+builder.Services.AddScoped<IDirectMessageService, DirectMessageService>();
+
+builder.Services.AddScoped<IFollowRepository, FollowRepository>();
+builder.Services.AddScoped<FollowService>();
 
 builder.Services.AddCors(options =>
 {
@@ -45,6 +62,7 @@ builder.Services.AddSwaggerGen(options =>
         In = ParameterLocation.Header,
         Description = "Skriv in din token h�r"
     });
+
 
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {

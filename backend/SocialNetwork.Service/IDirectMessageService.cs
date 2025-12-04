@@ -4,8 +4,12 @@ using System.Threading.Tasks;
 
 namespace SocialNetwork.Service
 {
-    internal interface IDirectMessageService
+    public interface IDirectMessageService
     {
         Task<DirectMessage> CreateMessageAsync(DirectMessage message);
+        Task<IEnumerable<DirectMessage>> GetConversationAsync(string currentUserId, string otherUserId);
+      
+        Task<IEnumerable<DirectMessage>> GetInboxAsync(string userId);
+
     }
 }

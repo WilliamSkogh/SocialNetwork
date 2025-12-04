@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using SocialNetwork.Api.Abstractions;
-using SocialNetwork.Entity;      
+using SocialNetwork.Entity;
 using System.Security.Claims;
 
 namespace SocialNetwork.Endpoints.Users;
