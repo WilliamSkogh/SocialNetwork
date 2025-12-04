@@ -91,6 +91,24 @@ public class ProfileServiceTests
         )), Times.Once);
     }
     [Fact]
+    public async Task UpdateUserProfileAsync_Should_Throw_When_Bio_Is_Too_Long()
+    {
+        // Arrange
+        var username = "AnnoyingUser";
+        var tooLongBio = new string('a', 501);
+        
+        _mockRepo.Setup(r => r.GetUserByUsernameAsync(username))
+                 .ReturnsAsync(new ApplicationUser { UserName = username });
+        // Act
+        var action = async () => await _sut.UpdateUserProfileAsync(username, tooLongBio, "someimage.jpg");
+
+        // Assert
+        await action.Should().ThrowAsync<ArgumentException>()
+            .WithMessage("Bio cannot exceed 500 characters.*");
+
+        _mockRepo.Verify(r => r.UpdateUserAsync(It.IsAny<ApplicationUser>()), Times.Never);
+    }
+    [Fact]
 
     public async Task UpdateProfileAsync_Should_Clear_Bio_And_Image_When_Strings_Are_Empty()
     {
