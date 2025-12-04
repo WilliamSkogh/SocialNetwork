@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Microsoft.EntityFrameworkCore;
 using SocialNetwork.Entity;
 using SocialNetwork.Repository;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 
 namespace SocialNetwork.Service
@@ -60,11 +61,15 @@ namespace SocialNetwork.Service
 
         public Task<int> GetUnreadCountAsync(string userId)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new ArgumentException("UserId cannot be null or empty");
+
+            return _repo.GetUnreadCountAsync(userId);
         }
 
         public Task<IEnumerable<DirectMessage>> GetUnreadMessagesAsync(string userId)
         {
+            
             if (string.IsNullOrWhiteSpace(userId))
                 throw new ArgumentException("UserId cannot be null or empty");
             return _repo.GetUnreadMessagesAsync(userId);

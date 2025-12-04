@@ -88,15 +88,16 @@ namespace SocialNetwork.Repository
             return result.OrderByDescending(m => m.Timestamp).ToList();
         }
 
-        public Task<int> GetUnreadCountAsync(string userId)
+        public async Task<int> GetUnreadCountAsync(string userId)
         {
-            throw new NotImplementedException();
+
+            return await _context.DirectMessages
+                .CountAsync(m => m.ReceiverId == userId && !m.IsRead);
         }
 
         public async Task<IEnumerable<DirectMessage>> GetUnreadMessagesAsync(string userId)
         {
-            if (string.IsNullOrWhiteSpace(userId))
-                throw new ArgumentException("UserId cannot be null or empty");
+        
 
             return await _context.DirectMessages
                 .Where(m => m.ReceiverId == userId && !m.IsRead)
