@@ -2,6 +2,7 @@ using SocialNetwork.Api.Abstractions;
 using SocialNetwork.Api.DTOs;
 using SocialNetwork.Entity;
 using SocialNetwork.Service;
+using Microsoft.AspNetCore.Mvc;
 
 namespace SocialNetwork.Api.Endpoints;
 
@@ -149,5 +150,31 @@ public class DeletePostEndpoint : IEndpoint
             return Results.NotFound(new { error = "Post not found" });
 
         return Results.NoContent();
+    }
+}
+
+public class UploadPostImageEndpoint : IEndpoint
+{
+    public static void MapEndpoint(IEndpointRouteBuilder app)
+    {
+        app.MapPost("/api/posts/upload-image", UploadImage)
+            .WithName("UploadPostImage")
+            .WithTags("Posts")
+            .DisableAntiforgery();
+    }
+
+    private static async Task<IResult> UploadImage(
+        [FromServices] IMediaUploadService mediaUploadService,
+        IFormFile file)
+    {
+        try
+        {
+            var imageUrl = await mediaUploadService.UploadFileAsync(file, "posts");
+            return Results.Ok(imageUrl);
+        }
+        catch (Exception ex)
+        {
+            return Results.BadRequest(new { error = ex.Message });
+        }
     }
 }
