@@ -34,20 +34,35 @@ public async Task<UserProfile?> GetUserProfileAsync(string userName)
     }
     public async Task UpdateUserProfileAsync(string username, string newBio, string newImageUrl)
     {
-        if (newBio.Length > 500)
-        {
-            throw new ArgumentException("Bio cannot exceed 500 characters.");
-        }
+        ValidateProfileUpdate(newBio, newImageUrl);
 
         var user = await _repo.GetUserByUsernameAsync(username);
 
         if (user == null)throw new Exception("User not found");
 
-
         user.Bio = newBio;
         user.ProfileImageUrl = newImageUrl;
 
         await _repo.UpdateUserAsync(user); 
+    }
+    private void ValidateProfileUpdate(string bio, string imageUrl)
+    {
+        if (bio.Length > 500)
+        {
+            throw new ArgumentException("Bio cannot exceed 500 characters.");
+        }
+
+        if (string.IsNullOrWhiteSpace(imageUrl))
+        {
+            return;
+        }
+        bool isJpg = imageUrl.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) || imageUrl.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase);
+        bool isPng = imageUrl.EndsWith(".png", StringComparison.OrdinalIgnoreCase);
+
+        if (!isJpg && !isPng)
+        {
+            throw new ArgumentException("Invalid image format. Only .jpg, .jpeg and .png are allowed.");
+        }
     }
 
 }
