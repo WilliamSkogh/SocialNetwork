@@ -1,4 +1,5 @@
-﻿using Socialnetwork.Repository.Profile;
+﻿using Microsoft.AspNetCore.Http;
+using Socialnetwork.Repository.Profile;
 using SocialNetwork.Entity;
 using System;
 using System.Collections.Generic;
@@ -11,9 +12,11 @@ namespace SocialNetwork.Service;
 public class ProfileService : IProfileService
 {
     private readonly IProfileRepository _repo;
-    public ProfileService(IProfileRepository repo)
+    private readonly IMediaUploadService _mediaService;
+    public ProfileService(IProfileRepository repo, IMediaUploadService mediaService)
     {
         _repo = repo;
+        _mediaService = mediaService;
     }
     
 
@@ -32,37 +35,32 @@ public async Task<UserProfile?> GetUserProfileAsync(string userName)
             FollowingCount = user.FollowingCount
         };
     }
-    public async Task UpdateUserProfileAsync(string username, string newBio, string newImageUrl)
+    public async Task UpdateUserProfileAsync(string username, string newBio, IFormFile? imageFile)
     {
-        ValidateProfileUpdate(newBio, newImageUrl);
+        if (newBio != null && newBio.Length > 500)
+        {
+            throw new ArgumentException("Bio cannot exceed 500 characters.");
+        }
 
         var user = await _repo.GetUserByUsernameAsync(username);
 
         if (user == null)throw new Exception("User not found");
 
-        user.Bio = newBio;
-        user.ProfileImageUrl = newImageUrl;
+        user.Bio = newBio ?? user.Bio;
+
+        if (imageFile != null)
+        {
+            try
+            {
+                var imagePath = await _mediaService.UploadFileAsync(imageFile, "profiles");
+                user.ProfileImageUrl = imagePath;
+            }
+            catch (Exception ex) 
+            {
+                throw new ArgumentException(ex.Message);
+            }
+        }
 
         await _repo.UpdateUserAsync(user); 
     }
-    private void ValidateProfileUpdate(string bio, string imageUrl)
-    {
-        if (bio.Length > 500)
-        {
-            throw new ArgumentException("Bio cannot exceed 500 characters.");
-        }
-
-        if (string.IsNullOrWhiteSpace(imageUrl))
-        {
-            return;
-        }
-        bool isJpg = imageUrl.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) || imageUrl.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase);
-        bool isPng = imageUrl.EndsWith(".png", StringComparison.OrdinalIgnoreCase);
-
-        if (!isJpg && !isPng)
-        {
-            throw new ArgumentException("Invalid image format. Only .jpg, .jpeg and .png are allowed.");
-        }
-    }
-
 }
