@@ -134,4 +134,19 @@ public class ProfileServiceTests
             u.ProfileImageUrl == ""
         )), Times.Once);
     }
+    [Fact]
+    public async Task UpdateUserProfileAsync_Should_ThrowException_When_ImageUrl_Is_Invalid()
+    {
+        // ARRANGE
+        var username = "testuser";
+        _mockRepo.Setup(r => r.GetUserByUsernameAsync(username))
+                 .ReturnsAsync(new ApplicationUser { UserName = username });
+
+        // ACT
+        var action = async () => await _sut.UpdateUserProfileAsync(username, "Bio", "ftp://bad-file.exe");
+
+        // ASSERT
+        await action.Should().ThrowAsync<ArgumentException>()
+            .WithMessage("*Invalid image URL*");
+    }
 }
