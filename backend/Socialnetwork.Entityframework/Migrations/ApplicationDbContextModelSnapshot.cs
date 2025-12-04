@@ -245,7 +245,7 @@ namespace Socialnetwork.Entityframework.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("DirectMessages");
+                    b.ToTable("DirectMessages", (string)null);
                 });
 
             modelBuilder.Entity("SocialNetwork.Entity.Follow", b =>
@@ -263,7 +263,7 @@ namespace Socialnetwork.Entityframework.Migrations
 
                     b.HasIndex("FollowingId");
 
-                    b.ToTable("Follows");
+                    b.ToTable("Follows", (string)null);
                 });
 
             modelBuilder.Entity("SocialNetwork.Entity.Post", b =>
@@ -292,7 +292,7 @@ namespace Socialnetwork.Entityframework.Migrations
 
                     b.HasIndex("RecipientId");
 
-                    b.ToTable("Posts");
+                    b.ToTable("Posts", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
