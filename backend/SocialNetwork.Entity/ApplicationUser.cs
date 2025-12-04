@@ -10,6 +10,9 @@ public class ApplicationUser : IdentityUser
     public virtual ICollection<Follow> Followers { get; set; } = new List<Follow>();
     public virtual ICollection<Follow> Following { get; set; } = new List<Follow>();
 
+    public string? Bio { get; set; }
+    public string? ProfileImageUrl { get; set; }
+
     public void Follow(ApplicationUser targetUser)
     {
         ArgumentNullException.ThrowIfNull(targetUser);
