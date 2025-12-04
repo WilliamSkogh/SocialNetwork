@@ -87,6 +87,21 @@ namespace SocialNetwork.Repository
 
             return result.OrderByDescending(m => m.Timestamp).ToList();
         }
+
+        public Task<int> GetUnreadCountAsync(string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<DirectMessage>> GetUnreadMessagesAsync(string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task MarkAsReadAsync(int messageId, string userId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
     
