@@ -70,7 +70,8 @@ namespace SocialNetwork.Service
 
         public Task MarkMessageAsReadAsync(int messageId, string userId)
         {
-            throw new NotImplementedException();
+            return _repo.MarkAsReadAsync(messageId, userId);
+
         }
     }
 }

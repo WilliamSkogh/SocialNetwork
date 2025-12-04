@@ -106,10 +106,17 @@ namespace SocialNetwork.Repository
                 .ToListAsync();
         }
 
-        public Task MarkAsReadAsync(int messageId, string userId)
+        public async Task MarkAsReadAsync(int messageId, string userId)
         {
-            throw new NotImplementedException();
+            var message = await _context.DirectMessages.FindAsync(messageId);
+
+            if (message != null && message.ReceiverId == userId)
+            {
+                message.IsRead = true;
+                await _context.SaveChangesAsync();
+            }
         }
+
     }
 }
     
