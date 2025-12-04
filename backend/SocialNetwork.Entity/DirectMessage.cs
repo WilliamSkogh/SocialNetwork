@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +16,10 @@ namespace SocialNetwork.Entity
         public DateTime Timestamp { get; set; } = DateTime.UtcNow;
         public bool IsRead { get; set; } = false;
 
-        
+        [NotMapped]
+        public int UnreadCount { get; set; }
+
+
         public ApplicationUser Sender { get; set; }
         public ApplicationUser Receiver { get; set; }
 
