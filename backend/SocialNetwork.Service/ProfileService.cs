@@ -15,18 +15,19 @@ public class ProfileService
     {
         _repo = repo;
     }
+    
 
-    public async Task<UserProfile?> GetProfileAsync(string userName)
+public async Task<UserProfile?> GetUserProfileAsync(string userName)
     {
         var user =  await _repo.GetUserByUsernameAsync(userName);
-
+       
         if (user == null) return null;
 
         return new UserProfile
         {
             UserName = user.UserName,
             Bio = user.Bio,
-            ProfileImageUrl = user?.ProfileImageUrl,
+            ProfileImageUrl = user.ProfileImageUrl,
             FollowerCount = user.FollowerCount,
             FollowingCount = user.FollowingCount
         };

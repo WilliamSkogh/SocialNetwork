@@ -36,7 +36,7 @@ public class ProfileServiceTests
         _mockRepo.Setup(r => r.GetUserByUsernameAsync(testUsername))
                  .ReturnsAsync(mockUser);
         //Act
-        var result = await _sut.GetProfileAsync(testUsername);
+        var result = await _sut.GetUserProfileAsync(testUsername);
 
         //Assert
         result.Should().NotBeNull();
