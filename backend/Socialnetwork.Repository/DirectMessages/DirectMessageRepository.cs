@@ -93,9 +93,17 @@ namespace SocialNetwork.Repository
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<DirectMessage>> GetUnreadMessagesAsync(string userId)
+        public async Task<IEnumerable<DirectMessage>> GetUnreadMessagesAsync(string userId)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new ArgumentException("UserId cannot be null or empty");
+
+            return await _context.DirectMessages
+                .Where(m => m.ReceiverId == userId && !m.IsRead)
+                .Include(m => m.Sender)
+                .Include(m => m.Receiver)
+                .OrderByDescending(m => m.Timestamp)
+                .ToListAsync();
         }
 
         public Task MarkAsReadAsync(int messageId, string userId)
