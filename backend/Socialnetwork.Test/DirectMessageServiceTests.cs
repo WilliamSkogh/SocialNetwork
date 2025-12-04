@@ -456,7 +456,7 @@ public class DirectMessageServiceTests
                     Timestamp = g.Max(m => m.Timestamp),
                     IsRead = g.OrderByDescending(m => m.Timestamp).First().IsRead,
                     Sender = g.First().Sender,
-                    UnreadCount = g.Count(m => !m.IsRead) // JAG LA TILL DENNA RAD VA GÖR DEN?
+                    UnreadCount = g.Count(m => !m.IsRead) 
                 })
                 .OrderByDescending(m => m.Timestamp)
                 .ToList());
