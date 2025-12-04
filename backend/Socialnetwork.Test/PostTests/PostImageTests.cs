@@ -1,0 +1,27 @@
+using FluentAssertions;
+using SocialNetwork.Entity;
+using Xunit;
+
+namespace Socialnetwork.Test.PostTests;
+
+public class PostImageTests
+{
+    [Fact]
+    public void Post_ShouldStoreImageUrl_WhenImageIsAttached()
+    {
+        // Arrange
+        var imageUrl = "/uploads/posts/test-image.jpg";
+        
+        // Act
+        var post = new Post
+        {
+            Id = 1,
+            AuthorId = "user1",
+            Content = "Post with image",
+            ImageUrl = imageUrl  
+        };
+
+        // Assert
+        post.ImageUrl.Should().Be(imageUrl);
+    }
+}
