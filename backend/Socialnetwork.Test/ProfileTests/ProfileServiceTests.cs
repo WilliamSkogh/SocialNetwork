@@ -40,7 +40,7 @@ public class ProfileServiceTests
 
         //Assert
         result.Should().NotBeNull();
-        result!.Username.Should().Be(testUsername);
+        result!.UserName.Should().Be(testUsername);
         result.Bio.Should().Be("This is a test bio");
         result.ProfileImageUrl.Should().Be("profile.jpg");
         result.FollowerCount.Should().Be(10);
