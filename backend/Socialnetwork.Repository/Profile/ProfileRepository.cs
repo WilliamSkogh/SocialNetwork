@@ -9,4 +9,8 @@ public class ProfileRepository : IProfileRepository
     {
         throw new NotImplementedException();
     }
+    public Task UpdateUserAsync(ApplicationUser user)
+    {
+        throw new NotImplementedException();
+    }
 }

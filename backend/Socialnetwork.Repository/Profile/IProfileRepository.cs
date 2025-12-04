@@ -9,4 +9,6 @@ namespace Socialnetwork.Repository.Profile;
 public interface IProfileRepository
 {
     Task<ApplicationUser?> GetUserByUsernameAsync(string userName);
+    Task UpdateUserAsync(ApplicationUser user);
+
 }
