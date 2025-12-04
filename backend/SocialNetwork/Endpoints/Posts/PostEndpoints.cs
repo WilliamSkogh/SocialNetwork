@@ -2,6 +2,7 @@ using SocialNetwork.Api.Abstractions;
 using SocialNetwork.Api.DTOs;
 using SocialNetwork.Entity;
 using SocialNetwork.Service;
+using Microsoft.AspNetCore.Mvc;
 
 namespace SocialNetwork.Api.Endpoints;
 
@@ -24,7 +25,8 @@ public class CreatePostEndpoint : IEndpoint
             {
                 AuthorId = request.AuthorId,
                 RecipientId = request.RecipientId,
-                Content = request.Content
+                Content = request.Content,
+                ImageUrl = request.ImageUrl
             };
 
             var createdPost = await postService.CreatePostAsync(post);
@@ -34,6 +36,7 @@ public class CreatePostEndpoint : IEndpoint
                 createdPost.AuthorId,
                 createdPost.RecipientId,
                 createdPost.Content,
+                createdPost.ImageUrl,
                 createdPost.CreatedAt
             );
 
@@ -63,6 +66,7 @@ public class GetAllPostsEndpoint : IEndpoint
             p.AuthorId,
             p.RecipientId,
             p.Content,
+            p.ImageUrl,
             p.CreatedAt
         ));
         return Results.Ok(response);
@@ -89,6 +93,7 @@ public class GetPostByIdEndpoint : IEndpoint
             post.AuthorId,
             post.RecipientId,
             post.Content,
+            post.ImageUrl,
             post.CreatedAt
         );
         return Results.Ok(response);
@@ -117,6 +122,7 @@ public class UpdatePostEndpoint : IEndpoint
                 updatedPost.AuthorId,
                 updatedPost.RecipientId,
                 updatedPost.Content,
+                updatedPost.ImageUrl,
                 updatedPost.CreatedAt
             );
             return Results.Ok(response);
@@ -144,5 +150,31 @@ public class DeletePostEndpoint : IEndpoint
             return Results.NotFound(new { error = "Post not found" });
 
         return Results.NoContent();
+    }
+}
+
+public class UploadPostImageEndpoint : IEndpoint
+{
+    public static void MapEndpoint(IEndpointRouteBuilder app)
+    {
+        app.MapPost("/api/posts/upload-image", UploadImage)
+            .WithName("UploadPostImage")
+            .WithTags("Posts")
+            .DisableAntiforgery();
+    }
+
+    private static async Task<IResult> UploadImage(
+        [FromServices] IMediaUploadService mediaUploadService,
+        IFormFile file)
+    {
+        try
+        {
+            var imageUrl = await mediaUploadService.UploadFileAsync(file, "posts");
+            return Results.Ok(imageUrl);
+        }
+        catch (Exception ex)
+        {
+            return Results.BadRequest(new { error = ex.Message });
+        }
     }
 }

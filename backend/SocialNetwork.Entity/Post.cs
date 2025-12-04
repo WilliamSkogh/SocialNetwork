@@ -6,6 +6,7 @@ public class Post
     public string AuthorId { get; set; } = string.Empty;
     public string? RecipientId { get; set; }
     public string Content { get; set; } = string.Empty;
+    public string? ImageUrl { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public ApplicationUser? Author { get; set; }
     public ApplicationUser? Recipient { get; set; }

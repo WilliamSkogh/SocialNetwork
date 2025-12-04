@@ -21,6 +21,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddScoped<SocialNetwork.Repository.Posts.IPostRepository, SocialNetwork.Repository.Posts.PostRepository>();
 builder.Services.AddScoped<SocialNetwork.Service.IPostService, SocialNetwork.Service.PostService>();
+builder.Services.AddScoped<IMediaUploadService, MediaUploadService>();
 builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
 
@@ -94,6 +95,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseStaticFiles();
 
 app.UseCors("AllowAll");
 
