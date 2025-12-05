@@ -80,4 +80,28 @@ public class PostLikeTests
         var likeCount = await context.Set<Like>().CountAsync(l => l.PostId == postId && l.UserId == userId);
         likeCount.Should().Be(1);
     }
+
+    [Fact]
+    public async Task LikeService_ShouldRemoveLike()
+    {
+        // Arrange
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseInMemoryDatabase(databaseName: "RemoveLikeTestDb")
+            .Options;
+
+        using var context = new ApplicationDbContext(options);
+        var likeService = new LikeService(context);
+        var postId = 1;
+        var userId = "user123";
+        
+        await likeService.AddLikeAsync(postId, userId);
+        
+        // Act
+        var result = await likeService.RemoveLikeAsync(postId, userId);
+        
+        // Assert
+        result.Should().BeTrue();
+        var like = await context.Set<Like>().FirstOrDefaultAsync(l => l.PostId == postId && l.UserId == userId);
+        like.Should().BeNull();
+    }
 }

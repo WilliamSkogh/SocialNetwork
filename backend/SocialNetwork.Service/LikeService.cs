@@ -31,4 +31,17 @@ public class LikeService : ILikeService
         await _context.SaveChangesAsync();
         return true;
     }
+
+    public async Task<bool> RemoveLikeAsync(int postId, string userId)
+    {
+        var like = await _context.Set<Like>()
+            .FirstOrDefaultAsync(l => l.PostId == postId && l.UserId == userId);
+
+        if (like == null)
+            return false;
+
+        _context.Set<Like>().Remove(like);
+        await _context.SaveChangesAsync();
+        return true;
+    }
 }
