@@ -125,7 +125,8 @@ public class DirectMessagesEndpoints : IEndpoint
                 ReceiverUsername = m.Receiver?.UserName,
                 Message = m.Message,
                 Timestamp = m.Timestamp,
-                IsRead = m.IsRead
+                IsRead = m.IsRead,
+                UnreadCount = m.UnreadCount 
             }).ToList();
 
             return Results.Ok(dtoList);
