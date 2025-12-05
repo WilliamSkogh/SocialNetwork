@@ -17,7 +17,8 @@ public class ProfileRepository : IProfileRepository
     
     public async Task<ApplicationUser?> GetUserByUsernameAsync(string userName)
     {
-        return await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+        return await _context.Users
+        .FirstOrDefaultAsync(u => u.UserName.ToLower() == userName.ToLower());
     }
     public async Task UpdateUserAsync(ApplicationUser user)
     {
