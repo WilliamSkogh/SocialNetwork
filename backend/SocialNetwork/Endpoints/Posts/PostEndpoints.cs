@@ -52,10 +52,14 @@ public class CreatePostEndpoint : IEndpoint
             var response = new PostResponse(
                 createdPost.Id,
                 createdPost.AuthorId,
+                createdPost.Author?.UserName ?? "Unknown",
                 createdPost.RecipientId,
                 createdPost.Content,
                 createdPost.ImageUrl,
-                createdPost.CreatedAt
+                createdPost.CreatedAt,
+                0,
+                0,
+                new List<CommentDto>()
             );
 
             return Results.Created($"/api/posts/{createdPost.Id}", response);
@@ -82,10 +86,20 @@ public class GetAllPostsEndpoint : IEndpoint
         var response = posts.Select(p => new PostResponse(
             p.Id,
             p.AuthorId,
+            p.Author?.UserName ?? "Unknown",
             p.RecipientId,
             p.Content,
             p.ImageUrl,
-            p.CreatedAt
+            p.CreatedAt,
+            p.Likes?.Count ?? 0,
+            p.Dislikes?.Count ?? 0,
+            p.Comments?.Select(c => new CommentDto(
+                c.Id,
+                c.UserId,
+                c.User?.UserName ?? "Unknown",
+                c.Text,
+                c.CreatedAt
+            )).ToList() ?? new List<CommentDto>()
         ));
         return Results.Ok(response);
     }
@@ -109,10 +123,20 @@ public class GetPostByIdEndpoint : IEndpoint
         var response = new PostResponse(
             post.Id,
             post.AuthorId,
+            post.Author?.UserName ?? "Unknown",
             post.RecipientId,
             post.Content,
             post.ImageUrl,
-            post.CreatedAt
+            post.CreatedAt,
+            post.Likes?.Count ?? 0,
+            post.Dislikes?.Count ?? 0,
+            post.Comments?.Select(c => new CommentDto(
+                c.Id,
+                c.UserId,
+                c.User?.UserName ?? "Unknown",
+                c.Text,
+                c.CreatedAt
+            )).ToList() ?? new List<CommentDto>()
         );
         return Results.Ok(response);
     }
@@ -138,10 +162,20 @@ public class UpdatePostEndpoint : IEndpoint
             var response = new PostResponse(
                 updatedPost.Id,
                 updatedPost.AuthorId,
+                updatedPost.Author?.UserName ?? "Unknown",
                 updatedPost.RecipientId,
                 updatedPost.Content,
                 updatedPost.ImageUrl,
-                updatedPost.CreatedAt
+                updatedPost.CreatedAt,
+                updatedPost.Likes?.Count ?? 0,
+                updatedPost.Dislikes?.Count ?? 0,
+                updatedPost.Comments?.Select(c => new CommentDto(
+                    c.Id,
+                    c.UserId,
+                    c.User?.UserName ?? "Unknown",
+                    c.Text,
+                    c.CreatedAt
+                )).ToList() ?? new List<CommentDto>()
             );
             return Results.Ok(response);
         }
@@ -158,11 +192,28 @@ public class DeletePostEndpoint : IEndpoint
     {
         app.MapDelete("/api/posts/{id}", DeletePost)
             .WithName("DeletePost")
-            .WithTags("Posts");
+            .WithTags("Posts")
+            .RequireAuthorization();
     }
 
-    private static async Task<IResult> DeletePost(IPostService postService, int id)
+    private static async Task<IResult> DeletePost(IPostService postService, int id, HttpContext httpContext)
     {
+        var userId = httpContext.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Results.Unauthorized();
+        }
+
+        var post = await postService.GetPostByIdAsync(id);
+        if (post == null)
+            return Results.NotFound(new { error = "Post not found" });
+
+        if (post.AuthorId != userId)
+        {
+            return Results.Forbid();
+        }
+
         var deleted = await postService.DeletePostAsync(id);
         if (!deleted)
             return Results.NotFound(new { error = "Post not found" });
