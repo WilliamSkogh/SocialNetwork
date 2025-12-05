@@ -1,0 +1,98 @@
+.profile-container {
+    max-width: 935px;
+    margin: 0 auto;
+    padding-bottom: 30px;
+}
+
+.profile-image-container {
+    display: flex;
+    justify-content: center;
+}
+
+.profileimage {
+    width: 77px;
+    height: 77px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 1px solid #dbdbdb;
+}
+
+@media (min-width: 768px) {
+    .profile-image-container {
+        justify-content: center;
+        margin-right: 30px;
+    }
+
+    .profileimage {
+        width: 150px;
+        height: 150px;
+    }
+}
+
+.stats-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 20px;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.stats-list li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stats-value {
+    font-weight: 600;
+    color: #262626;
+}
+
+.stats-label {
+    color: #8e8e8e;
+}
+
+@media (min-width: 768px) {
+    .stats-list {
+        gap: 40px;
+        font-size: 16px;
+        margin-bottom: 0;
+    }
+
+    .stats-list li {
+        flex-direction: row;
+        gap: 5px;
+    }
+
+    .stats-label {
+        color: #262626;
+    }
+}
+
+/* Typografi */
+.username-title {
+    font-weight: 300;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+@media (min-width: 768px) {
+    .username-title {
+        font-size: 28px;
+        margin-bottom: 0;
+    }
+}
+
+.bio-text {
+    white-space: pre-wrap;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-top: 10px;
+}
+
+.action-btn {
+    font-weight: 600;
+    font-size: 14px;
+}
