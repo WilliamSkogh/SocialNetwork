@@ -56,4 +56,28 @@ public class PostLikeTests
         var like = await context.Set<Like>().FirstOrDefaultAsync(l => l.PostId == postId && l.UserId == userId);
         like.Should().NotBeNull();
     }
+
+    [Fact]
+    public async Task LikeService_ShouldNotAddDuplicateLike()
+    {
+        // Arrange
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseInMemoryDatabase(databaseName: "DuplicateLikeTestDb")
+            .Options;
+
+        using var context = new ApplicationDbContext(options);
+        var likeService = new LikeService(context);
+        var postId = 1;
+        var userId = "user123";
+        
+        await likeService.AddLikeAsync(postId, userId);
+        
+        // Act
+        var result = await likeService.AddLikeAsync(postId, userId);
+        
+        // Assert
+        result.Should().BeFalse();
+        var likeCount = await context.Set<Like>().CountAsync(l => l.PostId == postId && l.UserId == userId);
+        likeCount.Should().Be(1);
+    }
 }

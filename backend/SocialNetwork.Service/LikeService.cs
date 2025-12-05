@@ -1,5 +1,6 @@
 using SocialNetwork.Entityframework;
 using SocialNetwork.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace SocialNetwork.Service;
 
@@ -14,6 +15,12 @@ public class LikeService : ILikeService
 
     public async Task<bool> AddLikeAsync(int postId, string userId)
     {
+        var existingLike = await _context.Set<Like>()
+            .FirstOrDefaultAsync(l => l.PostId == postId && l.UserId == userId);
+
+        if (existingLike != null)
+            return false;
+
         var like = new Like
         {
             PostId = postId,
