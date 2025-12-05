@@ -9,13 +9,10 @@ export const profiileService = {
 
     updateProfile: async (username: string, bio: string, file: File | null) => {
         const formData = new FormData();
-
         formData.append("bio", bio);
-
         if (file) {
             formData.append("profileImage", file);
         }
-
         const response = await apiClient.put(`/api/users/${username}`, formData, {
             headers: {
                 "Content-Type": "multipart/form-data"
@@ -23,5 +20,4 @@ export const profiileService = {
         });
         return response.data;
     }
-
 };
