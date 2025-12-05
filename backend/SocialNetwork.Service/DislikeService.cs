@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using SocialNetwork.Entityframework;
 using SocialNetwork.Entity;
 
@@ -14,6 +15,14 @@ public class DislikeService : IDislikeService
 
     public async Task<bool> AddDislikeAsync(int postId, string userId)
     {
+        var existingDislike = await _context.Set<Dislike>()
+            .FirstOrDefaultAsync(d => d.PostId == postId && d.UserId == userId);
+        
+        if (existingDislike != null)
+        {
+            return false;
+        }
+
         var dislike = new Dislike
         {
             PostId = postId,

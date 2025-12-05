@@ -41,4 +41,28 @@ public class PostDislikeTests
         var dislike = await context.Set<Dislike>().FirstOrDefaultAsync(d => d.PostId == postId && d.UserId == userId);
         dislike.Should().NotBeNull();
     }
+
+    [Fact]
+    public async Task DislikeService_ShouldNotAddDuplicateDislike()
+    {
+        // Arrange
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseInMemoryDatabase(databaseName: "DuplicateDislikeTestDb")
+            .Options;
+
+        using var context = new ApplicationDbContext(options);
+        var dislikeService = new DislikeService(context);
+        var postId = 1;
+        var userId = "user123";
+        
+        await dislikeService.AddDislikeAsync(postId, userId);
+        
+        // Act
+        var result = await dislikeService.AddDislikeAsync(postId, userId);
+        
+        // Assert
+        result.Should().BeFalse();
+        var dislikeCount = await context.Set<Dislike>().CountAsync(d => d.PostId == postId && d.UserId == userId);
+        dislikeCount.Should().Be(1);
+    }
 }
