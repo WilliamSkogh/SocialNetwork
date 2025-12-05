@@ -4,6 +4,8 @@ import { useEffect, useState, type ChangeEvent } from "react";
 import { profiileService } from "../services/ProfileService";
 import type { UserProfile } from "../types/types";
 import { Container, Row, Col, Image, Button, Form } from "react-bootstrap";
+import EmojiPicker, { type EmojiClickData } from "emoji-picker-react";
+import 'bootstrap-icons/font/bootstrap-icons.css';
 import config from "../config";
 import '../styles/profilepage.css'
 
@@ -18,6 +20,7 @@ export default function ProfilePage() {
     const [isEditing, setIsEditing] = useState(false);
     const [editBio, setEditBio] = useState("");
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [showPicker, setShowPicker] = useState(false);
 
     const isMyProfile = currentUser && profile && currentUser.username?.toLowerCase() === profile.userName?.toLowerCase();
 
@@ -60,6 +63,9 @@ export default function ProfilePage() {
             setSelectedFile(e.target.files[0]);
         }
     };
+    const onEmojiClick = (emojiData: EmojiClickData) => {
+        setEditBio((prev) => prev + emojiData.emoji);
+    };
 
     if (loading) return <div className="text-center mt-5">Laddar profil...</div>;
     if (error) return <div className="text-center mt-5 text-danger">{error}</div>;
@@ -73,7 +79,8 @@ export default function ProfilePage() {
 
             <header className="mb-5">
                 <Row className="align-items-start align-items-md-center">
-                    <Col xs={4} md={4} className="d-flex justify-content-center justify-content-md-center mb-3 mb-md-0">
+                    <Col xs={isEditing ? 12 : 4} md={4}
+                        className={`d-flex justify-content-center justify-content-md-center mb-3 mb-md-0 ${isEditing ? 'mb-4' : ''}`}>
                         <div className="profile-image-container">
                             <Image
                                 src={imageUrl}
@@ -83,27 +90,47 @@ export default function ProfilePage() {
                             />
                         </div>
                     </Col>
-                    <Col xs={8} md={8}>
+                    <Col xs={isEditing ? 12 : 8} md={8}>
                         {isEditing ? (
-                            <div className="p-3 bg-light rounded">
+                            <div className="p-3 bg-light rounded shadow-sm">
                                 <h5 className="mb-3">Redigera profil</h5>
                                 <Form>
                                     <Form.Group className="mb-3">
                                         <Form.Label className="small fw-bold text-muted">Byt profilbild</Form.Label>
                                         <Form.Control size="sm" type="file" onChange={handleFileChange} />
                                     </Form.Group>
+
                                     <Form.Group className="mb-3">
-                                        <Form.Label className="small fw-bold text-muted">Bio</Form.Label>
-                                        <Form.Control
-                                            as="textarea"
-                                            rows={3}
-                                            value={editBio}
-                                            onChange={e => setEditBio(e.target.value)}
-                                        />
+                                        <div className="d-flex justify-content-between align-items-center mb-1">
+                                            <Form.Label className="small fw-bold text-muted mb-0">Bio</Form.Label>
+                                            <Button
+                                                variant="light"
+                                                size="sm"
+                                                className="p-0 border-0 text-muted"
+                                                onClick={() => setShowPicker(!showPicker)}
+                                                title="Infoga emoji"
+                                            >
+                                                <i className="bi bi-emoji-smile fs-5"></i>
+                                            </Button>
+                                        </div>
+                                        <Form.Control as="textarea" rows={3} value={editBio} onChange={e => setEditBio(e.target.value)} maxLength={500} />
+                                        {showPicker && (
+                                            <div className="mt-2">
+                                                <EmojiPicker
+                                                    onEmojiClick={onEmojiClick}
+                                                    autoFocusSearch={false}
+                                                    width="100%"
+                                                    height={350}
+                                                    previewConfig={{ showPreview: false }}
+                                                />
+                                            </div>
+                                        )}
+                                        <div className="text-end small text-muted mt-1">{editBio.length}/500</div>
                                     </Form.Group>
+
                                     <div className="d-flex gap-2">
                                         <Button size="sm" variant="primary" onClick={handleUpdateProfile}>Spara</Button>
-                                        <Button size="sm" variant="outline-secondary" onClick={() => setIsEditing(false)}>Avbryt</Button>
+                                        <Button size="sm" variant="outline-secondary" onClick={() => { setIsEditing(false); setShowPicker(false); }}>Avbryt</Button>
                                     </div>
                                 </Form>
                             </div>
