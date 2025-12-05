@@ -22,19 +22,37 @@ public class PostRepository : IPostRepository
 
     public async Task<Post?> GetByIdAsync(int id)
     {
-        return await _context.Posts.FindAsync(id);
+        return await _context.Posts
+            .Include(p => p.Author)
+            .Include(p => p.Likes)
+            .Include(p => p.Dislikes)
+            .Include(p => p.Comments)
+                .ThenInclude(c => c.User)
+            .FirstOrDefaultAsync(p => p.Id == id);
     }
 
     public async Task<IEnumerable<Post>> GetAllAsync()
     {
         return await _context.Posts
+            .Include(p => p.Author)
+            .Include(p => p.Likes)
+            .Include(p => p.Dislikes)
+            .Include(p => p.Comments)
+                .ThenInclude(c => c.User)
             .OrderByDescending(p => p.CreatedAt)
             .ToListAsync();
     }
 
     public async Task<Post?> UpdateAsync(Post post)
     {
-        var existingPost = await _context.Posts.FindAsync(post.Id);
+        var existingPost = await _context.Posts
+            .Include(p => p.Author)
+            .Include(p => p.Likes)
+            .Include(p => p.Dislikes)
+            .Include(p => p.Comments)
+                .ThenInclude(c => c.User)
+            .FirstOrDefaultAsync(p => p.Id == post.Id);
+            
         if (existingPost == null)
             return null;
 
