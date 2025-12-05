@@ -12,4 +12,5 @@ public class Post
     public ApplicationUser? Recipient { get; set; }
     public ICollection<Like> Likes { get; set; } = new List<Like>();
     public ICollection<Dislike> Dislikes { get; set; } = new List<Dislike>();
+    public ICollection<Comment> Comments { get; set; } = new List<Comment>();
 }
