@@ -16,6 +16,8 @@ namespace SocialNetwork.Repository
         Task MarkAsReadAsync(int messageId, string userId);
         Task<IEnumerable<DirectMessage>> GetUnreadMessagesAsync(string userId);
         Task<int> GetUnreadCountAsync(string userId);
+        Task<DirectMessage> GetMessageByIdAsync(int messageId);
+
 
     }
 }
