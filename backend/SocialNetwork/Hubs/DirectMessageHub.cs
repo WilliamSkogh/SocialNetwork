@@ -106,10 +106,44 @@ public class DirectMessageHub : Hub
     public async Task MarkMessageAsRead(int messageId)
     {
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (userId != null)
+        if (string.IsNullOrEmpty(userId))
         {
+            await Clients.Caller.SendAsync("Error", "Unauthorized");
+            return;
+        }
+
+        try
+        {
+            var message = await _directMessageService.GetMessageByIdAsync(messageId);
+            if (message == null)
+            {
+                await Clients.Caller.SendAsync("Error", "Meddelandet hittades inte");
+                return;
+            }
+
             await _directMessageService.MarkMessageAsReadAsync(messageId, userId);
-            await Clients.Group($"user-{userId}").SendAsync("MessageMarkedAsRead", messageId);
+
+            await Clients.Group($"user-{userId}").SendAsync("MessageMarkedAsRead", new
+            {
+                messageId,
+                timestamp = DateTime.UtcNow
+            });
+
+            await Clients.Group($"user-{message.SenderId}").SendAsync("MessageReadByRecipient", new
+            {
+                messageId,
+                readBy = userId,
+                readByUsername = message.Receiver?.UserName,
+                timestamp = DateTime.UtcNow
+            });
+        }
+        catch (ArgumentException ex)
+        {
+            await Clients.Caller.SendAsync("Error", ex.Message);
+        }
+        catch (Exception ex)
+        {
+            await Clients.Caller.SendAsync("Error", $"Ett fel uppstod: {ex.Message}");
         }
     }
 
