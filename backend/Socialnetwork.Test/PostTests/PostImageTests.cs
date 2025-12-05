@@ -54,10 +54,14 @@ public class PostImageTests
         var response = new PostResponse(
             Id: 1,
             AuthorId: "user1",
+            AuthorUsername: "TestUser",
             RecipientId: null,
             Content: "Post with image",
             ImageUrl: imageUrl,
-            CreatedAt: DateTime.UtcNow
+            CreatedAt: DateTime.UtcNow,
+            LikesCount: 0,
+            DislikesCount: 0,
+            Comments: new List<CommentDto>()
         );
 
         // Assert
