@@ -103,6 +103,16 @@ public class DirectMessageHub : Hub
         await base.OnDisconnectedAsync(exception);
     }
 
+    public async Task MarkMessageAsRead(int messageId)
+    {
+        var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId != null)
+        {
+            await _directMessageService.MarkMessageAsReadAsync(messageId, userId);
+            await Clients.Group($"user-{userId}").SendAsync("MessageMarkedAsRead", messageId);
+        }
+    }
+
 
 
 
