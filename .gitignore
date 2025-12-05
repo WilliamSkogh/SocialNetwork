@@ -35,6 +35,9 @@ msbuild.wrn
 
 # React ignores
 node_modules
+.env
+.env.test
+.env.production
 # Logs
 logs
 *.log
