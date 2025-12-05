@@ -61,7 +61,7 @@ namespace SocialNetwork.Repository
                 {
                     SenderId = g.Key,
                     LatestTimestamp = g.Max(m => m.Timestamp),
-                    UnreadCount = g.Count(m => !m.IsRead)  
+                    UnreadCount = g.Count(m => !m.IsRead)
                 })
                 .ToListAsync();
 
@@ -79,7 +79,7 @@ namespace SocialNetwork.Repository
 
                 if (message != null)
                 {
-                   
+
                     message.UnreadCount = item.UnreadCount;
                     result.Add(message);
                 }
@@ -88,9 +88,15 @@ namespace SocialNetwork.Repository
             return result.OrderByDescending(m => m.Timestamp).ToList();
         }
 
-        public Task<DirectMessage> GetMessageByIdAsync(int messageId)
+        public async Task<DirectMessage> GetMessageByIdAsync(int messageId)
         {
-            throw new NotImplementedException();
+            if (messageId <= 0)
+                throw new ArgumentException("MessageId must be greater than 0");
+
+            return await _context.DirectMessages
+                .Include(m => m.Sender)
+                .Include(m => m.Receiver)
+                .FirstOrDefaultAsync(m => m.Id == messageId);
         }
 
         public async Task<int> GetUnreadCountAsync(string userId)
@@ -102,7 +108,7 @@ namespace SocialNetwork.Repository
 
         public async Task<IEnumerable<DirectMessage>> GetUnreadMessagesAsync(string userId)
         {
-        
+
 
             return await _context.DirectMessages
                 .Where(m => m.ReceiverId == userId && !m.IsRead)
@@ -125,5 +131,5 @@ namespace SocialNetwork.Repository
 
     }
 }
-    
+
 

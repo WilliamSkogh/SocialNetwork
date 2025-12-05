@@ -61,7 +61,10 @@ namespace SocialNetwork.Service
 
         public Task<DirectMessage> GetMessageByIdAsync(int messageId)
         {
-            throw new NotImplementedException();
+            if (messageId <= 0)
+                throw new ArgumentException("MessageId must be greater than 0");
+
+            return _repo.GetMessageByIdAsync(messageId);
         }
 
         public Task<int> GetUnreadCountAsync(string userId)
