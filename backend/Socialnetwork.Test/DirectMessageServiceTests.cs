@@ -639,6 +639,58 @@ public class DirectMessageServiceTests
         Assert.Equal(0, result);
     }
 
+    [Fact]
+    public async Task GetMessageByIdAsyncShouldThrowWhenMessageIdIsInvalid()
+    {
+        await Assert.ThrowsAsync<ArgumentException>(() =>
+            _directMessageService.GetMessageByIdAsync(0)
+        );
+
+        await Assert.ThrowsAsync<ArgumentException>(() =>
+            _directMessageService.GetMessageByIdAsync(-1)
+        );
+    }
+
+    [Fact]
+    public async Task GetMessageByIdAsyncShouldReturnMessageFromRepository()
+    {
+        var messageId = 1;
+        var expectedMessage = new DirectMessage
+        {
+            Id = messageId,
+            SenderId = "user1",
+            ReceiverId = "user2",
+            Message = "Test message",
+            Timestamp = DateTime.UtcNow,
+            IsRead = false,
+            Sender = new ApplicationUser { Id = "user1", UserName = "user1" },
+            Receiver = new ApplicationUser { Id = "user2", UserName = "user2" }
+        };
+
+        _directMessageRepoMock
+            .Setup(r => r.GetMessageByIdAsync(messageId))
+            .ReturnsAsync(expectedMessage);
+
+        var result = await _directMessageService.GetMessageByIdAsync(messageId);
+
+        Assert.NotNull(result);
+        Assert.Equal(messageId, result.Id);
+        Assert.Equal("user1", result.SenderId);
+    }
+
+    [Fact]
+    public async Task GetMessageByIdAsyncShouldReturnNullWhenMessageNotFound()
+    {
+        var messageId = 999;
+
+        _directMessageRepoMock
+            .Setup(r => r.GetMessageByIdAsync(messageId))
+            .ReturnsAsync((DirectMessage)null);
+
+        var result = await _directMessageService.GetMessageByIdAsync(messageId);
+
+        Assert.Null(result);
+    }
 
 
 
