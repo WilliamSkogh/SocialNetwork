@@ -12,21 +12,39 @@ public class CreatePostEndpoint : IEndpoint
     {
         app.MapPost("/api/posts", CreatePost)
             .WithName("CreatePost")
-            .WithTags("Posts");
+            .WithTags("Posts")
+            .RequireAuthorization()
+            .DisableAntiforgery();
     }
 
     private static async Task<IResult> CreatePost(
+        [FromForm] string content,
+        IFormFile? imageFile,
+        HttpContext httpContext,
         IPostService postService,
-        PostRequest request)
+        IMediaUploadService mediaService)
     {
+        var userId = httpContext.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Results.Unauthorized();
+        }
+
         try
         {
+            string? imageUrl = null;
+            
+            if (imageFile != null)
+            {
+                imageUrl = await mediaService.UploadFileAsync(imageFile, "posts");
+            }
+
             var post = new Post
             {
-                AuthorId = request.AuthorId,
-                RecipientId = request.RecipientId,
-                Content = request.Content,
-                ImageUrl = request.ImageUrl
+                AuthorId = userId,
+                Content = content,
+                ImageUrl = imageUrl
             };
 
             var createdPost = await postService.CreatePostAsync(post);
