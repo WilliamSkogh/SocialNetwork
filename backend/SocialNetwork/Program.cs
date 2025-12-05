@@ -43,6 +43,7 @@ builder.Services.AddScoped<FollowService>();
 
 builder.Services.AddScoped<ILikeService, LikeService>();
 builder.Services.AddScoped<IDislikeService, DislikeService>();
+builder.Services.AddScoped<ICommentService, CommentService>();
 
 builder.Services.AddCors(options =>
 {
