@@ -59,6 +59,11 @@ namespace SocialNetwork.Service
             return _repo.GetInboxAsync(userId);
         }
 
+        public Task<DirectMessage> GetMessageByIdAsync(int messageId)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<int> GetUnreadCountAsync(string userId)
         {
             if (string.IsNullOrWhiteSpace(userId))
