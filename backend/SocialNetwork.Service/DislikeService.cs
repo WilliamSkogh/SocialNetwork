@@ -33,4 +33,19 @@ public class DislikeService : IDislikeService
         await _context.SaveChangesAsync();
         return true;
     }
+
+    public async Task<bool> RemoveDislikeAsync(int postId, string userId)
+    {
+        var dislike = await _context.Set<Dislike>()
+            .FirstOrDefaultAsync(d => d.PostId == postId && d.UserId == userId);
+        
+        if (dislike == null)
+        {
+            return false;
+        }
+
+        _context.Set<Dislike>().Remove(dislike);
+        await _context.SaveChangesAsync();
+        return true;
+    }
 }

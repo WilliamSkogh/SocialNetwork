@@ -65,4 +65,28 @@ public class PostDislikeTests
         var dislikeCount = await context.Set<Dislike>().CountAsync(d => d.PostId == postId && d.UserId == userId);
         dislikeCount.Should().Be(1);
     }
+
+    [Fact]
+    public async Task DislikeService_ShouldRemoveDislike()
+    {
+        // Arrange
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseInMemoryDatabase(databaseName: "RemoveDislikeTestDb")
+            .Options;
+        using var context = new ApplicationDbContext(options);
+        var service = new DislikeService(context);
+
+        var postId = 1;
+        var userId = "user1";
+
+        await service.AddDislikeAsync(postId, userId);
+
+        // Act
+        var result = await service.RemoveDislikeAsync(postId, userId);
+
+        // Assert
+        result.Should().BeTrue();
+        var dislikes = context.Set<Dislike>().Where(d => d.PostId == postId && d.UserId == userId);
+        dislikes.Count().Should().Be(0);
+    }
 }
