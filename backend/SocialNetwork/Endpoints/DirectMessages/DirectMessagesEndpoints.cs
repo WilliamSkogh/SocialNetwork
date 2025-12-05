@@ -30,6 +30,10 @@ public class DirectMessagesEndpoints : IEndpoint
            .WithName("MarkMessageAsRead")
            .WithDescription("Markera ett meddelande som läst");
 
+        group.MapGet("/unread/count", GetUnreadCount)
+          .WithName("GetUnreadCount")
+          .WithDescription("Hämta antalet olästa meddelanden");
+
     }
 
     private static async Task<IResult> SendMessage( DirectMessageCreateDto dto,ClaimsPrincipal user,IDirectMessageService service)
@@ -155,6 +159,28 @@ public class DirectMessagesEndpoints : IEndpoint
             await service.MarkMessageAsReadAsync(messageId, userId);
 
             return Results.Ok(new { message = "Meddelandet har markerats som läst" });
+        }
+        catch (ArgumentException ex)
+        {
+            return Results.BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return Results.Problem($"Ett fel uppstod: {ex.Message}");
+        }
+    }
+
+    private static async Task<IResult> GetUnreadCount(ClaimsPrincipal user, IDirectMessageService service)
+    {
+        try
+        {
+            var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                return Results.Unauthorized();
+
+            var unreadCount = await service.GetUnreadCountAsync(userId);
+
+            return Results.Ok(new { unreadCount });
         }
         catch (ArgumentException ex)
         {
