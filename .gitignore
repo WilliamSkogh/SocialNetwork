@@ -61,5 +61,5 @@ dist-ssr
 *.db
 *.db-shm
 *.db-wal
-uploads/*
-!uploads/.gitkeep
+backend/SocialNetwork/wwwroot/uploads/*
+!backend/SocialNetwork/wwwroot/uploads/.gitkeep
