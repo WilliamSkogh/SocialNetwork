@@ -21,10 +21,14 @@ public class DirectMessagesEndpoints : IEndpoint
         group.MapGet("/conversation/{otherUserId}", GetConversation)
             .WithName("GetConversation")
             .WithDescription("Hämta en konversation med en annan användare");
-        
+
         group.MapGet("/inbox", GetInbox)
                    .WithName("GetInbox")
                    .WithDescription("Hämta alla mottagna meddelanden");
+
+        group.MapPut("/{messageId}/read", MarkMessageAsRead)
+           .WithName("MarkMessageAsRead")
+           .WithDescription("Markera ett meddelande som läst");
 
     }
 
@@ -130,6 +134,27 @@ public class DirectMessagesEndpoints : IEndpoint
             }).ToList();
 
             return Results.Ok(dtoList);
+        }
+        catch (ArgumentException ex)
+        {
+            return Results.BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return Results.Problem($"Ett fel uppstod: {ex.Message}");
+        }
+    }
+    private static async Task<IResult> MarkMessageAsRead(int messageId, ClaimsPrincipal user, IDirectMessageService service)
+    {
+        try
+        {
+            var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                return Results.Unauthorized();
+
+            await service.MarkMessageAsReadAsync(messageId, userId);
+
+            return Results.Ok(new { message = "Meddelandet har markerats som läst" });
         }
         catch (ArgumentException ex)
         {
