@@ -10,4 +10,5 @@ public class Post
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public ApplicationUser? Author { get; set; }
     public ApplicationUser? Recipient { get; set; }
+    public ICollection<Like> Likes { get; set; } = new List<Like>();
 }
