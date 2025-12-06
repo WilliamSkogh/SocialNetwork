@@ -59,7 +59,7 @@ public class DirectMessagesEndpoints : IEndpoint
             var createdMessage = await service.CreateMessageAsync(directMessage);
 
 
-            var resultDto = new DirectMessageDto
+            var resultDto = new DirectMessageCreateResultDto
             {
                 Id = createdMessage.Id,
                 SenderId = createdMessage.SenderId,
@@ -92,7 +92,7 @@ public class DirectMessagesEndpoints : IEndpoint
 
             var messages = await service.GetConversationAsync(currentUserId, otherUserId);
 
-            var dtoList = messages.Select(m => new DirectMessageDto
+            var dtoList = messages.Select(m => new DirectMessageConversationDto
             {
                 Id = m.Id,
                 SenderId = m.SenderId,
@@ -128,16 +128,13 @@ public class DirectMessagesEndpoints : IEndpoint
 
             var messages = await service.GetInboxAsync(userId);
 
-            var dtoList = messages.Select(m => new DirectMessageDto
+            var dtoList = messages.Select(m => new InboxMessageDto
             {
                 Id = m.Id,
                 SenderId = m.SenderId,
                 SenderUsername = m.Sender?.UserName,
-                ReceiverId = m.ReceiverId,
-                ReceiverUsername = m.Receiver?.UserName,
                 Message = m.Message,
                 Timestamp = m.Timestamp,
-                IsRead = m.IsRead,
                 UnreadCount = m.UnreadCount
             }).ToList();
 
@@ -184,7 +181,11 @@ public class DirectMessagesEndpoints : IEndpoint
 
             var unreadCount = await service.GetUnreadCountAsync(userId);
 
-            return Results.Ok(new { unreadCount });
+            var resultDto = new UnreadCountDto
+            {
+                UnreadCount = unreadCount,
+            };
+            return Results.Ok(resultDto);
         }
         catch (ArgumentException ex)
         {
@@ -206,7 +207,7 @@ public class DirectMessagesEndpoints : IEndpoint
 
             var messages = await service.GetUnreadMessagesAsync(userId);
 
-            var dtoList = messages.Select(m => new DirectMessageDto
+            var dtoList = messages.Select(m => new DirectMessageConversationDto
             {
                 Id = m.Id,
                 SenderId = m.SenderId,
