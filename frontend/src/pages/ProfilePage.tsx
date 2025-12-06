@@ -16,6 +16,7 @@ interface Comment {
     id: number;
     userId: string;
     username: string;
+    profileImageUrl?: string;
     text: string;
     createdAt: string;
 }
@@ -24,8 +25,10 @@ interface Post {
     id: number;
     authorId: string;
     authorUsername: string;
+    authorProfileImageUrl?: string;
     recipientId?: string;
     recipientUsername?: string;
+    recipientProfileImageUrl?: string;
     content: string;
     imageUrl?: string;
     createdAt: string;
@@ -357,24 +360,32 @@ export default function ProfilePage() {
                             <div key={post.id} className="card mb-3">
                                 <div className="card-body">
                                     <div className="d-flex justify-content-between align-items-center mb-2">
-                                        <div>
-                                            <span 
-                                                onClick={() => navigate(`/profile/${post.authorUsername}`)}
-                                                className="fw-bold text-primary" style={{ cursor: "pointer" }}
-                                            >
-                                                {post.authorUsername}
-                                            </span>
-                                            {post.recipientUsername && (
-                                                <>
-                                                    <span className="text-muted mx-1">→</span>
-                                                    <span 
-                                                        onClick={() => navigate(`/profile/${post.recipientUsername}`)}
-                                                        className="fw-bold text-primary" style={{ cursor: "pointer" }}
-                                                    >
-                                                        {post.recipientUsername}
-                                                    </span>
-                                                </>
-                                            )}
+                                        <div className="d-flex align-items-center">
+                                            <img 
+                                                src={post.authorProfileImageUrl ? `${API_BASE_URL}${post.authorProfileImageUrl}` : "https://via.placeholder.com/32"}
+                                                alt={post.authorUsername}
+                                                className="rounded-circle me-2"
+                                                style={{ width: "32px", height: "32px", objectFit: "cover" }}
+                                            />
+                                            <div>
+                                                <span 
+                                                    onClick={() => navigate(`/profile/${post.authorUsername}`)}
+                                                    className="fw-bold text-primary" style={{ cursor: "pointer" }}
+                                                >
+                                                    {post.authorUsername}
+                                                </span>
+                                                {post.recipientUsername && (
+                                                    <>
+                                                        <span className="text-muted mx-1">→</span>
+                                                        <span 
+                                                            onClick={() => navigate(`/profile/${post.recipientUsername}`)}
+                                                            className="fw-bold text-primary" style={{ cursor: "pointer" }}
+                                                        >
+                                                            {post.recipientUsername}
+                                                        </span>
+                                                    </>
+                                                )}
+                                            </div>
                                         </div>
                                         {currentUser?.username === post.authorUsername && (
                                             <button
@@ -424,15 +435,25 @@ export default function ProfilePage() {
                                         
                                         {post.comments?.map((comment) => (
                                             <div key={comment.id} className="bg-light p-2 mb-2 rounded">
-                                                <small className="text-muted">
-                                                    <strong 
-                                                        onClick={() => navigate(`/profile/${comment.username}`)}
-                                                        className="text-primary" style={{ cursor: "pointer" }}
-                                                    >
-                                                        {comment.username}
-                                                    </strong> - {new Date(comment.createdAt).toLocaleString()}
-                                                </small>
-                                                <div>{comment.text}</div>
+                                                <div className="d-flex align-items-start">
+                                                    <img 
+                                                        src={comment.profileImageUrl ? `${API_BASE_URL}${comment.profileImageUrl}` : "https://via.placeholder.com/28"}
+                                                        alt={comment.username}
+                                                        className="rounded-circle me-2"
+                                                        style={{ width: "28px", height: "28px", objectFit: "cover" }}
+                                                    />
+                                                    <div className="flex-grow-1">
+                                                        <small className="text-muted">
+                                                            <strong 
+                                                                onClick={() => navigate(`/profile/${comment.username}`)}
+                                                                className="text-primary" style={{ cursor: "pointer" }}
+                                                            >
+                                                                {comment.username}
+                                                            </strong> - {new Date(comment.createdAt).toLocaleString()}
+                                                        </small>
+                                                        <div>{comment.text}</div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         ))}
 
