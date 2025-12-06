@@ -43,6 +43,33 @@ public class PostRepository : IPostRepository
             .ToListAsync();
     }
 
+    public async Task<IEnumerable<Post>> GetFeedPostsAsync()
+    {
+        return await _context.Posts
+            .Where(p => p.RecipientId == null)
+            .Include(p => p.Author)
+            .Include(p => p.Likes)
+            .Include(p => p.Dislikes)
+            .Include(p => p.Comments)
+                .ThenInclude(c => c.User)
+            .OrderByDescending(p => p.CreatedAt)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Post>> GetUserProfilePostsAsync(string userId)
+    {
+        return await _context.Posts
+            .Where(p => p.RecipientId == userId || p.AuthorId == userId)
+            .Include(p => p.Author)
+            .Include(p => p.Recipient)
+            .Include(p => p.Likes)
+            .Include(p => p.Dislikes)
+            .Include(p => p.Comments)
+                .ThenInclude(c => c.User)
+            .OrderByDescending(p => p.CreatedAt)
+            .ToListAsync();
+    }
+
     public async Task<Post?> UpdateAsync(Post post)
     {
         var existingPost = await _context.Posts
