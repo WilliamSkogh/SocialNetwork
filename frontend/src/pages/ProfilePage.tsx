@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../AuthContext";
 import { useEffect, useState, type ChangeEvent } from "react";
 import { profiileService } from "../services/ProfileService";
@@ -8,11 +8,37 @@ import EmojiPicker, { type EmojiClickData } from "emoji-picker-react";
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import config from "../config";
 import '../styles/profilepage.css'
+import { apiClient } from "../services/axiosClient";
 
 const API_BASE_URL = config.apiBaseUrl;
 
+interface Comment {
+    id: number;
+    userId: string;
+    username: string;
+    text: string;
+    createdAt: string;
+}
+
+interface Post {
+    id: number;
+    authorId: string;
+    authorUsername: string;
+    recipientId?: string;
+    recipientUsername?: string;
+    content: string;
+    imageUrl?: string;
+    createdAt: string;
+    likesCount: number;
+    dislikesCount: number;
+    hasLiked: boolean;
+    hasDisliked: boolean;
+    comments: Comment[];
+}
+
 export default function ProfilePage() {
     const { username } = useParams<{ username: string }>();
+    const navigate = useNavigate();
     const { user: currentUser } = useAuth();
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
@@ -21,6 +47,10 @@ export default function ProfilePage() {
     const [editBio, setEditBio] = useState("");
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [showPicker, setShowPicker] = useState(false);
+    const [posts, setPosts] = useState<Post[]>([]);
+    const [newPost, setNewPost] = useState("");
+    const [selectedImage, setSelectedImage] = useState<File | null>(null);
+    const [commentTexts, setCommentTexts] = useState<{ [key: number]: string }>({});
 
     const isMyProfile = currentUser && profile && currentUser.username?.toLowerCase() === profile.userName?.toLowerCase();
 
@@ -34,6 +64,10 @@ export default function ProfilePage() {
                 const data = await profiileService.getProfile(username);
                 setProfile(data);
                 setEditBio(data.bio || "");
+                
+                
+                const postsResponse = await apiClient.get(`/api/users/${data.userId}/posts`);
+                setPosts(postsResponse.data);
             } catch (err) {
                 console.error(err);
                 setError("kunde inte hämta profilen");
@@ -68,6 +102,94 @@ export default function ProfilePage() {
     const onEmojiClick = (emojiData: EmojiClickData) => {
         setEditBio((prev) => prev + emojiData.emoji);
     };
+
+    const handleCreateWallPost = async () => {
+        if (!newPost.trim() || !profile) return;
+        
+        try {
+            const formData = new FormData();
+            formData.append("content", newPost);
+            if (selectedImage) {
+                formData.append("imageFile", selectedImage);
+            }
+
+            await apiClient.post(`/api/users/${profile.userId}/posts`, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            setNewPost("");
+            setSelectedImage(null);
+            
+            
+            const postsResponse = await apiClient.get(`/api/users/${profile.userId}/posts`);
+            setPosts(postsResponse.data);
+        } catch (error) {
+            console.error("Failed to create wall post", error);
+        }
+    };
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setSelectedImage(e.target.files[0]);
+        }
+    };
+
+    const handleLike = async (postId: number, hasLiked: boolean) => {
+        try {
+            if (hasLiked) {
+                await apiClient.delete(`/api/posts/${postId}/likes`);
+            } else {
+                await apiClient.post(`/api/posts/${postId}/likes`);
+            }
+            const postsResponse = await apiClient.get(`/api/users/${profile?.userId}/posts`);
+            setPosts(postsResponse.data);
+        } catch (error) {
+            console.error("Failed to toggle like", error);
+        }
+    };
+
+    const handleDislike = async (postId: number, hasDisliked: boolean) => {
+        try {
+            if (hasDisliked) {
+                await apiClient.delete(`/api/posts/${postId}/dislikes`);
+            } else {
+                await apiClient.post(`/api/posts/${postId}/dislikes`);
+            }
+            const postsResponse = await apiClient.get(`/api/users/${profile?.userId}/posts`);
+            setPosts(postsResponse.data);
+        } catch (error) {
+            console.error("Failed to toggle dislike", error);
+        }
+    };
+
+    const handleAddComment = async (postId: number) => {
+        const text = commentTexts[postId];
+        if (!text?.trim()) return;
+
+        try {
+            await apiClient.post(`/api/posts/${postId}/comments`, { text });
+            setCommentTexts({ ...commentTexts, [postId]: "" });
+            const postsResponse = await apiClient.get(`/api/users/${profile?.userId}/posts`);
+            setPosts(postsResponse.data);
+        } catch (error) {
+            console.error("Failed to add comment", error);
+        }
+    };
+
+    const handleDelete = async (postId: number) => {
+        if (!confirm("Är du säker på att du vill ta bort detta inlägg?")) return;
+
+        try {
+            await apiClient.delete(`/api/posts/${postId}`);
+            const postsResponse = await apiClient.get(`/api/users/${profile?.userId}/posts`);
+            setPosts(postsResponse.data);
+        } catch (error) {
+            console.error("Failed to delete post", error);
+        }
+    };
+
 
     if (loading) return <div className="text-center mt-5">Laddar profil...</div>;
     if (error) return <div className="text-center mt-5 text-danger">{error}</div>;
@@ -159,8 +281,26 @@ export default function ProfilePage() {
                                 </Button>
                             ) : (
                                 <>
-                                    <Button variant="primary" size="sm" className="action-btn flex-grow-1">
-                                        Följ
+                                    <Button 
+                                        variant={profile.isFollowing ? "outline-primary" : "primary"} 
+                                        size="sm" 
+                                        className="action-btn flex-grow-1"
+                                        onClick={async () => {
+                                            try {
+                                                if (profile.isFollowing) {
+                                                    await profiileService.unfollowUser(profile.userId);
+                                                } else {
+                                                    await profiileService.followUser(profile.userId);
+                                                }
+                                                const updatedProfile = await profiileService.getProfile(username!);
+                                                setProfile(updatedProfile);
+                                            } catch (err) {
+                                                console.error(err);
+                                                alert("Kunde inte uppdatera följ-status");
+                                            }
+                                        }}
+                                    >
+                                        {profile.isFollowing ? "Följer" : "Följ"}
                                     </Button>
                                     <Button variant="outline-secondary" size="sm" className="action-btn flex-grow-1" onClick={() => alert("Kommer snart!")}>
                                         Meddelande
@@ -176,11 +316,147 @@ export default function ProfilePage() {
                 )}
             </header>
 
-            <div className="border-top pt-4">
-                <div className="text-center text-muted">
-                    <i className="bi bi-grid-3x3 fs-3"></i>
-                    <p className="mt-2">Inga inlägg ännu</p>
+            {!isMyProfile && (
+                <div className="card mb-3">
+                    <div className="card-body">
+                        <h5>Skriv på {profile.userName}s vägg</h5>
+                        <textarea
+                            value={newPost}
+                            onChange={(e) => setNewPost(e.target.value)}
+                            placeholder="Skriv något..."
+                            className="form-control mb-2"
+                            rows={3}
+                        />
+                        <div className="mb-2">
+                            <input
+                                type="file"
+                                accept="image/*,video/*"
+                                onChange={handleImageChange}
+                                className="form-control"
+                            />
+                            {selectedImage && (
+                                <small className="text-muted">
+                                    Vald: {selectedImage.name}
+                                </small>
+                            )}
+                        </div>
+                        <Button onClick={handleCreateWallPost}>Posta</Button>
+                    </div>
                 </div>
+            )}
+
+            <div className="border-top pt-4">
+                {posts.length === 0 ? (
+                    <div className="text-center text-muted">
+                        <i className="bi bi-grid-3x3 fs-3"></i>
+                        <p className="mt-2">Inga inlägg ännu</p>
+                    </div>
+                ) : (
+                    <div>
+                        {posts.map((post) => (
+                            <div key={post.id} className="card mb-3">
+                                <div className="card-body">
+                                    <div className="d-flex justify-content-between align-items-center mb-2">
+                                        <div>
+                                            <span 
+                                                onClick={() => navigate(`/profile/${post.authorUsername}`)}
+                                                className="fw-bold text-primary" style={{ cursor: "pointer" }}
+                                            >
+                                                {post.authorUsername}
+                                            </span>
+                                            {post.recipientUsername && (
+                                                <>
+                                                    <span className="text-muted mx-1">→</span>
+                                                    <span 
+                                                        onClick={() => navigate(`/profile/${post.recipientUsername}`)}
+                                                        className="fw-bold text-primary" style={{ cursor: "pointer" }}
+                                                    >
+                                                        {post.recipientUsername}
+                                                    </span>
+                                                </>
+                                            )}
+                                        </div>
+                                        {currentUser?.username === post.authorUsername && (
+                                            <button
+                                                onClick={() => handleDelete(post.id)}
+                                                className="btn btn-danger btn-sm"
+                                            >
+                                                Ta bort
+                                            </button>
+                                        )}
+                                    </div>
+                                    {post.imageUrl && (
+                                        post.imageUrl.endsWith('.mp4') || post.imageUrl.endsWith('.webm') ? (
+                                            <video controls className="w-100 mb-2" style={{ maxHeight: "400px" }}>
+                                                <source src={`${API_BASE_URL}${post.imageUrl}`} type="video/mp4" />
+                                            </video>
+                                        ) : (
+                                            <img 
+                                                src={`${API_BASE_URL}${post.imageUrl}`} 
+                                                alt="Inlägg" 
+                                                className="w-100 mb-2" 
+                                                style={{ maxHeight: "400px", objectFit: "cover" }} 
+                                            />
+                                        )
+                                    )}
+                                    <p>{post.content}</p>
+                                    <small className="text-muted">
+                                        {new Date(post.createdAt).toLocaleString()}
+                                    </small>
+                                    
+                                    <div className="my-2">
+                                        <button 
+                                            onClick={() => handleLike(post.id, post.hasLiked)}
+                                            className={`btn btn-sm me-2 ${post.hasLiked ? 'btn-primary' : 'btn-outline-primary'}`}
+                                        >
+                                            <i className="bi bi-hand-thumbs-up-fill"></i> Gilla ({post.likesCount})
+                                        </button>
+                                        <button 
+                                            onClick={() => handleDislike(post.id, post.hasDisliked)}
+                                            className={`btn btn-sm ${post.hasDisliked ? 'btn-danger' : 'btn-outline-danger'}`}
+                                        >
+                                            <i className="bi bi-hand-thumbs-down-fill"></i> Hata ({post.dislikesCount})
+                                        </button>
+                                    </div>
+
+                                    <div className="border-top pt-2">
+                                        <h6>Kommentarer ({post.comments?.length || 0})</h6>
+                                        
+                                        {post.comments?.map((comment) => (
+                                            <div key={comment.id} className="bg-light p-2 mb-2 rounded">
+                                                <small className="text-muted">
+                                                    <strong 
+                                                        onClick={() => navigate(`/profile/${comment.username}`)}
+                                                        className="text-primary" style={{ cursor: "pointer" }}
+                                                    >
+                                                        {comment.username}
+                                                    </strong> - {new Date(comment.createdAt).toLocaleString()}
+                                                </small>
+                                                <div>{comment.text}</div>
+                                            </div>
+                                        ))}
+
+                                        <div className="input-group mt-2">
+                                            <input
+                                                type="text"
+                                                value={commentTexts[post.id] || ""}
+                                                onChange={(e) => setCommentTexts({ ...commentTexts, [post.id]: e.target.value })}
+                                                placeholder="Kommentera..."
+                                                className="form-control"
+                                            />
+                                            <button 
+                                                onClick={() => handleAddComment(post.id)}
+                                                className="btn btn-outline-secondary"
+                                            >
+                                                Kommentera
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
         </Container>
     );
