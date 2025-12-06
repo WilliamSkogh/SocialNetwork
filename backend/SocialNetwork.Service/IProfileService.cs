@@ -10,6 +10,6 @@ namespace SocialNetwork.Service;
 
 public interface IProfileService
 {
-    Task<UserProfile?> GetUserProfileAsync(string userName);
+    Task<UserProfile?> GetUserProfileAsync(string userName, string? currentUserId = null);
      Task UpdateUserProfileAsync(string userName, string newBio, IFormFile? imageFile);
 }
