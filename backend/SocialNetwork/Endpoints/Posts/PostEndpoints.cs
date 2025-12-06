@@ -23,8 +23,10 @@ public static class PostResponseHelper
             post.Id,
             post.AuthorId,
             post.Author?.UserName ?? "Unknown",
+            post.Author?.ProfileImageUrl,
             post.RecipientId,
             post.Recipient?.UserName,
+            post.Recipient?.ProfileImageUrl,
             post.Content,
             post.ImageUrl,
             post.CreatedAt,
@@ -36,6 +38,7 @@ public static class PostResponseHelper
                 c.Id,
                 c.UserId,
                 c.User?.UserName ?? "Unknown",
+                c.User?.ProfileImageUrl,
                 c.Text,
                 c.CreatedAt
             )).ToList() ?? new List<CommentDto>()

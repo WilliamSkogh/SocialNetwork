@@ -55,12 +55,17 @@ public class PostImageTests
             Id: 1,
             AuthorId: "user1",
             AuthorUsername: "TestUser",
+            AuthorProfileImageUrl: null,
             RecipientId: null,
+            RecipientUsername: null,
+            RecipientProfileImageUrl: null,
             Content: "Post with image",
             ImageUrl: imageUrl,
             CreatedAt: DateTime.UtcNow,
             LikesCount: 0,
             DislikesCount: 0,
+            HasLiked: false,
+            HasDisliked: false,
             Comments: new List<CommentDto>()
         );
 
