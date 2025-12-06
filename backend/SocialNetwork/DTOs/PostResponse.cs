@@ -5,11 +5,14 @@ public record PostResponse(
     string AuthorId,
     string AuthorUsername,
     string? RecipientId,
+    string? RecipientUsername,
     string Content,
     string? ImageUrl,
     DateTime CreatedAt,
     int LikesCount,
     int DislikesCount,
+    bool HasLiked,
+    bool HasDisliked,
     List<CommentDto> Comments
 );
 
