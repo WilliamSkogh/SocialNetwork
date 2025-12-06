@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Socialnetwork.Repository;
-using SocialNetwork.Api.Extensions;
+using Socialnetwork.Repository.Profile;
 using SocialNetwork.Api.Endpoints;
+using SocialNetwork.Api.Extensions;
 using SocialNetwork.Entity;
 using SocialNetwork.Entityframework;
 using SocialNetwork.Repository;
@@ -21,6 +22,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<SocialNetwork.Repository.Posts.IPostRepository, SocialNetwork.Repository.Posts.PostRepository>();
 builder.Services.AddScoped<SocialNetwork.Service.IPostService, SocialNetwork.Service.PostService>();
 builder.Services.AddScoped<IMediaUploadService, MediaUploadService>();
+builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
+builder.Services.AddScoped<IProfileService, ProfileService>();
 
 builder.Services.AddAuthorization();
 
