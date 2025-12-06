@@ -270,6 +270,32 @@ export default function PostsPage() {
                                     </div>
                                 ))}
 
+                                <div className="mb-2">
+                                    <button 
+                                        onClick={() => {
+                                            setCommentTexts({ ...commentTexts, [post.id]: "Cringe" });
+                                        }}
+                                        className="btn btn-sm btn-outline-secondary me-1"
+                                    >
+                                        Cringe
+                                    </button>
+                                    <button 
+                                        onClick={() => {
+                                            setCommentTexts({ ...commentTexts, [post.id]: "L + ratio" });
+                                        }}
+                                        className="btn btn-sm btn-outline-secondary me-1"
+                                    >
+                                        L + ratio
+                                    </button>
+                                    <button 
+                                        onClick={() => {
+                                            setCommentTexts({ ...commentTexts, [post.id]: "Bror vad sysslar du med?" });
+                                        }}
+                                        className="btn btn-sm btn-outline-secondary"
+                                    >
+                                        Bror vad sysslar du med?
+                                    </button>
+                                </div>
                                 <div className="input-group mt-2">
                                     <input
                                         type="text"
