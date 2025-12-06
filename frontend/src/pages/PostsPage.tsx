@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../AuthContext";
 import { apiClient } from "../services/axiosClient";
 
 interface Comment {
@@ -13,15 +15,22 @@ interface Post {
     id: number;
     authorId: string;
     authorUsername: string;
+    recipientId?: string;
+    recipientUsername?: string;
     content: string;
     imageUrl?: string;
     createdAt: string;
     likesCount: number;
     dislikesCount: number;
+    hasLiked: boolean;
+    hasDisliked: boolean;
     comments: Comment[];
 }
 
 export default function PostsPage() {
+    const navigate = useNavigate();
+    const { user } = useAuth();
+    const [activeTab, setActiveTab] = useState<'all' | 'following'>('all');
     const [posts, setPosts] = useState<Post[]>([]);
     const [newPost, setNewPost] = useState("");
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -29,11 +38,12 @@ export default function PostsPage() {
 
     useEffect(() => {
         fetchPosts();
-    }, []);
+    }, [activeTab]);
 
     const fetchPosts = async () => {
         try {
-            const response = await apiClient.get("/api/posts");
+            const endpoint = activeTab === 'following' ? '/api/posts/following' : '/api/posts';
+            const response = await apiClient.get(endpoint);
             setPosts(response.data);
         } catch (error) {
             console.error("Failed to fetch posts", error);
@@ -70,21 +80,29 @@ export default function PostsPage() {
         }
     };
 
-    const handleLike = async (postId: number) => {
+    const handleLike = async (postId: number, hasLiked: boolean) => {
         try {
-            await apiClient.post(`/api/posts/${postId}/likes`);
+            if (hasLiked) {
+                await apiClient.delete(`/api/posts/${postId}/likes`);
+            } else {
+                await apiClient.post(`/api/posts/${postId}/likes`);
+            }
             await fetchPosts();
         } catch (error) {
-            console.error("Failed to like post", error);
+            console.error("Failed to toggle like", error);
         }
     };
 
-    const handleDislike = async (postId: number) => {
+    const handleDislike = async (postId: number, hasDisliked: boolean) => {
         try {
-            await apiClient.post(`/api/posts/${postId}/dislikes`);
+            if (hasDisliked) {
+                await apiClient.delete(`/api/posts/${postId}/dislikes`);
+            } else {
+                await apiClient.post(`/api/posts/${postId}/dislikes`);
+            }
             await fetchPosts();
         } catch (error) {
-            console.error("Failed to dislike post", error);
+            console.error("Failed to toggle dislike", error);
         }
     };
 
@@ -113,122 +131,139 @@ export default function PostsPage() {
     };
 
     return (
-        <div style={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
-            <h1>Posts</h1>
+        <div className="container" style={{ maxWidth: "600px" }}>
+            <h1>Inlägg</h1>
 
-            <div style={{ marginBottom: "30px", padding: "20px", border: "1px solid #ccc", borderRadius: "8px" }}>
-                <h2>Create Post</h2>
-                <textarea
-                    value={newPost}
-                    onChange={(e) => setNewPost(e.target.value)}
-                    placeholder="What's on your mind?"
-                    style={{ width: "100%", minHeight: "80px", padding: "10px", marginBottom: "10px" }}
-                />
-                <div style={{ marginBottom: "10px" }}>
-                    <input
-                        type="file"
-                        accept="image/*,video/*"
-                        onChange={handleImageChange}
-                    />
-                    {selectedImage && (
-                        <div style={{ marginTop: "8px", fontSize: "14px", color: "#666" }}>
-                            Selected: {selectedImage.name}
-                        </div>
-                    )}
-                </div>
-                <button onClick={createPost} style={{ padding: "10px 20px" }}>
-                    Post
+            <div className="mb-3">
+                <button
+                    onClick={() => setActiveTab('all')}
+                    className={`btn ${activeTab === 'all' ? 'btn-primary' : 'btn-outline-secondary'} me-2`}
+                >
+                    Alla inlägg
                 </button>
+                <button
+                    onClick={() => setActiveTab('following')}
+                    className={`btn ${activeTab === 'following' ? 'btn-primary' : 'btn-outline-secondary'}`}
+                >
+                    Följer
+                </button>
+            </div>
+
+            <div className="card mb-3">
+                <div className="card-body">
+                    <h2>Skapa inlägg</h2>
+                    <textarea
+                        value={newPost}
+                        onChange={(e) => setNewPost(e.target.value)}
+                        placeholder="Vad tänker du på?"
+                        className="form-control mb-2"
+                        rows={3}
+                    />
+                    <div className="mb-2">
+                        <input
+                            type="file"
+                            accept="image/*,video/*"
+                            onChange={handleImageChange}
+                            className="form-control"
+                        />
+                        {selectedImage && (
+                            <small className="text-muted">
+                                Vald: {selectedImage.name}
+                            </small>
+                        )}
+                    </div>
+                    <button onClick={createPost} className="btn btn-primary">
+                        Posta
+                    </button>
+                </div>
             </div>
 
             <div>
                 {posts.map((post) => (
-                    <div key={post.id} style={{ marginBottom: "20px", padding: "15px", border: "1px solid #ddd", borderRadius: "8px" }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-                            <div style={{ fontWeight: "bold", color: "#333" }}>
-                                {post.authorUsername}
-                            </div>
-                            <button
-                                onClick={() => handleDelete(post.id)}
-                                style={{ 
-                                    padding: "4px 12px", 
-                                    backgroundColor: "#dc3545", 
-                                    color: "white", 
-                                    border: "none", 
-                                    borderRadius: "4px",
-                                    cursor: "pointer",
-                                    fontSize: "12px"
-                                }}
-                            >
-                                Ta bort
-                            </button>
-                        </div>
-                        {post.imageUrl && (
-                            post.imageUrl.endsWith('.mp4') || post.imageUrl.endsWith('.webm') ? (
-                                <video controls style={{ width: "100%", maxHeight: "400px", marginBottom: "10px" }}>
-                                    <source src={`https://localhost:7166${post.imageUrl}`} type="video/mp4" />
-                                </video>
-                            ) : (
-                                <img 
-                                    src={`https://localhost:7166${post.imageUrl}`} 
-                                    alt="Post" 
-                                    style={{ width: "100%", maxHeight: "400px", objectFit: "cover", marginBottom: "10px" }} 
-                                />
-                            )
-                        )}
-                        <p style={{ marginBottom: "10px" }}>{post.content}</p>
-                        <small style={{ color: "#666", display: "block", marginBottom: "10px" }}>
-                            {new Date(post.createdAt).toLocaleString()}
-                        </small>
-                        
-                        <div style={{ marginBottom: "15px" }}>
-                            <button 
-                                onClick={() => handleLike(post.id)}
-                                style={{ marginRight: "10px", padding: "5px 15px", cursor: "pointer" }}
-                            >
-                                👍 Like ({post.likesCount})
-                            </button>
-                            <button 
-                                onClick={() => handleDislike(post.id)}
-                                style={{ padding: "5px 15px", cursor: "pointer" }}
-                            >
-                                👎 Dislike ({post.dislikesCount})
-                            </button>
-                        </div>
-
-                        <div style={{ borderTop: "1px solid #eee", paddingTop: "10px" }}>
-                            <h4 style={{ fontSize: "16px", marginBottom: "10px" }}>
-                                Comments ({post.comments?.length || 0})
-                            </h4>
-                            
-                            {post.comments?.map((comment) => (
-                                <div key={comment.id} style={{ 
-                                    padding: "8px", 
-                                    backgroundColor: "#f9f9f9", 
-                                    marginBottom: "8px", 
-                                    borderRadius: "4px" 
-                                }}>
-                                    <div style={{ fontSize: "12px", color: "#666", marginBottom: "4px" }}>
-                                        <strong>{comment.username}</strong> - {new Date(comment.createdAt).toLocaleString()}
-                                    </div>
-                                    <div>{comment.text}</div>
-                                </div>
-                            ))}
-
-                            <div style={{ marginTop: "10px", display: "flex", gap: "10px" }}>
-                                <input
-                                    type="text"
-                                    value={commentTexts[post.id] || ""}
-                                    onChange={(e) => setCommentTexts({ ...commentTexts, [post.id]: e.target.value })}
-                                    placeholder="Add a comment..."
-                                    style={{ flex: 1, padding: "8px" }}
-                                />
-                                <button 
-                                    onClick={() => handleAddComment(post.id)}
-                                    style={{ padding: "8px 15px" }}
+                    <div key={post.id} className="card mb-3">
+                        <div className="card-body">
+                            <div className="d-flex justify-content-between align-items-center mb-2">
+                                <span 
+                                    onClick={() => navigate(`/profile/${post.authorUsername}`)}
+                                    className="fw-bold text-primary" style={{ cursor: "pointer" }}
                                 >
-                                    Comment
+                                    {post.authorUsername}
+                                </span>
+                                {user?.username === post.authorUsername && (
+                                    <button
+                                        onClick={() => handleDelete(post.id)}
+                                        className="btn btn-danger btn-sm"
+                                    >
+                                        Ta bort
+                                    </button>
+                                )}
+                            </div>
+                            {post.imageUrl && (
+                                post.imageUrl.endsWith('.mp4') || post.imageUrl.endsWith('.webm') ? (
+                                    <video controls className="w-100 mb-2" style={{ maxHeight: "400px" }}>
+                                        <source src={`https://localhost:7166${post.imageUrl}`} type="video/mp4" />
+                                    </video>
+                                ) : (
+                                    <img 
+                                        src={`https://localhost:7166${post.imageUrl}`} 
+                                        alt="Post" 
+                                        className="w-100 mb-2" 
+                                        style={{ maxHeight: "400px", objectFit: "cover" }} 
+                                    />
+                                )
+                            )}
+                            <p>{post.content}</p>
+                            <small className="text-muted">
+                                {new Date(post.createdAt).toLocaleString()}
+                            </small>
+                            
+                            <div className="my-2">
+                                <button 
+                                    onClick={() => handleLike(post.id, post.hasLiked)}
+                                    className={`btn btn-sm me-2 ${post.hasLiked ? 'btn-primary' : 'btn-outline-primary'}`}
+                                >
+                                    <i className="bi bi-hand-thumbs-up-fill"></i> Gilla ({post.likesCount})
                                 </button>
+                                <button 
+                                    onClick={() => handleDislike(post.id, post.hasDisliked)}
+                                    className={`btn btn-sm ${post.hasDisliked ? 'btn-danger' : 'btn-outline-danger'}`}
+                                >
+                                    <i className="bi bi-hand-thumbs-down-fill"></i> Hata ({post.dislikesCount})
+                                </button>
+                            </div>
+
+                            <div className="border-top pt-2">
+                                <h6>Kommentarer ({post.comments?.length || 0})</h6>
+                                
+                                {post.comments?.map((comment) => (
+                                    <div key={comment.id} className="bg-light p-2 mb-2 rounded">
+                                        <small className="text-muted">
+                                            <strong 
+                                                onClick={() => navigate(`/profile/${comment.username}`)}
+                                                className="text-primary" style={{ cursor: "pointer" }}
+                                            >
+                                                {comment.username}
+                                            </strong> - {new Date(comment.createdAt).toLocaleString()}
+                                        </small>
+                                        <div>{comment.text}</div>
+                                    </div>
+                                ))}
+
+                                <div className="input-group mt-2">
+                                    <input
+                                        type="text"
+                                        value={commentTexts[post.id] || ""}
+                                        onChange={(e) => setCommentTexts({ ...commentTexts, [post.id]: e.target.value })}
+                                        placeholder="Skriv en kommentar..."
+                                        className="form-control"
+                                    />
+                                    <button 
+                                        onClick={() => handleAddComment(post.id)}
+                                        className="btn btn-outline-secondary"
+                                    >
+                                        Kommentera
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
