@@ -13,8 +13,8 @@ export default function Header() {
 
     if (!user) {
         return (
-            <Navbar bg="dark" expand="lg" sticky="top">
-                <Container fluid>
+            <Navbar bg="dark" expand="lg" sticky="top" variant="dark">
+                <Container fluid className="d-flex justify-content-between align-items-center">
                     <Navbar.Brand href="/" className="">
                         <img
                             src={logo}
@@ -22,6 +22,27 @@ export default function Header() {
                             height="50"
                         />
                     </Navbar.Brand>
+                    <button
+                        onClick={toggleTheme}
+                        style={{
+                            background: 'transparent',
+                            border: '1px solid rgba(255, 255, 255, 0.3)',
+                            borderRadius: '50%',
+                            width: '40px',
+                            height: '40px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '1.2rem',
+                            color: 'white',
+                            transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                    >
+                        <i className={`bi ${theme === 'light' ? 'bi-moon-stars-fill' : 'bi-sun-fill'}`}></i>
+                    </button>
                 </Container>
             </Navbar >
         );
