@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Socialnetwork.Repository;
+using Socialnetwork.Repository.Profile;
 using SocialNetwork.Api.Endpoints;
 using SocialNetwork.Api.Extensions;
 using SocialNetwork.Api.Hubs;
@@ -18,6 +19,12 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
+
+builder.Services.AddScoped<SocialNetwork.Repository.Posts.IPostRepository, SocialNetwork.Repository.Posts.PostRepository>();
+builder.Services.AddScoped<SocialNetwork.Service.IPostService, SocialNetwork.Service.PostService>();
+builder.Services.AddScoped<IMediaUploadService, MediaUploadService>();
+builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
+builder.Services.AddScoped<IProfileService, ProfileService>();
 
 builder.Services.AddAuthorization();
 
@@ -90,6 +97,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseStaticFiles();
 
 app.UseCors("AllowAll");
 
@@ -100,7 +108,6 @@ app.UseAuthorization();
 app.MapGroup("/auth").MapIdentityApi<ApplicationUser>();
 app.MapHub<DirectMessageHub>("/hubs/direct-messages");
 app.MapEndpoints<Program>();
-app.MapPostEndpoints();
 
 app.Run();
 

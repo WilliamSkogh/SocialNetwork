@@ -5,6 +5,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using SocialNetwork.Entity;
 using SocialNetwork.Entityframework;
 using Xunit;
 
@@ -28,13 +29,23 @@ public class PostEndpointTests : IClassFixture<WebApplicationFactory<Program>>
 
                 services.AddDbContext<ApplicationDbContext>(options =>
                 {
-                    options.UseInMemoryDatabase($"TestDb_{Guid.NewGuid()}");
+                    options.UseInMemoryDatabase("PostEndpointTestsDb");
                 });
 
                 var sp = services.BuildServiceProvider();
                 using var scope = sp.CreateScope();
                 var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 db.Database.EnsureCreated();
+                
+                db.Users.RemoveRange(db.Users);
+                db.Posts.RemoveRange(db.Posts);
+                db.SaveChanges();
+                
+                db.Users.AddRange(
+                    new ApplicationUser { Id = "William", UserName = "William", Email = "william@test.com", NormalizedUserName = "WILLIAM", NormalizedEmail = "WILLIAM@TEST.COM" },
+                    new ApplicationUser { Id = "Pelle", UserName = "Pelle", Email = "pelle@test.com", NormalizedUserName = "PELLE", NormalizedEmail = "PELLE@TEST.COM" }
+                );
+                db.SaveChanges();
             });
         });
     }
@@ -126,5 +137,83 @@ public class PostEndpointTests : IClassFixture<WebApplicationFactory<Program>>
         var createdAt = root.GetProperty("createdAt").GetDateTime();
         createdAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
     }
+    [Fact]
+    public async Task CreatePost_WithNonExistentAuthorId_ReturnsBadRequest()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var request = new
+        {
+            AuthorId = "nonexistent-user-id",
+            RecipientId = "Pelle",
+            Content = "Test message"
+        };
+
+        // Act
+        var response = await client.PostAsJsonAsync("/api/posts", request);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task CreatePost_WithNonExistentRecipientId_ReturnsBadRequest()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var request = new
+        {
+            AuthorId = "William",
+            RecipientId = "nonexistent-recipient-id",
+            Content = "Test message"
+        };
+
+        // Act
+        var response = await client.PostAsJsonAsync("/api/posts", request);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task CreatePost_WithWhitespaceContent_ReturnsBadRequest()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var request = new
+        {
+            AuthorId = "William",
+            RecipientId = "Pelle",
+            Content = "   "
+        };
+
+        // Act
+        var response = await client.PostAsJsonAsync("/api/posts", request);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task CreatePost_WithExactly500Characters_ReturnsCreated()
+    {
+        // Arrange
+        var client = _factory.CreateClient();
+        var request = new
+        {
+            AuthorId = "William",
+            RecipientId = "Pelle",
+            Content = new string('x', 500)
+        };
+
+        // Act
+        var response = await client.PostAsJsonAsync("/api/posts", request);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+    }
 }
+
+
+
 

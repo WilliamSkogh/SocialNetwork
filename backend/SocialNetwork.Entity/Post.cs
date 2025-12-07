@@ -4,23 +4,10 @@ public class Post
 {
     public int Id { get; set; }
     public string AuthorId { get; set; } = string.Empty;
-    public string RecipientId { get; set; } = string.Empty;
-    
-    private string _content = string.Empty;
-    public string Content
-    {
-        get => _content;
-        set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("Content cannot be empty");
-            if (value.Length > 500)  
-                throw new ArgumentException("Content cannot exceed 500 characters");
-            _content = value;
-        }
-    }
-    
+    public string? RecipientId { get; set; }
+    public string Content { get; set; } = string.Empty;
+    public string? ImageUrl { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public ApplicationUser Author { get; set; } = null!;
-    public ApplicationUser Recipient { get; set; } = null!;
+    public ApplicationUser? Author { get; set; }
+    public ApplicationUser? Recipient { get; set; }
 }

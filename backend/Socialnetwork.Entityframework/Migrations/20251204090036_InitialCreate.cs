@@ -30,6 +30,8 @@ namespace Socialnetwork.Entityframework.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "TEXT", nullable: false),
+                    FollowerCount = table.Column<int>(type: "INTEGER", nullable: false),
+                    FollowingCount = table.Column<int>(type: "INTEGER", nullable: false),
                     UserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
@@ -156,6 +158,87 @@ namespace Socialnetwork.Entityframework.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "DirectMessages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    SenderId = table.Column<string>(type: "TEXT", nullable: false),
+                    ReceiverId = table.Column<string>(type: "TEXT", nullable: false),
+                    Message = table.Column<string>(type: "TEXT", nullable: false),
+                    Timestamp = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    IsRead = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DirectMessages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DirectMessages_AspNetUsers_ReceiverId",
+                        column: x => x.ReceiverId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_DirectMessages_AspNetUsers_SenderId",
+                        column: x => x.SenderId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Follows",
+                columns: table => new
+                {
+                    FollowerId = table.Column<string>(type: "TEXT", nullable: false),
+                    FollowingId = table.Column<string>(type: "TEXT", nullable: false),
+                    FollowedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Follows", x => new { x.FollowerId, x.FollowingId });
+                    table.ForeignKey(
+                        name: "FK_Follows_AspNetUsers_FollowerId",
+                        column: x => x.FollowerId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Follows_AspNetUsers_FollowingId",
+                        column: x => x.FollowingId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Posts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    AuthorId = table.Column<string>(type: "TEXT", nullable: false),
+                    RecipientId = table.Column<string>(type: "TEXT", nullable: true),
+                    Content = table.Column<string>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Posts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Posts_AspNetUsers_AuthorId",
+                        column: x => x.AuthorId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Posts_AspNetUsers_RecipientId",
+                        column: x => x.RecipientId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -192,6 +275,31 @@ namespace Socialnetwork.Entityframework.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DirectMessages_ReceiverId",
+                table: "DirectMessages",
+                column: "ReceiverId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DirectMessages_SenderId",
+                table: "DirectMessages",
+                column: "SenderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Follows_FollowingId",
+                table: "Follows",
+                column: "FollowingId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Posts_AuthorId",
+                table: "Posts",
+                column: "AuthorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Posts_RecipientId",
+                table: "Posts",
+                column: "RecipientId");
         }
 
         /// <inheritdoc />
@@ -211,6 +319,15 @@ namespace Socialnetwork.Entityframework.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "DirectMessages");
+
+            migrationBuilder.DropTable(
+                name: "Follows");
+
+            migrationBuilder.DropTable(
+                name: "Posts");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
