@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useAuth } from "../AuthContext";
 import { useEffect, useState, type ChangeEvent } from "react";
 import { profiileService } from "../services/ProfileService";
@@ -10,6 +10,7 @@ import config from "../config";
 import '../styles/profilepage.css'
 import '../pages/PostsPage.css'
 import { apiClient } from "../services/axiosClient";
+import PostCard from "../components/Post/PostCard";
 
 const API_BASE_URL = config.apiBaseUrl;
 
@@ -42,7 +43,6 @@ interface Post {
 
 export default function ProfilePage() {
     const { username } = useParams<{ username: string }>();
-    const navigate = useNavigate();
     const { user: currentUser } = useAuth();
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
@@ -54,7 +54,6 @@ export default function ProfilePage() {
     const [posts, setPosts] = useState<Post[]>([]);
     const [newPost, setNewPost] = useState("");
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
-    const [commentTexts, setCommentTexts] = useState<{ [key: number]: string }>({});
 
     const isMyProfile = currentUser && profile && currentUser.username?.toLowerCase() === profile.userName?.toLowerCase();
 
@@ -81,6 +80,16 @@ export default function ProfilePage() {
         };
         fetchProfile();
     }, [username]);
+
+    const fetchPosts = async () => {
+        if (!profile) return;
+        try {
+            const postsResponse = await apiClient.get(`/api/users/${profile.userId}/posts`);
+            setPosts(postsResponse.data);
+        } catch (error) {
+            console.error("Failed to fetch posts", error);
+        }
+    };
 
     const handleUpdateProfile = async () => {
         if (!profile) return;
@@ -126,9 +135,7 @@ export default function ProfilePage() {
             setNewPost("");
             setSelectedImage(null);
             
-            
-            const postsResponse = await apiClient.get(`/api/users/${profile.userId}/posts`);
-            setPosts(postsResponse.data);
+            await fetchPosts();
         } catch (error) {
             console.error("Failed to create wall post", error);
         }
@@ -137,60 +144,6 @@ export default function ProfilePage() {
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             setSelectedImage(e.target.files[0]);
-        }
-    };
-
-    const handleLike = async (postId: number, hasLiked: boolean) => {
-        try {
-            if (hasLiked) {
-                await apiClient.delete(`/api/posts/${postId}/likes`);
-            } else {
-                await apiClient.post(`/api/posts/${postId}/likes`);
-            }
-            const postsResponse = await apiClient.get(`/api/users/${profile?.userId}/posts`);
-            setPosts(postsResponse.data);
-        } catch (error) {
-            console.error("Failed to toggle like", error);
-        }
-    };
-
-    const handleDislike = async (postId: number, hasDisliked: boolean) => {
-        try {
-            if (hasDisliked) {
-                await apiClient.delete(`/api/posts/${postId}/dislikes`);
-            } else {
-                await apiClient.post(`/api/posts/${postId}/dislikes`);
-            }
-            const postsResponse = await apiClient.get(`/api/users/${profile?.userId}/posts`);
-            setPosts(postsResponse.data);
-        } catch (error) {
-            console.error("Failed to toggle dislike", error);
-        }
-    };
-
-    const handleAddComment = async (postId: number) => {
-        const text = commentTexts[postId];
-        if (!text?.trim()) return;
-
-        try {
-            await apiClient.post(`/api/posts/${postId}/comments`, { text });
-            setCommentTexts({ ...commentTexts, [postId]: "" });
-            const postsResponse = await apiClient.get(`/api/users/${profile?.userId}/posts`);
-            setPosts(postsResponse.data);
-        } catch (error) {
-            console.error("Failed to add comment", error);
-        }
-    };
-
-    const handleDelete = async (postId: number) => {
-        if (!confirm("Är du säker på att du vill ta bort detta inlägg?")) return;
-
-        try {
-            await apiClient.delete(`/api/posts/${postId}`);
-            const postsResponse = await apiClient.get(`/api/users/${profile?.userId}/posts`);
-            setPosts(postsResponse.data);
-        } catch (error) {
-            console.error("Failed to delete post", error);
         }
     };
 
@@ -366,138 +319,7 @@ export default function ProfilePage() {
                 ) : (
                     <div>
                         {posts.map((post) => (
-                            <div key={post.id} className="post-card">
-                                <div className="post-header">
-                                    <div className="post-author">
-                                        <img 
-                                            src={post.authorProfileImageUrl ? `${API_BASE_URL}${post.authorProfileImageUrl}` : "https://via.placeholder.com/40"}
-                                            alt={post.authorUsername}
-                                        />
-                                        <div>
-                                            <span onClick={() => navigate(`/profile/${post.authorUsername}`)}>
-                                                {post.authorUsername}
-                                            </span>
-                                            {post.recipientUsername && (
-                                                <>
-                                                    <span style={{color: 'var(--text-secondary)'}} className="mx-1">→</span>
-                                                    <span onClick={() => navigate(`/profile/${post.recipientUsername}`)}>
-                                                        {post.recipientUsername}
-                                                    </span>
-                                                </>
-                                            )}
-                                        </div>
-                                    </div>
-                                    {currentUser?.username === post.authorUsername && (
-                                        <button onClick={() => handleDelete(post.id)} className="delete-btn">
-                                            <i className="bi bi-trash"></i> Ta bort
-                                        </button>
-                                    )}
-                                </div>
-
-                                {!post.imageUrl && (
-                                    <div className="post-content">
-                                        <p><strong>{post.authorUsername}</strong> {post.content}</p>
-                                        <small className="text-muted">
-                                            {new Date(post.createdAt).toLocaleString()}
-                                        </small>
-                                    </div>
-                                )}
-
-                                {post.imageUrl && (
-                                    post.imageUrl.endsWith('.mp4') || post.imageUrl.endsWith('.webm') ? (
-                                        <video controls className="post-image">
-                                            <source src={`${API_BASE_URL}${post.imageUrl}`} type="video/mp4" />
-                                        </video>
-                                    ) : (
-                                        <img 
-                                            src={`${API_BASE_URL}${post.imageUrl}`} 
-                                            alt="Inlägg"
-                                            className="post-image"
-                                        />
-                                    )
-                                )}
-
-                                {post.imageUrl && (
-                                    <div className="post-content">
-                                        <p><strong>{post.authorUsername}</strong> {post.content}</p>
-                                        <small style={{color: 'var(--text-secondary)'}}>
-                                            {new Date(post.createdAt).toLocaleString()}
-                                        </small>
-                                    </div>
-                                )}
-
-                                <div className="post-actions">
-                                    <button 
-                                        onClick={() => handleLike(post.id, post.hasLiked)}
-                                        className={`like-btn ${post.hasLiked ? 'active' : ''}`}
-                                    >
-                                        <i className="bi bi-hand-thumbs-up-fill"></i> Gilla
-                                    </button>
-                                    <button 
-                                        onClick={() => handleDislike(post.id, post.hasDisliked)}
-                                        className={`dislike-btn ${post.hasDisliked ? 'active' : ''}`}
-                                    >
-                                        <i className="bi bi-hand-thumbs-down-fill"></i> Hata
-                                    </button>
-                                </div>
-
-                                <div className="post-stats">
-                                    <span><i className="bi bi-heart-fill"></i> {post.likesCount} gillningar</span>
-                                    <span><i className="bi bi-heartbreak-fill"></i> {post.dislikesCount} hatningar</span>
-                                    <span><i className="bi bi-chat-fill"></i> {post.comments?.length || 0} kommentarer</span>
-                                </div>
-
-                                <div className="comments-section">
-                                    {post.comments?.map((comment) => (
-                                        <div key={comment.id} className="comment">
-                                            <img 
-                                                src={comment.profileImageUrl ? `${API_BASE_URL}${comment.profileImageUrl}` : "https://via.placeholder.com/32"}
-                                                alt={comment.username}
-                                                className="comment-avatar"
-                                            />
-                                            <div className="comment-content">
-                                                <strong onClick={() => navigate(`/profile/${comment.username}`)}>
-                                                    {comment.username}
-                                                </strong>
-                                                <span>{comment.text}</span>
-                                            </div>
-                                        </div>
-                                    ))}
-
-                                    <div className="quick-replies">
-                                        <button 
-                                            onClick={() => setCommentTexts({ ...commentTexts, [post.id]: "Cringe" })}
-                                            className="quick-reply-btn"
-                                        >
-                                            Cringe
-                                        </button>
-                                        <button 
-                                            onClick={() => setCommentTexts({ ...commentTexts, [post.id]: "L + ratio" })}
-                                            className="quick-reply-btn"
-                                        >
-                                            L + ratio
-                                        </button>
-                                        <button 
-                                            onClick={() => setCommentTexts({ ...commentTexts, [post.id]: "Bror vad sysslar du med?" })}
-                                            className="quick-reply-btn"
-                                        >
-                                            Bror vad sysslar du med?
-                                        </button>
-                                    </div>
-
-                                    <div className="add-comment">
-                                        <input
-                                            type="text"
-                                            value={commentTexts[post.id] || ""}
-                                            onChange={(e) => setCommentTexts({ ...commentTexts, [post.id]: e.target.value })}
-                                            placeholder="Skriv en kommentar..."
-                                        />
-                                        <button onClick={() => handleAddComment(post.id)}>
-                                            <i className="bi bi-send-fill"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                            <PostCard key={post.id} post={post} onUpdate={fetchPosts} />
                         ))}
                     </div>
                 )}
