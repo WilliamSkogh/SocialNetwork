@@ -94,5 +94,10 @@ namespace SocialNetwork.Service
             return _repo.MarkAsReadAsync(messageId, userId);
 
         }
+        public async Task<int> GetLatestDirectMessageIdBetweenUsersAsync(string user1Id, string user2Id)
+        {
+            var directMessage = await _repo.GetLatestDirectMessageBetweenUsersAsync(user1Id, user2Id);
+            return directMessage.Id;
+        }
     }
 }

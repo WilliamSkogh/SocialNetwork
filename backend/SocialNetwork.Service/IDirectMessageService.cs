@@ -13,6 +13,7 @@ namespace SocialNetwork.Service
         Task<IEnumerable<DirectMessage>> GetUnreadMessagesAsync(string userId);
         Task<int> GetUnreadCountAsync(string userId);
         Task<DirectMessage> GetMessageByIdAsync(int messageId);
+        Task<int> GetLatestDirectMessageIdBetweenUsersAsync(string user1Id, string user2Id);
 
 
     }
