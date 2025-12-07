@@ -139,17 +139,9 @@ export default function PostsPage() {
         <div className="posts-page">
             <div className="posts-layout">
                 <div className="sidebar-ad">
-                    <div className="ad-card">
-                        <div className="ad-badge">ANNONS</div>
-                        <div className="ad-logo">
-                            <img src="/src/assets/moverot-logo.png" alt="Moverot" />
-                        </div>
-                        <h3 className="ad-title">Moverot</h3>
-                        <p className="ad-description">Använd ditt friskvårdsbidrag och använd det till träning som faktiskt blir av!</p>
-                        <a href="https://moverot.se" className="ad-link">
-                            Besök Moverot.se <i className="bi bi-arrow-right"></i>
-                        </a>
-                    </div>
+                    <a href="https://moverot.se" target="_blank" rel="noopener noreferrer">
+                        <img src="/src/assets/moverot-ad.png" alt="Moverot" className="ad-image" />
+                    </a>
                 </div>
 
                 <div className="posts-container">
@@ -313,17 +305,9 @@ export default function PostsPage() {
                 </div>
 
                 <div className="sidebar-ad">
-                    <div className="ad-card flavorly">
-                        <div className="ad-badge">ANNONS</div>
-                        <div className="ad-logo">
-                            <img src="/src/assets/flavorly-logo.png" alt="Flavorly" />
-                        </div>
-                        <h3 className="ad-title">Flavorly</h3>
-                        <p className="ad-description">Share Cook Enjoy - Hitta dina favoritrecept idag</p>
-                        <a href="https://flavorly.se" className="ad-link">
-                            Besök Flavorly.se <i className="bi bi-arrow-right"></i>
-                        </a>
-                    </div>
+                    <a href="https://flavorly.se" target="_blank" rel="noopener noreferrer">
+                        <img src="/src/assets/flavorly-ad.png" alt="Flavorly" className="ad-image" />
+                    </a>
                 </div>
             </div>
         </div>

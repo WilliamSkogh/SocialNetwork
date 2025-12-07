@@ -5,12 +5,13 @@
 }
 
 .posts-layout {
-    max-width: 1400px;
+    max-width: 1800px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: 280px 1fr 280px;
-    gap: 2rem;
-    padding: 0 2rem;
+    grid-template-columns: 300px 1fr 300px;
+    gap: 4rem;
+    padding: 0 0.5rem;
+    align-items: start;
 }
 
 @media (max-width: 1200px) {
@@ -28,85 +29,22 @@
 
 .sidebar-ad {
     position: sticky;
-    top: 2rem;
+    bottom: 2rem;
     height: fit-content;
 }
 
-.ad-card {
-    background: linear-gradient(135deg, #FF6B35 0%, #FF8C42 100%);
-    border-radius: 20px;
-    padding: 2rem;
-    color: white;
-    text-align: center;
-    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
-    min-height: 400px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.ad-card.flavorly {
-    background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
-    box-shadow: 0 4px 12px rgba(31, 41, 55, 0.3);
-}
-
-.ad-logo {
-    width: 60px;
-    height: 60px;
-    margin: 0 auto 1rem;
-    background: white;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 8px;
-}
-
-.ad-logo img {
+.ad-image {
     width: 100%;
-    height: 100%;
-    object-fit: contain;
+    height: auto;
+    border-radius: 16px;
+    display: block;
+    opacity: 0.85;
+    transition: opacity 0.2s, transform 0.2s;
 }
 
-.ad-logo img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-
-.ad-badge {
-    background: rgba(255, 255, 255, 0.3);
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    margin-bottom: 1rem;
-    display: inline-block;
-}
-
-.ad-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 0.75rem;
-}
-
-.ad-description {
-    font-size: 0.9rem;
-    margin-bottom: 1.5rem;
-    opacity: 0.95;
-}
-
-.ad-link {
-    background: white;
-    color: #FF6B35;
-    padding: 0.75rem 1.5rem;
-    border-radius: 25px;
-    text-decoration: none;
-    font-weight: 700;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
+.ad-image:hover {
+    opacity: 1;
+    transform: translateY(-2px);
 }
 
 .filter-tabs {
@@ -276,11 +214,6 @@
 .post-actions .dislike-btn.active {
     background: #f02849;
     color: white;
-}
-
-.post-actions .comment-btn {
-    background: #f0f2f5;
-    color: #65676b;
 }
 
 .post-actions button:hover {
