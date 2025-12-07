@@ -206,7 +206,7 @@ export default function ProfilePage() {
         <Container className="mt-4 profile-container">
             <header className="mb-5">
                 {isEditing ? (
-                    <div className="p-3 bg-light rounded shadow-sm">
+                    <div className="p-3 rounded shadow-sm" style={{background: 'var(--bg-secondary)', border: '1px solid var(--border-color)'}}>
                         <div className="text-center mb-4">
                             <Image
                                 src={imageUrl}
@@ -215,27 +215,35 @@ export default function ProfilePage() {
                                 roundedCircle
                             />
                         </div>
-                        <h5 className="mb-3">Redigera profil</h5>
+                        <h5 className="mb-3" style={{color: 'var(--text-primary)'}}>Redigera profil</h5>
                         <Form>
                             <Form.Group className="mb-3">
-                                <Form.Label className="small fw-bold text-muted">Byt profilbild</Form.Label>
+                                <Form.Label className="small fw-bold" style={{color: 'var(--text-secondary)'}}>Byt profilbild</Form.Label>
                                 <Form.Control size="sm" type="file" onChange={handleFileChange} />
                             </Form.Group>
 
                             <Form.Group className="mb-3">
                                 <div className="d-flex justify-content-between align-items-center mb-1">
-                                    <Form.Label className="small fw-bold text-muted mb-0">Bio</Form.Label>
+                                    <Form.Label className="small fw-bold mb-0" style={{color: 'var(--text-secondary)'}}>Bio</Form.Label>
                                     <Button
                                         variant="light"
                                         size="sm"
-                                        className="p-0 border-0 text-muted"
+                                        className="p-0 border-0"
+                                        style={{color: 'var(--text-secondary)'}}
                                         onClick={() => setShowPicker(!showPicker)}
                                         title="Infoga emoji"
                                     >
                                         <i className="bi bi-emoji-smile fs-5"></i>
                                     </Button>
                                 </div>
-                                <Form.Control as="textarea" rows={3} value={editBio} onChange={e => setEditBio(e.target.value)} maxLength={500} />
+                                <Form.Control 
+                                    as="textarea" 
+                                    rows={3} 
+                                    value={editBio} 
+                                    onChange={e => setEditBio(e.target.value)} 
+                                    maxLength={500}
+                                    style={{background: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)'}}
+                                />
                                 {showPicker && (
                                     <div className="mt-2">
                                         <EmojiPicker
@@ -247,7 +255,7 @@ export default function ProfilePage() {
                                         />
                                     </div>
                                 )}
-                                <div className="text-end small text-muted mt-1">{editBio.length}/500</div>
+                                <div className="text-end small mt-1" style={{color: 'var(--text-secondary)'}}>{editBio.length}/500</div>
                             </Form.Group>
 
                             <div className="d-flex gap-2">
@@ -321,37 +329,37 @@ export default function ProfilePage() {
             </header>
 
             {!isMyProfile && (
-                <div className="card mb-3">
-                    <div className="card-body">
-                        <h5>Skriv på {profile.userName}s vägg</h5>
-                        <textarea
-                            value={newPost}
-                            onChange={(e) => setNewPost(e.target.value)}
-                            placeholder="Skriv något..."
-                            className="form-control mb-2"
-                            rows={3}
+                <div className="mb-3" style={{background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '1rem'}}>
+                    <h5 style={{color: 'var(--text-primary)'}}>Skriv på {profile.userName}s vägg</h5>
+                    <textarea
+                        value={newPost}
+                        onChange={(e) => setNewPost(e.target.value)}
+                        placeholder="Skriv något..."
+                        className="form-control mb-2"
+                        rows={3}
+                        style={{background: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)'}}
+                    />
+                    <div className="mb-2">
+                        <input
+                            type="file"
+                            accept="image/*,video/*"
+                            onChange={handleImageChange}
+                            className="form-control"
+                            style={{background: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)'}}
                         />
-                        <div className="mb-2">
-                            <input
-                                type="file"
-                                accept="image/*,video/*"
-                                onChange={handleImageChange}
-                                className="form-control"
-                            />
-                            {selectedImage && (
-                                <small className="text-muted">
-                                    Vald: {selectedImage.name}
-                                </small>
-                            )}
-                        </div>
-                        <Button onClick={handleCreateWallPost}>Posta</Button>
+                        {selectedImage && (
+                            <small style={{color: 'var(--text-secondary)'}}>
+                                Vald: {selectedImage.name}
+                            </small>
+                        )}
                     </div>
+                    <Button onClick={handleCreateWallPost}>Posta</Button>
                 </div>
             )}
 
             <div className="border-top pt-4">
                 {posts.length === 0 ? (
-                    <div className="text-center text-muted">
+                    <div className="text-center" style={{color: 'var(--text-secondary)'}}>
                         <i className="bi bi-grid-3x3 fs-3"></i>
                         <p className="mt-2">Inga inlägg ännu</p>
                     </div>
@@ -371,7 +379,7 @@ export default function ProfilePage() {
                                             </span>
                                             {post.recipientUsername && (
                                                 <>
-                                                    <span className="text-muted mx-1">→</span>
+                                                    <span style={{color: 'var(--text-secondary)'}} className="mx-1">→</span>
                                                     <span onClick={() => navigate(`/profile/${post.recipientUsername}`)}>
                                                         {post.recipientUsername}
                                                     </span>
@@ -412,7 +420,7 @@ export default function ProfilePage() {
                                 {post.imageUrl && (
                                     <div className="post-content">
                                         <p><strong>{post.authorUsername}</strong> {post.content}</p>
-                                        <small className="text-muted">
+                                        <small style={{color: 'var(--text-secondary)'}}>
                                             {new Date(post.createdAt).toLocaleString()}
                                         </small>
                                     </div>
