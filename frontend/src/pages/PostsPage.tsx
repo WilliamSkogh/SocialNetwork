@@ -153,24 +153,22 @@ export default function PostsPage() {
                 </div>
 
                 <div className="posts-container">
-                    <ul className="nav nav-tabs">
-                        <li className="nav-item">
-                            <button
-                                className={`nav-link ${activeTab === 'all' ? 'active' : ''}`}
-                                onClick={() => setActiveTab('all')}
-                            >
-                                <i className="bi bi-globe"></i> Alla
-                            </button>
-                        </li>
-                        <li className="nav-item">
-                            <button
-                                className={`nav-link ${activeTab === 'following' ? 'active' : ''}`}
-                                onClick={() => setActiveTab('following')}
-                            >
-                                <i className="bi bi-people-fill"></i> Följer
-                            </button>
-                        </li>
-                    </ul>
+                    <div className="filter-tabs">
+                        <button
+                            className={`filter-tab ${activeTab === 'all' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('all')}
+                        >
+                            <i className="bi bi-globe"></i>
+                            <span>Alla</span>
+                        </button>
+                        <button
+                            className={`filter-tab ${activeTab === 'following' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('following')}
+                        >
+                            <i className="bi bi-people-fill"></i>
+                            <span>Följer</span>
+                        </button>
+                    </div>
 
             <div className="create-post">
                 <h5 className="fw-bold mb-3">Skapa ett inlägg</h5>
@@ -244,9 +242,6 @@ export default function PostsPage() {
                             >
                                 <i className="bi bi-hand-thumbs-down-fill"></i> Hata
                             </button>
-                            <button className="comment-btn">
-                                <i className="bi bi-chat"></i> Kommentera
-                            </button>
                         </div>
 
                         <div className="post-stats">
@@ -265,46 +260,53 @@ export default function PostsPage() {
                         <div className="comments-section">
                             {post.comments?.map((comment) => (
                                 <div key={comment.id} className="comment">
-                                    <strong onClick={() => navigate(`/profile/${comment.username}`)}>
-                                        {comment.username}
-                                    </strong>
-                                    {comment.text}
+                                    <img 
+                                        src={comment.profileImageUrl ? `https://localhost:7166${comment.profileImageUrl}` : "https://via.placeholder.com/32"}
+                                        alt={comment.username}
+                                        className="comment-avatar"
+                                    />
+                                    <div className="comment-content">
+                                        <strong onClick={() => navigate(`/profile/${comment.username}`)}>
+                                            {comment.username}
+                                        </strong>
+                                        <span>{comment.text}</span>
+                                    </div>
                                 </div>
                             ))}
 
-                                    <div className="quick-replies">
-                                        <button 
-                                            onClick={() => setCommentTexts({ ...commentTexts, [post.id]: "Cringe" })}
-                                            className="quick-reply-btn"
-                                        >
-                                            Cringe
-                                        </button>
-                                        <button 
-                                            onClick={() => setCommentTexts({ ...commentTexts, [post.id]: "L + ratio" })}
-                                            className="quick-reply-btn"
-                                        >
-                                            L + ratio
-                                        </button>
-                                        <button 
-                                            onClick={() => setCommentTexts({ ...commentTexts, [post.id]: "Bror vad sysslar du med?" })}
-                                            className="quick-reply-btn"
-                                        >
-                                            Bror vad sysslar du med?
-                                        </button>
-                                    </div>
+                            <div className="quick-replies">
+                                <button 
+                                    onClick={() => setCommentTexts({ ...commentTexts, [post.id]: "Cringe" })}
+                                    className="quick-reply-btn"
+                                >
+                                    Cringe
+                                </button>
+                                <button 
+                                    onClick={() => setCommentTexts({ ...commentTexts, [post.id]: "L + ratio" })}
+                                    className="quick-reply-btn"
+                                >
+                                    L + ratio
+                                </button>
+                                <button 
+                                    onClick={() => setCommentTexts({ ...commentTexts, [post.id]: "Bror vad sysslar du med?" })}
+                                    className="quick-reply-btn"
+                                >
+                                    Bror vad sysslar du med?
+                                </button>
+                            </div>
 
-                                    <div className="add-comment">
-                                        <input
-                                            type="text"
-                                            value={commentTexts[post.id] || ""}
-                                            onChange={(e) => setCommentTexts({ ...commentTexts, [post.id]: e.target.value })}
-                                            placeholder="Skriv en kommentar..."
-                                        />
-                                        <button onClick={() => handleAddComment(post.id)}>
-                                            <i className="bi bi-send-fill"></i>
-                                        </button>
-                                    </div>
-                                </div>
+                            <div className="add-comment">
+                                <input
+                                    type="text"
+                                    value={commentTexts[post.id] || ""}
+                                    onChange={(e) => setCommentTexts({ ...commentTexts, [post.id]: e.target.value })}
+                                    placeholder="Skriv en kommentar..."
+                                />
+                                <button onClick={() => handleAddComment(post.id)}>
+                                    <i className="bi bi-send-fill"></i>
+                                </button>
+                            </div>
+                        </div>
                             </div>
                         ))
                     )}
