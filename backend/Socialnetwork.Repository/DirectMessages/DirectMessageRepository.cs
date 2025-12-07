@@ -129,6 +129,19 @@ namespace SocialNetwork.Repository
             }
         }
 
+        public async Task <DirectMessage> GetLatestDirectMessageBetweenUsersAsync(string user1Id, string user2Id)
+        {
+            if (string.IsNullOrWhiteSpace(user1Id) || string.IsNullOrWhiteSpace(user2Id))
+                throw new ArgumentException("User IDs cannot be null or empty");
+            return await _context.DirectMessages
+                .Where(m =>
+                    (m.SenderId == user1Id && m.ReceiverId == user2Id) ||
+                    (m.SenderId == user2Id && m.ReceiverId == user1Id)
+                )
+                .OrderByDescending(m => m.Timestamp)
+                .FirstOrDefaultAsync();
+        }
+
     }
 }
 
