@@ -41,6 +41,8 @@ interface PostCardProps {
 export default function PostCard({ post, onUpdate }: PostCardProps) {
     const { user } = useAuth();
     const [commentText, setCommentText] = useState("");
+    const [showHeartAnimation, setShowHeartAnimation] = useState(false);
+    const [lastTap, setLastTap] = useState(0);
 
     const handleLike = async () => {
         try {
@@ -91,8 +93,25 @@ export default function PostCard({ post, onUpdate }: PostCardProps) {
         }
     };
 
+    const handleDoubleTap = (e: React.MouseEvent) => {
+        const now = Date.now();
+        const DOUBLE_TAP_DELAY = 300;
+
+        if (now - lastTap < DOUBLE_TAP_DELAY && now - lastTap > 0) {
+            e.preventDefault();
+            if (!post.hasLiked) {
+                handleLike();
+            }
+            setShowHeartAnimation(true);
+            setTimeout(() => setShowHeartAnimation(false), 1000);
+            setLastTap(0);
+        } else {
+            setLastTap(now);
+        }
+    };
+
     return (
-        <div className="post-card">
+        <div className="post-card" style={{ position: 'relative' }}>
             <PostHeader
                 authorUsername={post.authorUsername}
                 authorProfileImageUrl={post.authorProfileImageUrl}
@@ -109,7 +128,37 @@ export default function PostCard({ post, onUpdate }: PostCardProps) {
                 />
             )}
 
-            {post.imageUrl && <PostImage imageUrl={post.imageUrl} />}
+            {post.imageUrl && (
+                <div 
+                    style={{ position: 'relative', userSelect: 'none' }}
+                    onClick={handleDoubleTap}
+                >
+                    <PostImage imageUrl={post.imageUrl} />
+                    
+                    {showHeartAnimation && (
+                        <div
+                            style={{
+                                position: 'absolute',
+                                top: '50%',
+                                left: '50%',
+                                transform: 'translate(-50%, -50%)',
+                                pointerEvents: 'none',
+                                animation: 'heartPop 1s ease-out',
+                                zIndex: 10
+                            }}
+                        >
+                            <i 
+                                className="bi bi-heart-fill" 
+                                style={{ 
+                                    fontSize: '6rem', 
+                                    color: '#e74c3c',
+                                    filter: 'drop-shadow(0 0 10px rgba(231, 76, 60, 0.5))'
+                                }}
+                            ></i>
+                        </div>
+                    )}
+                </div>
+            )}
 
             {post.imageUrl && (
                 <PostContent
