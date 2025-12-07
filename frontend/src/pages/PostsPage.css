@@ -1,5 +1,5 @@
 .posts-page {
-    background: #f0f2f5;
+    background: var(--bg-primary);
     min-height: 100vh;
     padding: 2rem 0;
 }
@@ -55,9 +55,9 @@
 
 .filter-tab {
     flex: 1;
-    background: white;
-    border: 2px solid #e4e6eb;
-    color: #65676b;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    color: var(--text-secondary);
     padding: 1rem 1.5rem;
     border-radius: 12px;
     font-weight: 600;
@@ -80,7 +80,7 @@
 
 .filter-tab:hover {
     border-color: #0866ff;
-    background: #f0f6ff;
+    background: var(--hover-bg);
 }
 
 .filter-tab.active {
@@ -90,17 +90,27 @@
 }
 
 .create-post {
-    background: white;
+    background: var(--bg-secondary);
     border-radius: 12px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 2px var(--shadow);
+}
+
+.create-post h5 {
+    color: var(--text-primary);
 }
 
 .create-post textarea {
-    border: 1px solid #e4e6eb;
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 0.75rem;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.create-post textarea::placeholder {
+    color: var(--text-secondary);
 }
 
 .create-post .btn-primary {
@@ -112,10 +122,10 @@
 }
 
 .post-card {
-    background: white;
+    background: var(--bg-secondary);
     border-radius: 12px;
     margin-bottom: 1.5rem;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 2px var(--shadow);
     overflow: hidden;
 }
 
@@ -124,7 +134,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #e4e6eb;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .post-author {
@@ -143,7 +153,7 @@
 .post-author span {
     font-weight: 600;
     cursor: pointer;
-    color: #050505;
+    color: var(--text-primary);
 }
 
 .post-author span:hover {
@@ -160,7 +170,7 @@
 }
 
 .delete-btn:hover {
-    background: #f7f8fa;
+    background: var(--hover-bg);
 }
 
 .post-image {
@@ -172,13 +182,23 @@
 
 .post-content {
     padding: 1rem 1.5rem;
+    color: var(--text-primary);
+}
+
+.post-content p {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.post-content small {
+    color: var(--text-secondary);
 }
 
 .post-actions {
     padding: 0.75rem 1.5rem;
     display: flex;
     gap: 0.5rem;
-    border-bottom: 1px solid #e4e6eb;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .post-actions button {
@@ -223,7 +243,7 @@
 .post-stats {
     padding: 0.75rem 1.5rem;
     font-size: 0.9rem;
-    color: #65676b;
+    color: var(--text-secondary);
     display: flex;
     gap: 1.5rem;
 }
@@ -239,7 +259,7 @@
 
 .comments-section {
     padding: 1rem 1.5rem;
-    border-top: 1px solid #e4e6eb;
+    border-top: 1px solid var(--border-color);
 }
 
 .comment {
@@ -269,6 +289,7 @@
     font-weight: 600;
     cursor: pointer;
     display: block;
+    color: var(--text-primary);
 }
 
 .comment strong:hover {
@@ -276,7 +297,12 @@
 }
 
 .comment span {
-    color: #050505;
+    color: var(--text-primary);
+}
+
+.comment p {
+    color: var(--text-primary);
+    margin: 0;
 }
 
 .quick-replies {
@@ -287,9 +313,9 @@
 }
 
 .quick-reply-btn {
-    background: #f0f2f5;
-    border: 1px solid #ccd0d5;
-    color: #050505;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
     padding: 0.5rem 1rem;
     border-radius: 20px;
     font-size: 0.9rem;
@@ -298,7 +324,7 @@
 }
 
 .quick-reply-btn:hover {
-    background: #e4e6eb;
+    background: var(--hover-bg);
 }
 
 .add-comment {
@@ -309,11 +335,16 @@
 
 .add-comment input {
     flex: 1;
-    background: #f0f2f5;
+    background: var(--bg-primary);
     border: none;
     border-radius: 20px;
     padding: 0.625rem 1rem;
     outline: none;
+    color: var(--text-primary);
+}
+
+.add-comment input::placeholder {
+    color: var(--text-secondary);
 }
 
 .add-comment button {
@@ -328,8 +359,8 @@
 
 .no-posts {
     text-align: center;
-    color: #65676b;
+    color: var(--text-secondary);
     padding: 4rem 2rem;
-    background: white;
+    background: var(--bg-secondary);
     border-radius: 12px;
 }
