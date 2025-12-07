@@ -207,6 +207,15 @@ export default function PostsPage() {
                             )}
                         </div>
 
+                        {!post.imageUrl && (
+                            <div className="post-content">
+                                <p><strong>{post.authorUsername}</strong> {post.content}</p>
+                                <small style={{color: 'var(--text-secondary)'}}>
+                                    {new Date(post.createdAt).toLocaleString()}
+                                </small>
+                            </div>
+                        )}
+
                         {post.imageUrl && (
                             post.imageUrl.endsWith('.mp4') || post.imageUrl.endsWith('.webm') ? (
                                 <video controls className="post-image">
@@ -219,6 +228,15 @@ export default function PostsPage() {
                                     className="post-image"
                                 />
                             )
+                        )}
+
+                        {post.imageUrl && (
+                            <div className="post-content">
+                                <p><strong>{post.authorUsername}</strong> {post.content}</p>
+                                <small style={{color: 'var(--text-secondary)'}}>
+                                    {new Date(post.createdAt).toLocaleString()}
+                                </small>
+                            </div>
                         )}
 
                         <div className="post-actions">
@@ -240,13 +258,6 @@ export default function PostsPage() {
                             <span><i className="bi bi-heart-fill"></i> {post.likesCount} gillningar</span>
                             <span><i className="bi bi-heartbreak-fill"></i> {post.dislikesCount} hatningar</span>
                             <span><i className="bi bi-chat-fill"></i> {post.comments?.length || 0} kommentarer</span>
-                        </div>
-
-                        <div className="post-content">
-                            <p><strong>{post.authorUsername}</strong> {post.content}</p>
-                            <small style={{color: 'var(--text-secondary)'}}>
-                                {new Date(post.createdAt).toLocaleString()}
-                            </small>
                         </div>
 
                         <div className="comments-section">
