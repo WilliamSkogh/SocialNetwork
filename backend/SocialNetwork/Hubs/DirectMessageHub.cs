@@ -18,10 +18,12 @@ public class DirectMessageHub : Hub
     public override async Task OnConnectedAsync()
     {
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (userId != null)
-        {
+        Console.WriteLine($"[DirectMessageHub] User connected with userId = {userId}");
 
+        if (!string.IsNullOrEmpty(userId))
+        {
             await Groups.AddToGroupAsync(Context.ConnectionId, $"user-{userId}");
+            Console.WriteLine($"[DirectMessageHub] Added connection {Context.ConnectionId} to group user-{userId}");
         }
 
         await base.OnConnectedAsync();
@@ -145,6 +147,26 @@ public class DirectMessageHub : Hub
         {
             await Clients.Caller.SendAsync("Error", $"Ett fel uppstod: {ex.Message}");
         }
+    }
+    public async Task<int> GetLatestDirectMessageIdBetweenUsers(string userId1, string userId2)
+    {
+        var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId))
+        {
+            await Clients.Caller.SendAsync("Error", "Unauthorized");
+            return -1;
+        }
+        try
+        {
+            var latestMessageId = await _directMessageService.GetLatestDirectMessageIdBetweenUsersAsync(userId1, userId2);
+            return latestMessageId;
+        }
+        catch (Exception ex)
+        {
+            await Clients.Caller.SendAsync("Error", $"Ett fel uppstod: {ex.Message}");
+            return -1;
+        }
+
     }
 
 
