@@ -244,7 +244,7 @@ export default function PostsPage() {
 
                         <div className="post-content">
                             <p><strong>{post.authorUsername}</strong> {post.content}</p>
-                            <small className="text-muted">
+                            <small style={{color: 'var(--text-secondary)'}}>
                                 {new Date(post.createdAt).toLocaleString()}
                             </small>
                         </div>

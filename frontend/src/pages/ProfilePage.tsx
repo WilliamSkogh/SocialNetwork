@@ -8,6 +8,7 @@ import EmojiPicker, { type EmojiClickData } from "emoji-picker-react";
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import config from "../config";
 import '../styles/profilepage.css'
+import '../pages/PostsPage.css'
 import { apiClient } from "../services/axiosClient";
 
 const API_BASE_URL = config.apiBaseUrl;
@@ -357,147 +358,123 @@ export default function ProfilePage() {
                 ) : (
                     <div>
                         {posts.map((post) => (
-                            <div key={post.id} className="card mb-3">
-                                <div className="card-body">
-                                    <div className="d-flex justify-content-between align-items-center mb-2">
-                                        <div className="d-flex align-items-center">
-                                            <img 
-                                                src={post.authorProfileImageUrl ? `${API_BASE_URL}${post.authorProfileImageUrl}` : "https://via.placeholder.com/32"}
-                                                alt={post.authorUsername}
-                                                className="rounded-circle me-2"
-                                                style={{ width: "32px", height: "32px", objectFit: "cover" }}
-                                            />
-                                            <div>
-                                                <span 
-                                                    onClick={() => navigate(`/profile/${post.authorUsername}`)}
-                                                    className="fw-bold text-primary" style={{ cursor: "pointer" }}
-                                                >
-                                                    {post.authorUsername}
-                                                </span>
-                                                {post.recipientUsername && (
-                                                    <>
-                                                        <span className="text-muted mx-1">→</span>
-                                                        <span 
-                                                            onClick={() => navigate(`/profile/${post.recipientUsername}`)}
-                                                            className="fw-bold text-primary" style={{ cursor: "pointer" }}
-                                                        >
-                                                            {post.recipientUsername}
-                                                        </span>
-                                                    </>
-                                                )}
-                                            </div>
+                            <div key={post.id} className="post-card">
+                                <div className="post-header">
+                                    <div className="post-author">
+                                        <img 
+                                            src={post.authorProfileImageUrl ? `${API_BASE_URL}${post.authorProfileImageUrl}` : "https://via.placeholder.com/40"}
+                                            alt={post.authorUsername}
+                                        />
+                                        <div>
+                                            <span onClick={() => navigate(`/profile/${post.authorUsername}`)}>
+                                                {post.authorUsername}
+                                            </span>
+                                            {post.recipientUsername && (
+                                                <>
+                                                    <span className="text-muted mx-1">→</span>
+                                                    <span onClick={() => navigate(`/profile/${post.recipientUsername}`)}>
+                                                        {post.recipientUsername}
+                                                    </span>
+                                                </>
+                                            )}
                                         </div>
-                                        {currentUser?.username === post.authorUsername && (
-                                            <button
-                                                onClick={() => handleDelete(post.id)}
-                                                className="btn btn-danger btn-sm"
-                                            >
-                                                Ta bort
-                                            </button>
-                                        )}
                                     </div>
-                                    {post.imageUrl && (
-                                        post.imageUrl.endsWith('.mp4') || post.imageUrl.endsWith('.webm') ? (
-                                            <video controls className="w-100 mb-2" style={{ maxHeight: "400px" }}>
-                                                <source src={`${API_BASE_URL}${post.imageUrl}`} type="video/mp4" />
-                                            </video>
-                                        ) : (
-                                            <img 
-                                                src={`${API_BASE_URL}${post.imageUrl}`} 
-                                                alt="Inlägg" 
-                                                className="w-100 mb-2" 
-                                                style={{ maxHeight: "400px", objectFit: "cover" }} 
-                                            />
-                                        )
+                                    {currentUser?.username === post.authorUsername && (
+                                        <button onClick={() => handleDelete(post.id)} className="delete-btn">
+                                            <i className="bi bi-trash"></i> Ta bort
+                                        </button>
                                     )}
-                                    <p>{post.content}</p>
+                                </div>
+                                {post.imageUrl && (
+                                    post.imageUrl.endsWith('.mp4') || post.imageUrl.endsWith('.webm') ? (
+                                        <video controls className="post-image">
+                                            <source src={`${API_BASE_URL}${post.imageUrl}`} type="video/mp4" />
+                                        </video>
+                                    ) : (
+                                        <img 
+                                            src={`${API_BASE_URL}${post.imageUrl}`} 
+                                            alt="Inlägg"
+                                            className="post-image"
+                                        />
+                                    )
+                                )}
+
+                                <div className="post-actions">
+                                    <button 
+                                        onClick={() => handleLike(post.id, post.hasLiked)}
+                                        className={`like-btn ${post.hasLiked ? 'active' : ''}`}
+                                    >
+                                        <i className="bi bi-hand-thumbs-up-fill"></i> Gilla
+                                    </button>
+                                    <button 
+                                        onClick={() => handleDislike(post.id, post.hasDisliked)}
+                                        className={`dislike-btn ${post.hasDisliked ? 'active' : ''}`}
+                                    >
+                                        <i className="bi bi-hand-thumbs-down-fill"></i> Hata
+                                    </button>
+                                </div>
+
+                                <div className="post-stats">
+                                    <span><i className="bi bi-heart-fill"></i> {post.likesCount} gillningar</span>
+                                    <span><i className="bi bi-heartbreak-fill"></i> {post.dislikesCount} hatningar</span>
+                                    <span><i className="bi bi-chat-fill"></i> {post.comments?.length || 0} kommentarer</span>
+                                </div>
+
+                                <div className="post-content">
+                                    <p><strong>{post.authorUsername}</strong> {post.content}</p>
                                     <small className="text-muted">
                                         {new Date(post.createdAt).toLocaleString()}
                                     </small>
-                                    
-                                    <div className="my-2">
+                                </div>
+
+                                <div className="comments-section">
+                                    {post.comments?.map((comment) => (
+                                        <div key={comment.id} className="comment">
+                                            <img 
+                                                src={comment.profileImageUrl ? `${API_BASE_URL}${comment.profileImageUrl}` : "https://via.placeholder.com/32"}
+                                                alt={comment.username}
+                                                className="comment-avatar"
+                                            />
+                                            <div className="comment-content">
+                                                <strong onClick={() => navigate(`/profile/${comment.username}`)}>
+                                                    {comment.username}
+                                                </strong>
+                                                <span>{comment.text}</span>
+                                            </div>
+                                        </div>
+                                    ))}
+
+                                    <div className="quick-replies">
                                         <button 
-                                            onClick={() => handleLike(post.id, post.hasLiked)}
-                                            className={`btn btn-sm me-2 ${post.hasLiked ? 'btn-primary' : 'btn-outline-primary'}`}
+                                            onClick={() => setCommentTexts({ ...commentTexts, [post.id]: "Cringe" })}
+                                            className="quick-reply-btn"
                                         >
-                                            <i className="bi bi-hand-thumbs-up-fill"></i> Gilla ({post.likesCount})
+                                            Cringe
                                         </button>
                                         <button 
-                                            onClick={() => handleDislike(post.id, post.hasDisliked)}
-                                            className={`btn btn-sm ${post.hasDisliked ? 'btn-danger' : 'btn-outline-danger'}`}
+                                            onClick={() => setCommentTexts({ ...commentTexts, [post.id]: "L + ratio" })}
+                                            className="quick-reply-btn"
                                         >
-                                            <i className="bi bi-hand-thumbs-down-fill"></i> Hata ({post.dislikesCount})
+                                            L + ratio
+                                        </button>
+                                        <button 
+                                            onClick={() => setCommentTexts({ ...commentTexts, [post.id]: "Bror vad sysslar du med?" })}
+                                            className="quick-reply-btn"
+                                        >
+                                            Bror vad sysslar du med?
                                         </button>
                                     </div>
 
-                                    <div className="border-top pt-2">
-                                        <h6>Kommentarer ({post.comments?.length || 0})</h6>
-                                        
-                                        {post.comments?.map((comment) => (
-                                            <div key={comment.id} className="bg-light p-2 mb-2 rounded">
-                                                <div className="d-flex align-items-start">
-                                                    <img 
-                                                        src={comment.profileImageUrl ? `${API_BASE_URL}${comment.profileImageUrl}` : "https://via.placeholder.com/28"}
-                                                        alt={comment.username}
-                                                        className="rounded-circle me-2"
-                                                        style={{ width: "28px", height: "28px", objectFit: "cover" }}
-                                                    />
-                                                    <div className="flex-grow-1">
-                                                        <small className="text-muted">
-                                                            <strong 
-                                                                onClick={() => navigate(`/profile/${comment.username}`)}
-                                                                className="text-primary" style={{ cursor: "pointer" }}
-                                                            >
-                                                                {comment.username}
-                                                            </strong> - {new Date(comment.createdAt).toLocaleString()}
-                                                        </small>
-                                                        <div>{comment.text}</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))}
-
-                                        <div className="mb-2">
-                                            <button 
-                                                onClick={() => {
-                                                    setCommentTexts({ ...commentTexts, [post.id]: "Cringe" });
-                                                }}
-                                                className="btn btn-sm btn-outline-secondary me-1"
-                                            >
-                                                Cringe
-                                            </button>
-                                            <button 
-                                                onClick={() => {
-                                                    setCommentTexts({ ...commentTexts, [post.id]: "L + ratio" });
-                                                }}
-                                                className="btn btn-sm btn-outline-secondary me-1"
-                                            >
-                                                L + ratio
-                                            </button>
-                                            <button 
-                                                onClick={() => {
-                                                    setCommentTexts({ ...commentTexts, [post.id]: "Bror vad sysslar du med?" });
-                                                }}
-                                                className="btn btn-sm btn-outline-secondary"
-                                            >
-                                                Bror vad sysslar du med?
-                                            </button>
-                                        </div>
-                                        <div className="input-group mt-2">
-                                            <input
-                                                type="text"
-                                                value={commentTexts[post.id] || ""}
-                                                onChange={(e) => setCommentTexts({ ...commentTexts, [post.id]: e.target.value })}
-                                                placeholder="Kommentera..."
-                                                className="form-control"
-                                            />
-                                            <button 
-                                                onClick={() => handleAddComment(post.id)}
-                                                className="btn btn-outline-secondary"
-                                            >
-                                                Kommentera
-                                            </button>
-                                        </div>
+                                    <div className="add-comment">
+                                        <input
+                                            type="text"
+                                            value={commentTexts[post.id] || ""}
+                                            onChange={(e) => setCommentTexts({ ...commentTexts, [post.id]: e.target.value })}
+                                            placeholder="Skriv en kommentar..."
+                                        />
+                                        <button onClick={() => handleAddComment(post.id)}>
+                                            <i className="bi bi-send-fill"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>

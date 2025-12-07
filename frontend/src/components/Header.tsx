@@ -4,10 +4,12 @@ import { useAuth } from "../AuthContext";
 import { useNavigate } from "react-router-dom";
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './Header.css';
+import { useTheme } from "../ThemeContext";
 
 export default function Header() {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
+    const { theme, toggleTheme } = useTheme();
 
     if (!user) {
         return (
@@ -51,6 +53,13 @@ export default function Header() {
                             <span className="d-flex justify-content-between align-items-center">
                                 <span>Min profil</span>
                                 <i className="bi bi-person ms-2"></i>
+                            </span>
+                        </NavDropdown.Item>
+                        <NavDropdown.Divider />
+                        <NavDropdown.Item onClick={toggleTheme}>
+                            <span className="d-flex justify-content-between align-items-center">
+                                <span>{theme === 'light' ? 'Mörkt läge' : 'Ljust läge'}</span>
+                                <i className={`bi ${theme === 'light' ? 'bi-moon-stars' : 'bi-sun'} ms-2`}></i>
                             </span>
                         </NavDropdown.Item>
                         <NavDropdown.Divider />
