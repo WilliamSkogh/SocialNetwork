@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../AuthContext";
 import { apiClient } from "../services/axiosClient";
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import './PostsPage.css';
 
 interface Comment {
     id: number;
@@ -134,187 +136,193 @@ export default function PostsPage() {
     };
 
     return (
-        <div className="container" style={{ maxWidth: "600px" }}>
-            <h1>Inlägg</h1>
-
-            <div className="mb-3">
-                <button
-                    onClick={() => setActiveTab('all')}
-                    className={`btn ${activeTab === 'all' ? 'btn-primary' : 'btn-outline-secondary'} me-2`}
-                >
-                    Alla inlägg
-                </button>
-                <button
-                    onClick={() => setActiveTab('following')}
-                    className={`btn ${activeTab === 'following' ? 'btn-primary' : 'btn-outline-secondary'}`}
-                >
-                    Följer
-                </button>
-            </div>
-
-            <div className="card mb-3">
-                <div className="card-body">
-                    <h2>Skapa inlägg</h2>
-                    <textarea
-                        value={newPost}
-                        onChange={(e) => setNewPost(e.target.value)}
-                        placeholder="Vad tänker du på?"
-                        className="form-control mb-2"
-                        rows={3}
-                    />
-                    <div className="mb-2">
-                        <input
-                            type="file"
-                            accept="image/*,video/*"
-                            onChange={handleImageChange}
-                            className="form-control"
-                        />
-                        {selectedImage && (
-                            <small className="text-muted">
-                                Vald: {selectedImage.name}
-                            </small>
-                        )}
+        <div className="posts-page">
+            <div className="posts-layout">
+                <div className="sidebar-ad">
+                    <div className="ad-card">
+                        <div className="ad-badge">ANNONS</div>
+                        <div className="ad-logo">
+                            <img src="/src/assets/moverot-logo.png" alt="Moverot" />
+                        </div>
+                        <h3 className="ad-title">Moverot</h3>
+                        <p className="ad-description">Använd ditt friskvårdsbidrag och använd det till träning som faktiskt blir av!</p>
+                        <a href="https://moverot.se" className="ad-link">
+                            Besök Moverot.se <i className="bi bi-arrow-right"></i>
+                        </a>
                     </div>
-                    <button onClick={createPost} className="btn btn-primary">
-                        Posta
-                    </button>
                 </div>
+
+                <div className="posts-container">
+                    <ul className="nav nav-tabs">
+                        <li className="nav-item">
+                            <button
+                                className={`nav-link ${activeTab === 'all' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('all')}
+                            >
+                                <i className="bi bi-globe"></i> Alla
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button
+                                className={`nav-link ${activeTab === 'following' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('following')}
+                            >
+                                <i className="bi bi-people-fill"></i> Följer
+                            </button>
+                        </li>
+                    </ul>
+
+            <div className="create-post">
+                <h5 className="fw-bold mb-3">Skapa ett inlägg</h5>
+                <textarea
+                    className="form-control mb-2"
+                    placeholder="Vad tänker du på?"
+                    value={newPost}
+                    onChange={(e) => setNewPost(e.target.value)}
+                    rows={3}
+                />
+                <input
+                    type="file"
+                    accept="image/*,video/*"
+                    onChange={handleImageChange}
+                    className="form-control mb-2"
+                />
+                <button onClick={createPost} className="btn btn-primary">
+                    <i className="bi bi-send-fill"></i> Publicera
+                </button>
             </div>
 
-            <div>
-                {posts.map((post) => (
-                    <div key={post.id} className="card mb-3">
-                        <div className="card-body">
-                            <div className="d-flex justify-content-between align-items-center mb-2">
-                                <div className="d-flex align-items-center">
-                                    <img 
-                                        src={post.authorProfileImageUrl ? `https://localhost:7166${post.authorProfileImageUrl}` : "https://via.placeholder.com/32"}
-                                        alt={post.authorUsername}
-                                        className="rounded-circle me-2"
-                                        style={{ width: "32px", height: "32px", objectFit: "cover" }}
-                                    />
-                                    <span 
-                                        onClick={() => navigate(`/profile/${post.authorUsername}`)}
-                                        className="fw-bold text-primary" style={{ cursor: "pointer" }}
-                                    >
-                                        {post.authorUsername}
-                                    </span>
-                                </div>
-                                {user?.username === post.authorUsername && (
-                                    <button
-                                        onClick={() => handleDelete(post.id)}
-                                        className="btn btn-danger btn-sm"
-                                    >
-                                        Ta bort
-                                    </button>
-                                )}
+            {posts.length === 0 ? (
+                <div className="no-posts">
+                    <i className="bi bi-inbox" style={{ fontSize: '3rem' }}></i>
+                    <p className="mt-3">Inga inlägg att visa</p>
+                </div>
+            ) : (
+                posts.map((post) => (
+                    <div key={post.id} className="post-card">
+                        <div className="post-header">
+                            <div className="post-author">
+                                <img 
+                                    src={post.authorProfileImageUrl ? `https://localhost:7166${post.authorProfileImageUrl}` : "https://via.placeholder.com/40"}
+                                    alt={post.authorUsername}
+                                />
+                                <span onClick={() => navigate(`/profile/${post.authorUsername}`)}>
+                                    {post.authorUsername}
+                                </span>
                             </div>
-                            {post.imageUrl && (
-                                post.imageUrl.endsWith('.mp4') || post.imageUrl.endsWith('.webm') ? (
-                                    <video controls className="w-100 mb-2" style={{ maxHeight: "400px" }}>
-                                        <source src={`https://localhost:7166${post.imageUrl}`} type="video/mp4" />
-                                    </video>
-                                ) : (
-                                    <img 
-                                        src={`https://localhost:7166${post.imageUrl}`} 
-                                        alt="Post" 
-                                        className="w-100 mb-2" 
-                                        style={{ maxHeight: "400px", objectFit: "cover" }} 
-                                    />
-                                )
+                            {user?.username === post.authorUsername && (
+                                <button onClick={() => handleDelete(post.id)} className="delete-btn">
+                                    <i className="bi bi-trash"></i> Ta bort
+                                </button>
                             )}
-                            <p>{post.content}</p>
+                        </div>
+
+                        {post.imageUrl && (
+                            post.imageUrl.endsWith('.mp4') || post.imageUrl.endsWith('.webm') ? (
+                                <video controls className="post-image">
+                                    <source src={`https://localhost:7166${post.imageUrl}`} type="video/mp4" />
+                                </video>
+                            ) : (
+                                <img 
+                                    src={`https://localhost:7166${post.imageUrl}`} 
+                                    alt="Post"
+                                    className="post-image"
+                                />
+                            )
+                        )}
+
+                        <div className="post-actions">
+                            <button 
+                                onClick={() => handleLike(post.id, post.hasLiked)}
+                                className={`like-btn ${post.hasLiked ? 'active' : ''}`}
+                            >
+                                <i className="bi bi-hand-thumbs-up-fill"></i> Gilla
+                            </button>
+                            <button 
+                                onClick={() => handleDislike(post.id, post.hasDisliked)}
+                                className={`dislike-btn ${post.hasDisliked ? 'active' : ''}`}
+                            >
+                                <i className="bi bi-hand-thumbs-down-fill"></i> Hata
+                            </button>
+                            <button className="comment-btn">
+                                <i className="bi bi-chat"></i> Kommentera
+                            </button>
+                        </div>
+
+                        <div className="post-stats">
+                            <span><i className="bi bi-heart-fill"></i> {post.likesCount} gillningar</span>
+                            <span><i className="bi bi-heartbreak-fill"></i> {post.dislikesCount} hatningar</span>
+                            <span><i className="bi bi-chat-fill"></i> {post.comments?.length || 0} kommentarer</span>
+                        </div>
+
+                        <div className="post-content">
+                            <p><strong>{post.authorUsername}</strong> {post.content}</p>
                             <small className="text-muted">
                                 {new Date(post.createdAt).toLocaleString()}
                             </small>
-                            
-                            <div className="my-2">
-                                <button 
-                                    onClick={() => handleLike(post.id, post.hasLiked)}
-                                    className={`btn btn-sm me-2 ${post.hasLiked ? 'btn-primary' : 'btn-outline-primary'}`}
-                                >
-                                    <i className="bi bi-hand-thumbs-up-fill"></i> Gilla ({post.likesCount})
-                                </button>
-                                <button 
-                                    onClick={() => handleDislike(post.id, post.hasDisliked)}
-                                    className={`btn btn-sm ${post.hasDisliked ? 'btn-danger' : 'btn-outline-danger'}`}
-                                >
-                                    <i className="bi bi-hand-thumbs-down-fill"></i> Hata ({post.dislikesCount})
-                                </button>
-                            </div>
-
-                            <div className="border-top pt-2">
-                                <h6>Kommentarer ({post.comments?.length || 0})</h6>
-                                
-                                {post.comments?.map((comment) => (
-                                    <div key={comment.id} className="bg-light p-2 mb-2 rounded">
-                                        <div className="d-flex align-items-start">
-                                            <img 
-                                                src={comment.profileImageUrl ? `https://localhost:7166${comment.profileImageUrl}` : "https://via.placeholder.com/28"}
-                                                alt={comment.username}
-                                                className="rounded-circle me-2"
-                                                style={{ width: "28px", height: "28px", objectFit: "cover" }}
-                                            />
-                                            <div className="flex-grow-1">
-                                                <small className="text-muted">
-                                                    <strong 
-                                                        onClick={() => navigate(`/profile/${comment.username}`)}
-                                                        className="text-primary" style={{ cursor: "pointer" }}
-                                                    >
-                                                        {comment.username}
-                                                    </strong> - {new Date(comment.createdAt).toLocaleString()}
-                                                </small>
-                                                <div>{comment.text}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-
-                                <div className="mb-2">
-                                    <button 
-                                        onClick={() => {
-                                            setCommentTexts({ ...commentTexts, [post.id]: "Cringe" });
-                                        }}
-                                        className="btn btn-sm btn-outline-secondary me-1"
-                                    >
-                                        Cringe
-                                    </button>
-                                    <button 
-                                        onClick={() => {
-                                            setCommentTexts({ ...commentTexts, [post.id]: "L + ratio" });
-                                        }}
-                                        className="btn btn-sm btn-outline-secondary me-1"
-                                    >
-                                        L + ratio
-                                    </button>
-                                    <button 
-                                        onClick={() => {
-                                            setCommentTexts({ ...commentTexts, [post.id]: "Bror vad sysslar du med?" });
-                                        }}
-                                        className="btn btn-sm btn-outline-secondary"
-                                    >
-                                        Bror vad sysslar du med?
-                                    </button>
-                                </div>
-                                <div className="input-group mt-2">
-                                    <input
-                                        type="text"
-                                        value={commentTexts[post.id] || ""}
-                                        onChange={(e) => setCommentTexts({ ...commentTexts, [post.id]: e.target.value })}
-                                        placeholder="Skriv en kommentar..."
-                                        className="form-control"
-                                    />
-                                    <button 
-                                        onClick={() => handleAddComment(post.id)}
-                                        className="btn btn-outline-secondary"
-                                    >
-                                        Kommentera
-                                    </button>
-                                </div>
-                            </div>
                         </div>
+
+                        <div className="comments-section">
+                            {post.comments?.map((comment) => (
+                                <div key={comment.id} className="comment">
+                                    <strong onClick={() => navigate(`/profile/${comment.username}`)}>
+                                        {comment.username}
+                                    </strong>
+                                    {comment.text}
+                                </div>
+                            ))}
+
+                                    <div className="quick-replies">
+                                        <button 
+                                            onClick={() => setCommentTexts({ ...commentTexts, [post.id]: "Cringe" })}
+                                            className="quick-reply-btn"
+                                        >
+                                            Cringe
+                                        </button>
+                                        <button 
+                                            onClick={() => setCommentTexts({ ...commentTexts, [post.id]: "L + ratio" })}
+                                            className="quick-reply-btn"
+                                        >
+                                            L + ratio
+                                        </button>
+                                        <button 
+                                            onClick={() => setCommentTexts({ ...commentTexts, [post.id]: "Bror vad sysslar du med?" })}
+                                            className="quick-reply-btn"
+                                        >
+                                            Bror vad sysslar du med?
+                                        </button>
+                                    </div>
+
+                                    <div className="add-comment">
+                                        <input
+                                            type="text"
+                                            value={commentTexts[post.id] || ""}
+                                            onChange={(e) => setCommentTexts({ ...commentTexts, [post.id]: e.target.value })}
+                                            placeholder="Skriv en kommentar..."
+                                        />
+                                        <button onClick={() => handleAddComment(post.id)}>
+                                            <i className="bi bi-send-fill"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+
+                <div className="sidebar-ad">
+                    <div className="ad-card flavorly">
+                        <div className="ad-badge">ANNONS</div>
+                        <div className="ad-logo">
+                            <img src="/src/assets/flavorly-logo.png" alt="Flavorly" />
+                        </div>
+                        <h3 className="ad-title">Flavorly</h3>
+                        <p className="ad-description">Share Cook Enjoy - Hitta dina favoritrecept idag</p>
+                        <a href="https://flavorly.se" className="ad-link">
+                            Besök Flavorly.se <i className="bi bi-arrow-right"></i>
+                        </a>
                     </div>
-                ))}
+                </div>
             </div>
         </div>
     );

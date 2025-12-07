@@ -1,0 +1,359 @@
+.posts-page {
+    background: #f0f2f5;
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.posts-layout {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 280px 1fr 280px;
+    gap: 2rem;
+    padding: 0 2rem;
+}
+
+@media (max-width: 1200px) {
+    .posts-layout {
+        grid-template-columns: 1fr;
+    }
+    .sidebar-ad { display: none !important; }
+}
+
+.posts-container {
+    max-width: 700px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.sidebar-ad {
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+}
+
+.ad-card {
+    background: linear-gradient(135deg, #FF6B35 0%, #FF8C42 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    color: white;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.ad-card.flavorly {
+    background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+    box-shadow: 0 4px 12px rgba(31, 41, 55, 0.3);
+}
+
+.ad-logo {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 1rem;
+    background: white;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+}
+
+.ad-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.ad-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.ad-badge {
+    background: rgba(255, 255, 255, 0.3);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    display: inline-block;
+}
+
+.ad-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+}
+
+.ad-description {
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+    opacity: 0.95;
+}
+
+.ad-link {
+    background: white;
+    color: #FF6B35;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nav-tabs {
+    border: none;
+    margin-bottom: 2rem;
+    background: white;
+    padding: 0.5rem;
+    border-radius: 12px;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    color: #65676b;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+}
+
+.nav-tabs .nav-link.active {
+    background: #0866ff;
+    color: white;
+}
+
+.create-post {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.create-post textarea {
+    border: 1px solid #e4e6eb;
+    border-radius: 8px;
+    padding: 0.75rem;
+}
+
+.create-post .btn-primary {
+    background: #0866ff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+}
+
+.post-card {
+    background: white;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.post-header {
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e4e6eb;
+}
+
+.post-author {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.post-author img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.post-author span {
+    font-weight: 600;
+    cursor: pointer;
+    color: #050505;
+}
+
+.post-author span:hover {
+    text-decoration: underline;
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    color: #f02849;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+}
+
+.delete-btn:hover {
+    background: #f7f8fa;
+}
+
+.post-image {
+    width: 100%;
+    max-height: 600px;
+    object-fit: cover;
+    display: block;
+}
+
+.post-content {
+    padding: 1rem 1.5rem;
+}
+
+.post-actions {
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 1px solid #e4e6eb;
+}
+
+.post-actions button {
+    flex: 1;
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.post-actions .like-btn {
+    background: #e7f3ff;
+    color: #0866ff;
+}
+
+.post-actions .like-btn.active {
+    background: #0866ff;
+    color: white;
+}
+
+.post-actions .dislike-btn {
+    background: #fee;
+    color: #f02849;
+}
+
+.post-actions .dislike-btn.active {
+    background: #f02849;
+    color: white;
+}
+
+.post-actions .comment-btn {
+    background: #f0f2f5;
+    color: #65676b;
+}
+
+.post-actions button:hover {
+    transform: translateY(-1px);
+}
+
+.post-stats {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+    color: #65676b;
+    display: flex;
+    gap: 1.5rem;
+}
+
+.post-stats span {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.post-stats .bi-heart-fill { color: #0866ff; }
+.post-stats .bi-heartbreak-fill { color: #f02849; }
+
+.comments-section {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #e4e6eb;
+}
+
+.comment {
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+}
+
+.comment strong {
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 0.5rem;
+}
+
+.comment strong:hover {
+    text-decoration: underline;
+}
+
+.quick-replies {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.quick-reply-btn {
+    background: #f0f2f5;
+    border: 1px solid #ccd0d5;
+    color: #050505;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.quick-reply-btn:hover {
+    background: #e4e6eb;
+}
+
+.add-comment {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.add-comment input {
+    flex: 1;
+    background: #f0f2f5;
+    border: none;
+    border-radius: 20px;
+    padding: 0.625rem 1rem;
+    outline: none;
+}
+
+.add-comment button {
+    background: #0866ff;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 0.625rem 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.no-posts {
+    text-align: center;
+    color: #65676b;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 12px;
+}
