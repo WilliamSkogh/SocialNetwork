@@ -10,5 +10,5 @@ public interface IProfileRepository
 {
     Task<ApplicationUser?> GetUserByUsernameAsync(string userName);
     Task UpdateUserAsync(ApplicationUser user);
-
+    Task<List<ApplicationUser>> SearchUsersAsync(string query, int take = 5);
 }

@@ -5,11 +5,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SocialNetwork.Service.DTOs;
 
 namespace SocialNetwork.Service;
 
 public interface IProfileService
 {
     Task<UserProfile?> GetUserProfileAsync(string userName, string? currentUserId = null);
-     Task UpdateUserProfileAsync(string userName, string newBio, IFormFile? imageFile);
+    Task<List<UserSearchResultDto>> SearchUsersAsync(string query, int take = 5);
+    Task UpdateUserProfileAsync(string userName, string newBio, IFormFile? imageFile);
 }

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SocialNetwork.Service.DTOs;
 
 namespace SocialNetwork.Service;
 
@@ -45,6 +46,24 @@ public async Task<UserProfile?> GetUserProfileAsync(string userName, string? cur
             FollowingCount = user.FollowingCount,
             IsFollowing = isFollowing
         };
+    }
+
+    public async Task<List<UserSearchResultDto>> SearchUsersAsync(string query, int take = 5)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            return new List<UserSearchResultDto>();
+        }
+
+        var users = await _repo.SearchUsersAsync(query, take);
+
+        return users.Select(u => new UserSearchResultDto
+        {
+            Id = u.Id,
+            Username = u.UserName,
+            Bio = u.Bio,
+            ProfileImageUrl = u.ProfileImageUrl
+        }).ToList();
     }
     public async Task UpdateUserProfileAsync(string username, string newBio, IFormFile? imageFile)
     {
