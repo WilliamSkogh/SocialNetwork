@@ -44,6 +44,10 @@ builder.Services.AddScoped<IDirectMessageService, DirectMessageService>();
 builder.Services.AddScoped<IFollowRepository, FollowRepository>();
 builder.Services.AddScoped<FollowService>();
 
+builder.Services.AddScoped<ILikeService, LikeService>();
+builder.Services.AddScoped<IDislikeService, DislikeService>();
+builder.Services.AddScoped<ICommentService, CommentService>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>

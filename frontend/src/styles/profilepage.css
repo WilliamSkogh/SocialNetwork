@@ -4,6 +4,10 @@
     padding-bottom: 30px;
 }
 
+body {
+    background: var(--bg-primary) !important;
+}
+
 .profile-header-grid {
     display: grid;
     gap: 15px;
@@ -74,7 +78,7 @@
     height: 77px;
     object-fit: cover;
     border-radius: 50%;
-    border: 1px solid #dbdbdb;
+    border: 1px solid var(--border-color);
     display: block;
 }
 
@@ -91,6 +95,7 @@
     font-size: 20px;
     line-height: 1.2;
     margin: 0 0 5px 10px;
+    color: var(--text-primary);
 }
 
 @media (min-width: 768px) {
@@ -134,17 +139,18 @@
 
 .stats-value {
     font-weight: 600;
-    color: #262626;
+    color: var(--text-primary);
 }
 
 .stats-label {
-    color: #8e8e8e;
+    color: var(--text-secondary);
 }
 
 .bio-text {
     white-space: pre-wrap;
     font-size: 1rem;
     line-height: 1.5;
+    color: var(--text-primary);
 }
 
 .action-btn {

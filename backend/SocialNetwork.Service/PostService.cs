@@ -4,17 +4,20 @@ using Microsoft.EntityFrameworkCore;
 using SocialNetwork.Entity;
 using SocialNetwork.Entityframework;
 using SocialNetwork.Repository.Posts;
+using Socialnetwork.Repository;
 
 namespace SocialNetwork.Service
 {
     public class PostService : IPostService
     {
         private readonly IPostRepository _postRepository;
+        private readonly IFollowRepository _followRepository;
         private readonly ApplicationDbContext _db;
 
-        public PostService(IPostRepository postRepository, ApplicationDbContext db)
+        public PostService(IPostRepository postRepository, IFollowRepository followRepository, ApplicationDbContext db)
         {
             _postRepository = postRepository;
+            _followRepository = followRepository;
             _db = db;
         }
 
@@ -51,7 +54,30 @@ namespace SocialNetwork.Service
 
         public async Task<IEnumerable<Post>> GetAllPostsAsync()
         {
-            return await _postRepository.GetAllAsync();
+            return await _postRepository.GetFeedPostsAsync();
+        }
+
+        public async Task<IEnumerable<Post>> GetFollowingPostsAsync(string userId)
+        {
+            var followingIds = await _followRepository.GetFollowingIdsAsync(userId);
+            
+            var posts = await _db.Posts
+                .Where(p => p.RecipientId == null)
+                .Include(p => p.Author)
+                .Include(p => p.Likes)
+                .Include(p => p.Dislikes)
+                .Include(p => p.Comments)
+                    .ThenInclude(c => c.User)
+                .Where(p => followingIds.Contains(p.AuthorId))
+                .OrderByDescending(p => p.CreatedAt)
+                .ToListAsync();
+
+            return posts;
+        }
+
+        public async Task<IEnumerable<Post>> GetUserProfilePostsAsync(string userId)
+        {
+            return await _postRepository.GetUserProfilePostsAsync(userId);
         }
 
         public async Task<Post?> UpdatePostAsync(int id, string content)
