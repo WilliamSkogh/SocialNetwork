@@ -5,7 +5,6 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import './PostsPage.css';
 import PostCard from "../components/Post/PostCard";
 import CreatePostForm from "../components/CreatePost/CreatePostForm";
-import AdSidebar from "../components/Sidebar/AdSidebar";
 
 interface Comment {
     id: number;
@@ -60,12 +59,6 @@ export default function PostsPage() {
     return (
         <div className="posts-page">
             <div className="posts-layout">
-                <AdSidebar
-                    imageUrl="/src/assets/moverot-ad.png"
-                    linkUrl="https://moverot.se"
-                    altText="Moverot"
-                />
-
                 <div className="posts-container">
                     <div className="filter-tabs">
                         <button
@@ -97,12 +90,6 @@ export default function PostsPage() {
                         ))
                     )}
                 </div>
-
-                <AdSidebar
-                    imageUrl="/src/assets/flavorly-ad.png"
-                    linkUrl="https://flavorly.se"
-                    altText="Flavorly"
-                />
             </div>
         </div>
     );
