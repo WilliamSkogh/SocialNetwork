@@ -55,6 +55,11 @@ export default function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
                 onChange={handleImageChange}
                 className="form-control mb-2"
             />
+            {selectedImage && (
+                <p className="text-success mb-2">
+                    <i className="bi bi-check-circle-fill"></i> {selectedImage.name}
+                </p>
+            )}
             <button onClick={createPost} className="btn btn-primary">
                 <i className="bi bi-send-fill"></i> Publicera
             </button>
