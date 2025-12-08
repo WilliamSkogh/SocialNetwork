@@ -49,6 +49,9 @@ export default function PostCard({ post, onUpdate }: PostCardProps) {
             if (post.hasLiked) {
                 await apiClient.delete(`/api/posts/${post.id}/likes`);
             } else {
+                if (post.hasDisliked) {
+                    await apiClient.delete(`/api/posts/${post.id}/dislikes`);
+                }
                 await apiClient.post(`/api/posts/${post.id}/likes`);
             }
             onUpdate();
@@ -62,6 +65,9 @@ export default function PostCard({ post, onUpdate }: PostCardProps) {
             if (post.hasDisliked) {
                 await apiClient.delete(`/api/posts/${post.id}/dislikes`);
             } else {
+                if (post.hasLiked) {
+                    await apiClient.delete(`/api/posts/${post.id}/likes`);
+                }
                 await apiClient.post(`/api/posts/${post.id}/dislikes`);
             }
             onUpdate();
