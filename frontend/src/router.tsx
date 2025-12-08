@@ -4,11 +4,11 @@ import AppLayout from "./layouts/AppLayout";
 import LoginPage from "./pages/LoginPage";
 import Home from "./pages/Home";
 import ProfilePage from "./pages/ProfilePage";
+import MessagesPage from "./pages/MessagesPage";
+import ConversationPage from "./pages/ConversationPage";
 
 export const router = createBrowserRouter([
-
     {
-
         element: <AppLayout />,
         children: [
             {
@@ -26,9 +26,15 @@ export const router = createBrowserRouter([
             {
                 path: "/profile/:username",
                 element: <ProfilePage />
+            },
+            {
+                path: "/messages",
+                element: <MessagesPage />
+            },
+            {
+                path: "/messages/:userId",
+                element: <ConversationPage />
             }
         ]
     }
-
-]
-);
+]);
