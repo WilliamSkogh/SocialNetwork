@@ -1,18 +1,17 @@
-import { useParams } from "react-router-dom";
+﻿import { useParams } from "react-router-dom";
 import { useAuth } from "../AuthContext";
-import { useEffect, useState, type ChangeEvent } from "react";
+import { useEffect, useState } from "react";
 import { profiileService } from "../services/ProfileService";
 import type { UserProfile } from "../types/types";
 import { Container, Image, Button, Form } from "react-bootstrap";
 import EmojiPicker, { type EmojiClickData } from "emoji-picker-react";
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import config from "../config";
+import { buildMediaUrl } from "../utils/media";
 import '../styles/profilepage.css'
 import '../pages/PostsPage.css'
 import { apiClient } from "../services/axiosClient";
 import PostCard from "../components/Post/PostCard";
-
-const API_BASE_URL = config.apiBaseUrl;
+import CreatePostForm from "../components/CreatePost/CreatePostForm";
 
 interface Comment {
     id: number;
@@ -50,10 +49,9 @@ export default function ProfilePage() {
     const [isEditing, setIsEditing] = useState(false);
     const [editBio, setEditBio] = useState("");
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [profilePreviewUrl, setProfilePreviewUrl] = useState<string | null>(null);
     const [showPicker, setShowPicker] = useState(false);
     const [posts, setPosts] = useState<Post[]>([]);
-    const [newPost, setNewPost] = useState("");
-    const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
     const isMyProfile = currentUser && profile && currentUser.username?.toLowerCase() === profile.userName?.toLowerCase();
 
@@ -73,13 +71,25 @@ export default function ProfilePage() {
                 setPosts(postsResponse.data);
             } catch (err) {
                 console.error(err);
-                setError("kunde inte hämta profilen");
+                setError("kunde inte hÃ¤mta profilen");
             } finally {
                 setLoading(false);
             }
         };
         fetchProfile();
     }, [username]);
+
+    useEffect(() => {
+        if (!selectedFile) {
+            setProfilePreviewUrl(null);
+            return;
+        }
+
+        const url = URL.createObjectURL(selectedFile);
+        setProfilePreviewUrl(url);
+
+        return () => URL.revokeObjectURL(url);
+    }, [selectedFile]);
 
     const fetchPosts = async () => {
         if (!profile) return;
@@ -102,7 +112,7 @@ export default function ProfilePage() {
             setShowPicker(false);
         } catch (err) {
             console.error(err);
-            alert("Något gick fel när profilen skulle sparas");
+            alert("NÃ¥got gick fel nÃ¤r profilen skulle sparas");
         }
     };
 
@@ -116,44 +126,11 @@ export default function ProfilePage() {
         setEditBio((prev) => prev + emojiData.emoji);
     };
 
-    const handleCreateWallPost = async () => {
-        if (!newPost.trim() || !profile) return;
-        
-        try {
-            const formData = new FormData();
-            formData.append("content", newPost);
-            if (selectedImage) {
-                formData.append("imageFile", selectedImage);
-            }
-
-            await apiClient.post(`/api/users/${profile.userId}/posts`, formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
-
-            setNewPost("");
-            setSelectedImage(null);
-            
-            await fetchPosts();
-        } catch (error) {
-            console.error("Failed to create wall post", error);
-        }
-    };
-
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            setSelectedImage(e.target.files[0]);
-        }
-    };
-
-
     if (loading) return <div className="text-center mt-5">Laddar profil...</div>;
     if (error) return <div className="text-center mt-5 text-danger">{error}</div>;
     if (!profile) return <div className="text-center mt-5">Ingen profil hittades.</div>;
 
-    const imageUrl = profile.profileImageUrl ? `${API_BASE_URL}${profile.profileImageUrl}`
-        : "https://via.placeholder.com/150";
+    const imageUrl = profilePreviewUrl ?? buildMediaUrl(profile.profileImageUrl) ?? "https://via.placeholder.com/150";
 
     return (
         <Container className="mt-4 profile-container">
@@ -233,9 +210,9 @@ export default function ProfilePage() {
 
                         <div className="ph-stats">
                             <ul className="stats-list">
-                                <li><span className="stats-value">0</span><span className="stats-label">inlägg</span></li>
-                                <li><span className="stats-value">{profile.followerCount}</span><span className="stats-label">följare</span></li>
-                                <li><span className="stats-value">{profile.followingCount}</span><span className="stats-label">följer</span></li>
+                                <li><span className="stats-value">0</span><span className="stats-label">inlÃ¤gg</span></li>
+                                <li><span className="stats-value">{profile.followerCount}</span><span className="stats-label">fÃ¶ljare</span></li>
+                                <li><span className="stats-value">{profile.followingCount}</span><span className="stats-label">fÃ¶ljer</span></li>
                             </ul>
                         </div>
 
@@ -261,11 +238,11 @@ export default function ProfilePage() {
                                                 setProfile(updatedProfile);
                                             } catch (err) {
                                                 console.error(err);
-                                                alert("Kunde inte uppdatera följ-status");
+                                                alert("Kunde inte uppdatera fÃ¶lj-status");
                                             }
                                         }}
                                     >
-                                        {profile.isFollowing ? "Följer" : "Följ"}
+                                        {profile.isFollowing ? "FÃ¶ljer" : "FÃ¶lj"}
                                     </Button>
                                     <Button variant="outline-secondary" size="sm" className="action-btn flex-grow-1" onClick={() => alert("Kommer snart!")}>
                                         Meddelande
@@ -283,30 +260,13 @@ export default function ProfilePage() {
 
             {!isMyProfile && (
                 <div className="mb-3" style={{background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '1rem'}}>
-                    <h5 style={{color: 'var(--text-primary)'}}>Skriv på {profile.userName}s vägg</h5>
-                    <textarea
-                        value={newPost}
-                        onChange={(e) => setNewPost(e.target.value)}
+                    <CreatePostForm
+                        onPostCreated={fetchPosts}
+                        recipientUserId={profile.userId}
+                        title={`Skriv på ${profile.userName}s vägg`}
                         placeholder="Skriv något..."
-                        className="form-control mb-2"
-                        rows={3}
-                        style={{background: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)'}}
+                        submitLabel="Posta"
                     />
-                    <div className="mb-2">
-                        <input
-                            type="file"
-                            accept="image/*,video/*"
-                            onChange={handleImageChange}
-                            className="form-control"
-                            style={{background: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)'}}
-                        />
-                        {selectedImage && (
-                            <small style={{color: 'var(--text-secondary)'}}>
-                                Vald: {selectedImage.name}
-                            </small>
-                        )}
-                    </div>
-                    <Button onClick={handleCreateWallPost}>Posta</Button>
                 </div>
             )}
 
@@ -314,7 +274,7 @@ export default function ProfilePage() {
                 {posts.length === 0 ? (
                     <div className="text-center" style={{color: 'var(--text-secondary)'}}>
                         <i className="bi bi-grid-3x3 fs-3"></i>
-                        <p className="mt-2">Inga inlägg ännu</p>
+                        <p className="mt-2">Inga inlÃ¤gg Ã¤nnu</p>
                     </div>
                 ) : (
                     <div>
@@ -327,3 +287,5 @@ export default function ProfilePage() {
         </Container>
     );
 }
+
+
