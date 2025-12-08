@@ -49,9 +49,7 @@ export default function ActivityFeed() {
     };
 
     const handleClick = (a: Activity) => {
-        if (a.type === 'follow') {
-            navigate(`/profile/${a.actorUsername}`);
-        } else if (a.postId) {
+        if (a.postId) {
             navigate('/');
             setTimeout(() => {
                 const element = document.getElementById(`post-${a.postId}`);
@@ -60,6 +58,11 @@ export default function ActivityFeed() {
                 }
             }, 100);
         }
+    };
+
+    const handleProfileClick = (e: React.MouseEvent, username: string) => {
+        e.stopPropagation();
+        navigate(`/profile/${username}`);
     };
 
     const getMediaThumbnail = (url?: string) => {
@@ -71,10 +74,10 @@ export default function ActivityFeed() {
         
         if (isVideo) {
             return (
-                <div style={{ position: 'relative', width: 40, height: 40, marginLeft: 8 }}>
+                <div style={{ position: 'relative', width: 44, height: 44, borderRadius: '4px', overflow: 'hidden', flexShrink: 0 }}>
                     <video 
                         src={fullUrl} 
-                        style={{ width: 40, height: 40, objectFit: 'cover' }}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         muted
                     />
                     <i className="bi bi-play-circle-fill" style={{ 
@@ -94,30 +97,61 @@ export default function ActivityFeed() {
             <img 
                 src={fullUrl} 
                 alt="" 
-                style={{ width: 40, height: 40, marginLeft: 8, objectFit: 'cover' }} 
+                style={{ width: 44, height: 44, borderRadius: '4px', objectFit: 'cover', flexShrink: 0 }} 
             />
         );
     };
 
     return (
-        <div className="activity-feed">
-            <h3>Aktivitet</h3>
+        <div>
+            <div style={{ padding: '16px', borderBottom: '1px solid #dbdbdb' }}>
+                <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: '#262626' }}>Aktivitet</h3>
+            </div>
             {activities.length === 0 ? (
-                <p>Inga aktiviteter</p>
+                <div style={{ padding: '32px 24px', textAlign: 'center', color: '#8e8e8e', fontSize: '14px' }}>
+                    Inga aktiviteter än
+                </div>
             ) : (
                 <div>
                     {activities.map((a, i) => (
-                        <div key={i} onClick={() => handleClick(a)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div 
+                            key={i} 
+                            onClick={() => handleClick(a)} 
+                            style={{ 
+                                padding: '12px 16px',
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                gap: '12px',
+                                cursor: 'pointer',
+                                borderBottom: i < activities.length - 1 ? '1px solid #efefef' : 'none',
+                                transition: 'background-color 0.1s'
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#fafafa'}
+                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                        >
                             {a.actorProfileImageUrl && (
                                 <img 
                                     src={buildMediaUrl(a.actorProfileImageUrl)} 
                                     alt="" 
-                                    style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }} 
+                                    onClick={(e) => handleProfileClick(e, a.actorUsername)}
+                                    style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} 
                                 />
                             )}
-                            <div style={{ flex: 1 }}>
-                                <span>{getText(a)}</span>
-                                <span> - {getTime(a.createdAt)}</span>
+                            <div style={{ flex: 1, fontSize: '14px', lineHeight: '18px', minWidth: 0 }}>
+                                <div>
+                                    <span 
+                                        onClick={(e) => handleProfileClick(e, a.actorUsername)}
+                                        style={{ fontWeight: 600, color: '#262626', cursor: 'pointer' }}
+                                    >
+                                        {a.actorUsername}
+                                    </span>
+                                    <span style={{ fontWeight: 400, color: '#262626' }}>
+                                        {' '}{getText(a).substring(a.actorUsername.length)}
+                                    </span>
+                                </div>
+                                <div style={{ color: '#8e8e8e', fontSize: '12px', marginTop: '2px' }}>
+                                    {getTime(a.createdAt)}
+                                </div>
                             </div>
                             {getMediaThumbnail(a.postImageUrl)}
                         </div>

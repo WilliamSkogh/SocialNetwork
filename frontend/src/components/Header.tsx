@@ -11,6 +11,7 @@ import { useTheme } from "../ThemeContext";
 import { profiileService } from "../services/ProfileService";
 import type { UserSearchResult } from "../types/types";
 import { buildMediaUrl } from "../utils/media";
+import ActivityFeed from "./ActivityFeed/ActivityFeed";
 
 export default function Header() {
     const { user, logout } = useAuth();
@@ -20,13 +21,18 @@ export default function Header() {
     const [searchResults, setSearchResults] = useState<UserSearchResult[]>([]);
     const [isSearching, setIsSearching] = useState(false);
     const [showResults, setShowResults] = useState(false);
+    const [showActivity, setShowActivity] = useState(false);
     const searchDelayRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const searchBoxRef = useRef<HTMLDivElement | null>(null);
+    const activityRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
         const handleOutsideClick = (event: MouseEvent) => {
             if (searchBoxRef.current && !searchBoxRef.current.contains(event.target as Node)) {
                 setShowResults(false);
+            }
+            if (activityRef.current && !activityRef.current.contains(event.target as Node)) {
+                setShowActivity(false);
             }
         };
 
@@ -213,6 +219,39 @@ export default function Header() {
                 </div>
 
                 <Nav className="header-actions">
+                    <div ref={activityRef} style={{ position: 'relative' }}>
+                        <button
+                            onClick={() => setShowActivity(!showActivity)}
+                            style={{
+                                background: 'transparent',
+                                border: 'none',
+                                color: 'var(--header-text)',
+                                fontSize: '24px',
+                                cursor: 'pointer',
+                                padding: '0 10px'
+                            }}
+                        >
+                            <i className="bi bi-bell"></i>
+                        </button>
+                        {showActivity && (
+                            <div style={{
+                                position: 'absolute',
+                                top: '100%',
+                                right: 0,
+                                marginTop: '8px',
+                                width: 'min(400px, 90vw)',
+                                maxHeight: '500px',
+                                overflowY: 'auto',
+                                backgroundColor: 'white',
+                                border: '1px solid #dbdbdb',
+                                borderRadius: '8px',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                                zIndex: 1000
+                            }}>
+                                <ActivityFeed />
+                            </div>
+                        )}
+                    </div>
                     <NavDropdown
                         title={<i className="bi bi-person-circle profile-trigger" aria-hidden="true"></i>}
                         id="user-dropdown"
