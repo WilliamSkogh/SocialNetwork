@@ -50,38 +50,35 @@ namespace SocialNetwork.Repository
 
         public async Task<IEnumerable<DirectMessage>> GetInboxAsync(string userId)
         {
-
             if (string.IsNullOrWhiteSpace(userId))
                 throw new ArgumentException("UserId cannot be null or empty");
 
-            var latestPerSender = await _context.DirectMessages
-                .Where(m => m.ReceiverId == userId)
-                .GroupBy(m => m.SenderId)
-                .Select(g => new
-                {
-                    SenderId = g.Key,
-                    LatestTimestamp = g.Max(m => m.Timestamp),
-                    UnreadCount = g.Count(m => !m.IsRead)
-                })
+            var conversationPartners = await _context.DirectMessages
+                .Where(m => m.ReceiverId == userId || m.SenderId == userId)
+                .Select(m => m.ReceiverId == userId ? m.SenderId : m.ReceiverId)
+                .Distinct()
                 .ToListAsync();
 
             var result = new List<DirectMessage>();
 
-            foreach (var item in latestPerSender)
+            foreach (var partnerId in conversationPartners)
             {
-                var message = await _context.DirectMessages
-                    .Where(m => m.ReceiverId == userId
-                        && m.SenderId == item.SenderId
-                        && m.Timestamp == item.LatestTimestamp)
+                var latestMessage = await _context.DirectMessages
+                    .Where(m => (m.SenderId == userId && m.ReceiverId == partnerId) ||
+                                (m.SenderId == partnerId && m.ReceiverId == userId))
+                    .OrderByDescending(m => m.Timestamp)
                     .Include(m => m.Sender)
                     .Include(m => m.Receiver)
                     .FirstOrDefaultAsync();
 
-                if (message != null)
+                if (latestMessage != null)
                 {
+                    var unreadCount = await _context.DirectMessages
+                        .Where(m => m.SenderId == partnerId && m.ReceiverId == userId && !m.IsRead)
+                        .CountAsync();
 
-                    message.UnreadCount = item.UnreadCount;
-                    result.Add(message);
+                    latestMessage.UnreadCount = unreadCount;
+                    result.Add(latestMessage);
                 }
             }
 

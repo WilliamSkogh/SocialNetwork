@@ -96,9 +96,11 @@ public class DirectMessagesEndpoints : IEndpoint
             {
                 Id = m.Id,
                 SenderId = m.SenderId,
-                SenderUsername = m.Sender?.UserName,
+                SenderUsername = m.Sender?.UserName ?? string.Empty,
+                SenderProfileImageUrl = m.Sender?.ProfileImageUrl,
                 ReceiverId = m.ReceiverId,
-                ReceiverUsername = m.Receiver?.UserName,
+                ReceiverUsername = m.Receiver?.UserName ?? string.Empty,
+                ReceiverProfileImageUrl = m.Receiver?.ProfileImageUrl,
                 Message = m.Message,
                 Timestamp = m.Timestamp,
                 IsRead = m.IsRead
@@ -128,14 +130,21 @@ public class DirectMessagesEndpoints : IEndpoint
 
             var messages = await service.GetInboxAsync(userId);
 
-            var dtoList = messages.Select(m => new InboxMessageDto
+            var dtoList = messages.Select(m => 
             {
-                Id = m.Id,
-                SenderId = m.SenderId,
-                SenderUsername = m.Sender?.UserName,
-                Message = m.Message,
-                Timestamp = m.Timestamp,
-                UnreadCount = m.UnreadCount
+                var isOwnMessage = m.SenderId == userId;
+                var otherUser = isOwnMessage ? m.Receiver : m.Sender;
+                
+                return new InboxMessageDto
+                {
+                    Id = m.Id,
+                    SenderId = otherUser?.Id ?? m.SenderId,
+                    SenderUsername = otherUser?.UserName ?? "Unknown",
+                    SenderProfileImageUrl = otherUser?.ProfileImageUrl,
+                    Message = m.Message,
+                    Timestamp = m.Timestamp,
+                    UnreadCount = m.UnreadCount
+                };
             }).ToList();
 
             return Results.Ok(dtoList);
@@ -211,9 +220,9 @@ public class DirectMessagesEndpoints : IEndpoint
             {
                 Id = m.Id,
                 SenderId = m.SenderId,
-                SenderUsername = m.Sender?.UserName,
+                SenderUsername = m.Sender?.UserName ?? string.Empty,
                 ReceiverId = m.ReceiverId,
-                ReceiverUsername = m.Receiver?.UserName,
+                ReceiverUsername = m.Receiver?.UserName ?? string.Empty,
                 Message = m.Message,
                 Timestamp = m.Timestamp,
                 IsRead = m.IsRead
