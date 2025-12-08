@@ -71,4 +71,33 @@ public class ActivityServiceTests
         Assert.Equal("user2", activity.ActorId);
         Assert.Equal("disliker", activity.ActorUsername);
     }
+
+    [Fact]
+    public async Task GetUserActivitiesAsync_ShouldReturnCommentsOnUserPosts()
+    {
+        var context = GetInMemoryDbContext();
+        var service = new ActivityService(context);
+        
+        var author = new ApplicationUser { Id = "user1", UserName = "testuser" };
+        var commenter = new ApplicationUser { Id = "user2", UserName = "commenter" };
+        
+        context.Users.AddRange(author, commenter);
+        
+        var post = new Post { Id = 1, AuthorId = "user1", Content = "Test post" };
+        context.Posts.Add(post);
+        
+        var comment = new Comment { PostId = 1, UserId = "user2", Text = "Nice post!", CreatedAt = DateTime.UtcNow };
+        context.Set<Comment>().Add(comment);
+        
+        await context.SaveChangesAsync();
+
+        var activities = await service.GetUserActivitiesAsync("user1");
+
+        Assert.Single(activities);
+        var activity = activities.First();
+        Assert.Equal("comment", activity.Type);
+        Assert.Equal("user2", activity.ActorId);
+        Assert.Equal("commenter", activity.ActorUsername);
+        Assert.Equal("Nice post!", activity.CommentText);
+    }
 }
