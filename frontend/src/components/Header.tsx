@@ -4,7 +4,7 @@ import logo from "../assets/sn-high-resolution-logo-transparent.png";
 import { useAuth } from "../AuthContext";
 import { useNavigate } from "react-router-dom";
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import './Header.css';
+import '../styles/Header.css'
 import { useTheme } from "../ThemeContext";
 import { profiileService } from "../services/ProfileService";
 import type { UserSearchResult } from "../types/types";
