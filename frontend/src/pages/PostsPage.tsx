@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { apiClient } from "../services/axiosClient";
+import { useAuth } from "../AuthContext";
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './PostsPage.css';
 import PostCard from "../components/Post/PostCard";
@@ -34,8 +35,13 @@ interface Post {
 }
 
 export default function PostsPage() {
+    const { user } = useAuth();
     const [activeTab, setActiveTab] = useState<'all' | 'following'>('all');
     const [posts, setPosts] = useState<Post[]>([]);
+
+    if (!user) {
+        return null;
+    }
 
     useEffect(() => {
         fetchPosts();

@@ -17,7 +17,7 @@ export default function Header() {
         return (
             <Navbar bg="dark" expand="lg" sticky="top" variant="dark">
                 <Container fluid className="d-flex justify-content-between align-items-center">
-                    <Navbar.Brand href="/" className="">
+                    <Navbar.Brand href="/login" className="">
                         <img
                             src={logo}
                             alt="Social Network Logo"
@@ -67,9 +67,6 @@ export default function Header() {
                 <Nav className="me-auto">
                     {user && (
                         <>
-                            <Nav.Link as={Link} to="/" style={{ color: 'white' }}>
-                                Hem
-                            </Nav.Link>
                             <Nav.Link as={Link} to="/messages" style={{ color: 'white' }}>
                                 Meddelanden
                             </Nav.Link>
