@@ -51,8 +51,8 @@ export default function LoginPage() {
                         </Form>
                     </Card.Body>
                 </Card>
-                <div className="w-100 text-center mt-2">
-                    Har du inget konto? <a href="/register">Registrera dig här</a>
+                <div className="w-100 text-center mt-2" style={{ color: 'var(--text-primary)' }}>
+                    Har du inget konto? <a href="/register" style={{ color: '#0866ff' }}>Registrera dig här</a>
                 </div>
             </div>
         </Container>

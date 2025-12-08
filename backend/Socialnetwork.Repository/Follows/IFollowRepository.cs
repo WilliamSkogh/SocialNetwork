@@ -11,5 +11,6 @@ namespace Socialnetwork.Repository
 
         Task<Follow?> GetFollowAsync(string followerId, string followingId);
         Task RemoveFollowAsync(Follow follow);
+        Task<List<string>> GetFollowingIdsAsync(string userId);
     }
 }

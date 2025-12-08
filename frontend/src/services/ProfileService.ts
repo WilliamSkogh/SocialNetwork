@@ -19,5 +19,15 @@ export const profiileService = {
             },
         });
         return response.data;
+    },
+
+    followUser: async (userId: string) => {
+        const response = await apiClient.post(`/api/users/${userId}/follow`);
+        return response.data;
+    },
+
+    unfollowUser: async (userId: string) => {
+        const response = await apiClient.delete(`/api/users/${userId}/unfollow`);
+        return response.data;
     }
 };

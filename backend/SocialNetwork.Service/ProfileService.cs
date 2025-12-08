@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Socialnetwork.Repository.Profile;
+using Socialnetwork.Repository;
 using SocialNetwork.Entity;
 using System;
 using System.Collections.Generic;
@@ -13,26 +14,36 @@ public class ProfileService : IProfileService
 {
     private readonly IProfileRepository _repo;
     private readonly IMediaUploadService _mediaService;
-    public ProfileService(IProfileRepository repo, IMediaUploadService mediaService)
+    private readonly IFollowRepository _followRepo;
+    public ProfileService(IProfileRepository repo, IMediaUploadService mediaService, IFollowRepository followRepo)
     {
         _repo = repo;
         _mediaService = mediaService;
+        _followRepo = followRepo;
     }
     
 
-public async Task<UserProfile?> GetUserProfileAsync(string userName)
+public async Task<UserProfile?> GetUserProfileAsync(string userName, string? currentUserId = null)
     {
         var user =  await _repo.GetUserByUsernameAsync(userName);
        
         if (user == null) return null;
 
+        bool isFollowing = false;
+        if (!string.IsNullOrEmpty(currentUserId) && currentUserId != user.Id)
+        {
+            isFollowing = await _followRepo.IsFollowingAsync(currentUserId, user.Id);
+        }
+
         return new UserProfile
         {
+            UserId = user.Id,
             UserName = user.UserName,
             Bio = user.Bio,
             ProfileImageUrl = user.ProfileImageUrl,
             FollowerCount = user.FollowerCount,
-            FollowingCount = user.FollowingCount
+            FollowingCount = user.FollowingCount,
+            IsFollowing = isFollowing
         };
     }
     public async Task UpdateUserProfileAsync(string username, string newBio, IFormFile? imageFile)

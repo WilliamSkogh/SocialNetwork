@@ -221,6 +221,35 @@ namespace Socialnetwork.Entityframework.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("SocialNetwork.Entity.Comment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Comment");
+                });
+
             modelBuilder.Entity("SocialNetwork.Entity.DirectMessage", b =>
                 {
                     b.Property<int>("Id")
@@ -257,6 +286,31 @@ namespace Socialnetwork.Entityframework.Migrations
                     b.ToTable("DirectMessages");
                 });
 
+            modelBuilder.Entity("SocialNetwork.Entity.Dislike", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Dislike");
+                });
+
             modelBuilder.Entity("SocialNetwork.Entity.Follow", b =>
                 {
                     b.Property<string>("FollowerId")
@@ -273,6 +327,31 @@ namespace Socialnetwork.Entityframework.Migrations
                     b.HasIndex("FollowingId");
 
                     b.ToTable("Follows");
+                });
+
+            modelBuilder.Entity("SocialNetwork.Entity.Like", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Like");
                 });
 
             modelBuilder.Entity("SocialNetwork.Entity.Post", b =>
@@ -358,6 +437,25 @@ namespace Socialnetwork.Entityframework.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("SocialNetwork.Entity.Comment", b =>
+                {
+                    b.HasOne("SocialNetwork.Entity.Post", "Post")
+                        .WithMany("Comments")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SocialNetwork.Entity.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Post");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("SocialNetwork.Entity.DirectMessage", b =>
                 {
                     b.HasOne("SocialNetwork.Entity.ApplicationUser", "Receiver")
@@ -377,6 +475,25 @@ namespace Socialnetwork.Entityframework.Migrations
                     b.Navigation("Sender");
                 });
 
+            modelBuilder.Entity("SocialNetwork.Entity.Dislike", b =>
+                {
+                    b.HasOne("SocialNetwork.Entity.Post", "Post")
+                        .WithMany("Dislikes")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SocialNetwork.Entity.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Post");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("SocialNetwork.Entity.Follow", b =>
                 {
                     b.HasOne("SocialNetwork.Entity.ApplicationUser", "Follower")
@@ -394,6 +511,25 @@ namespace Socialnetwork.Entityframework.Migrations
                     b.Navigation("Follower");
 
                     b.Navigation("Following");
+                });
+
+            modelBuilder.Entity("SocialNetwork.Entity.Like", b =>
+                {
+                    b.HasOne("SocialNetwork.Entity.Post", "Post")
+                        .WithMany("Likes")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SocialNetwork.Entity.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Post");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SocialNetwork.Entity.Post", b =>
@@ -418,6 +554,15 @@ namespace Socialnetwork.Entityframework.Migrations
                     b.Navigation("Followers");
 
                     b.Navigation("Following");
+                });
+
+            modelBuilder.Entity("SocialNetwork.Entity.Post", b =>
+                {
+                    b.Navigation("Comments");
+
+                    b.Navigation("Dislikes");
+
+                    b.Navigation("Likes");
                 });
 #pragma warning restore 612, 618
         }

@@ -48,6 +48,11 @@ public class PostRepositoryTests
     {
         // Arrange
         using var context = GetInMemoryDbContext();
+        var author = new ApplicationUser { Id = "user1", UserName = "user1", Email = "user1@test.com" };
+        var recipient = new ApplicationUser { Id = "user2", UserName = "user2", Email = "user2@test.com" };
+        context.Users.AddRange(author, recipient);
+        await context.SaveChangesAsync();
+        
         var repository = new PostRepository(context);
         var post = new Post { AuthorId = "user1", RecipientId = "user2", Content = "Test" };
         await repository.CreateAsync(post);
@@ -66,6 +71,11 @@ public class PostRepositoryTests
     {
         // Arrange
         using var context = GetInMemoryDbContext();
+        var author1 = new ApplicationUser { Id = "user1", UserName = "user1", Email = "user1@test.com" };
+        var author2 = new ApplicationUser { Id = "user2", UserName = "user2", Email = "user2@test.com" };
+        context.Users.AddRange(author1, author2);
+        await context.SaveChangesAsync();
+        
         var repository = new PostRepository(context);
         
         var baseTime = DateTime.UtcNow;
@@ -93,6 +103,11 @@ public class PostRepositoryTests
     {
         // Arrange
         using var context = GetInMemoryDbContext();
+        var author = new ApplicationUser { Id = "user1", UserName = "user1", Email = "user1@test.com" };
+        var recipient = new ApplicationUser { Id = "user2", UserName = "user2", Email = "user2@test.com" };
+        context.Users.AddRange(author, recipient);
+        await context.SaveChangesAsync();
+        
         var repository = new PostRepository(context);
         var post = new Post { AuthorId = "user1", RecipientId = "user2", Content = "Original" };
         await repository.CreateAsync(post);

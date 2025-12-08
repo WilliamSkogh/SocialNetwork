@@ -8,8 +8,38 @@ import EmojiPicker, { type EmojiClickData } from "emoji-picker-react";
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import config from "../config";
 import '../styles/profilepage.css'
+import '../pages/PostsPage.css'
+import { apiClient } from "../services/axiosClient";
+import PostCard from "../components/Post/PostCard";
 
 const API_BASE_URL = config.apiBaseUrl;
+
+interface Comment {
+    id: number;
+    userId: string;
+    username: string;
+    profileImageUrl?: string;
+    text: string;
+    createdAt: string;
+}
+
+interface Post {
+    id: number;
+    authorId: string;
+    authorUsername: string;
+    authorProfileImageUrl?: string;
+    recipientId?: string;
+    recipientUsername?: string;
+    recipientProfileImageUrl?: string;
+    content: string;
+    imageUrl?: string;
+    createdAt: string;
+    likesCount: number;
+    dislikesCount: number;
+    hasLiked: boolean;
+    hasDisliked: boolean;
+    comments: Comment[];
+}
 
 export default function ProfilePage() {
     const { username } = useParams<{ username: string }>();
@@ -21,6 +51,9 @@ export default function ProfilePage() {
     const [editBio, setEditBio] = useState("");
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [showPicker, setShowPicker] = useState(false);
+    const [posts, setPosts] = useState<Post[]>([]);
+    const [newPost, setNewPost] = useState("");
+    const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
     const isMyProfile = currentUser && profile && currentUser.username?.toLowerCase() === profile.userName?.toLowerCase();
 
@@ -34,6 +67,10 @@ export default function ProfilePage() {
                 const data = await profiileService.getProfile(username);
                 setProfile(data);
                 setEditBio(data.bio || "");
+                
+                
+                const postsResponse = await apiClient.get(`/api/users/${data.userId}/posts`);
+                setPosts(postsResponse.data);
             } catch (err) {
                 console.error(err);
                 setError("kunde inte hämta profilen");
@@ -43,6 +80,16 @@ export default function ProfilePage() {
         };
         fetchProfile();
     }, [username]);
+
+    const fetchPosts = async () => {
+        if (!profile) return;
+        try {
+            const postsResponse = await apiClient.get(`/api/users/${profile.userId}/posts`);
+            setPosts(postsResponse.data);
+        } catch (error) {
+            console.error("Failed to fetch posts", error);
+        }
+    };
 
     const handleUpdateProfile = async () => {
         if (!profile) return;
@@ -69,6 +116,38 @@ export default function ProfilePage() {
         setEditBio((prev) => prev + emojiData.emoji);
     };
 
+    const handleCreateWallPost = async () => {
+        if (!newPost.trim() || !profile) return;
+        
+        try {
+            const formData = new FormData();
+            formData.append("content", newPost);
+            if (selectedImage) {
+                formData.append("imageFile", selectedImage);
+            }
+
+            await apiClient.post(`/api/users/${profile.userId}/posts`, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            setNewPost("");
+            setSelectedImage(null);
+            
+            await fetchPosts();
+        } catch (error) {
+            console.error("Failed to create wall post", error);
+        }
+    };
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setSelectedImage(e.target.files[0]);
+        }
+    };
+
+
     if (loading) return <div className="text-center mt-5">Laddar profil...</div>;
     if (error) return <div className="text-center mt-5 text-danger">{error}</div>;
     if (!profile) return <div className="text-center mt-5">Ingen profil hittades.</div>;
@@ -80,7 +159,7 @@ export default function ProfilePage() {
         <Container className="mt-4 profile-container">
             <header className="mb-5">
                 {isEditing ? (
-                    <div className="p-3 bg-light rounded shadow-sm">
+                    <div className="p-3 rounded shadow-sm" style={{background: 'var(--bg-secondary)', border: '1px solid var(--border-color)'}}>
                         <div className="text-center mb-4">
                             <Image
                                 src={imageUrl}
@@ -89,27 +168,35 @@ export default function ProfilePage() {
                                 roundedCircle
                             />
                         </div>
-                        <h5 className="mb-3">Redigera profil</h5>
+                        <h5 className="mb-3" style={{color: 'var(--text-primary)'}}>Redigera profil</h5>
                         <Form>
                             <Form.Group className="mb-3">
-                                <Form.Label className="small fw-bold text-muted">Byt profilbild</Form.Label>
+                                <Form.Label className="small fw-bold" style={{color: 'var(--text-secondary)'}}>Byt profilbild</Form.Label>
                                 <Form.Control size="sm" type="file" onChange={handleFileChange} />
                             </Form.Group>
 
                             <Form.Group className="mb-3">
                                 <div className="d-flex justify-content-between align-items-center mb-1">
-                                    <Form.Label className="small fw-bold text-muted mb-0">Bio</Form.Label>
+                                    <Form.Label className="small fw-bold mb-0" style={{color: 'var(--text-secondary)'}}>Bio</Form.Label>
                                     <Button
                                         variant="light"
                                         size="sm"
-                                        className="p-0 border-0 text-muted"
+                                        className="p-0 border-0"
+                                        style={{color: 'var(--text-secondary)'}}
                                         onClick={() => setShowPicker(!showPicker)}
                                         title="Infoga emoji"
                                     >
                                         <i className="bi bi-emoji-smile fs-5"></i>
                                     </Button>
                                 </div>
-                                <Form.Control as="textarea" rows={3} value={editBio} onChange={e => setEditBio(e.target.value)} maxLength={500} />
+                                <Form.Control 
+                                    as="textarea" 
+                                    rows={3} 
+                                    value={editBio} 
+                                    onChange={e => setEditBio(e.target.value)} 
+                                    maxLength={500}
+                                    style={{background: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)'}}
+                                />
                                 {showPicker && (
                                     <div className="mt-2">
                                         <EmojiPicker
@@ -121,7 +208,7 @@ export default function ProfilePage() {
                                         />
                                     </div>
                                 )}
-                                <div className="text-end small text-muted mt-1">{editBio.length}/500</div>
+                                <div className="text-end small mt-1" style={{color: 'var(--text-secondary)'}}>{editBio.length}/500</div>
                             </Form.Group>
 
                             <div className="d-flex gap-2">
@@ -159,8 +246,26 @@ export default function ProfilePage() {
                                 </Button>
                             ) : (
                                 <>
-                                    <Button variant="primary" size="sm" className="action-btn flex-grow-1">
-                                        Följ
+                                    <Button 
+                                        variant={profile.isFollowing ? "outline-primary" : "primary"} 
+                                        size="sm" 
+                                        className="action-btn flex-grow-1"
+                                        onClick={async () => {
+                                            try {
+                                                if (profile.isFollowing) {
+                                                    await profiileService.unfollowUser(profile.userId);
+                                                } else {
+                                                    await profiileService.followUser(profile.userId);
+                                                }
+                                                const updatedProfile = await profiileService.getProfile(username!);
+                                                setProfile(updatedProfile);
+                                            } catch (err) {
+                                                console.error(err);
+                                                alert("Kunde inte uppdatera följ-status");
+                                            }
+                                        }}
+                                    >
+                                        {profile.isFollowing ? "Följer" : "Följ"}
                                     </Button>
                                     <Button variant="outline-secondary" size="sm" className="action-btn flex-grow-1" onClick={() => alert("Kommer snart!")}>
                                         Meddelande
@@ -176,11 +281,48 @@ export default function ProfilePage() {
                 )}
             </header>
 
-            <div className="border-top pt-4">
-                <div className="text-center text-muted">
-                    <i className="bi bi-grid-3x3 fs-3"></i>
-                    <p className="mt-2">Inga inlägg ännu</p>
+            {!isMyProfile && (
+                <div className="mb-3" style={{background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '1rem'}}>
+                    <h5 style={{color: 'var(--text-primary)'}}>Skriv på {profile.userName}s vägg</h5>
+                    <textarea
+                        value={newPost}
+                        onChange={(e) => setNewPost(e.target.value)}
+                        placeholder="Skriv något..."
+                        className="form-control mb-2"
+                        rows={3}
+                        style={{background: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)'}}
+                    />
+                    <div className="mb-2">
+                        <input
+                            type="file"
+                            accept="image/*,video/*"
+                            onChange={handleImageChange}
+                            className="form-control"
+                            style={{background: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)'}}
+                        />
+                        {selectedImage && (
+                            <small style={{color: 'var(--text-secondary)'}}>
+                                Vald: {selectedImage.name}
+                            </small>
+                        )}
+                    </div>
+                    <Button onClick={handleCreateWallPost}>Posta</Button>
                 </div>
+            )}
+
+            <div className="border-top pt-4">
+                {posts.length === 0 ? (
+                    <div className="text-center" style={{color: 'var(--text-secondary)'}}>
+                        <i className="bi bi-grid-3x3 fs-3"></i>
+                        <p className="mt-2">Inga inlägg ännu</p>
+                    </div>
+                ) : (
+                    <div>
+                        {posts.map((post) => (
+                            <PostCard key={post.id} post={post} onUpdate={fetchPosts} />
+                        ))}
+                    </div>
+                )}
             </div>
         </Container>
     );

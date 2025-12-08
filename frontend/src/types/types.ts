@@ -6,11 +6,13 @@ export interface User {
     profileImageUrl?: string;
 }
 export interface UserProfile {
+    userId: string;
     userName: string;
     bio?: string;
     profileImageUrl?: string;
     followerCount: number;
     followingCount: number;
+    isFollowing: boolean;
 }
 export interface AuthResponse {
     accessToken: string;
