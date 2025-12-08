@@ -5,6 +5,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import './PostsPage.css';
 import PostCard from "../components/Post/PostCard";
 import CreatePostForm from "../components/CreatePost/CreatePostForm";
+import ActivityFeed from "../components/ActivityFeed/ActivityFeed";
 
 interface Comment {
     id: number;
@@ -89,6 +90,9 @@ export default function PostsPage() {
                             <PostCard key={post.id} post={post} onUpdate={fetchPosts} />
                         ))
                     )}
+                </div>
+                <div className="sidebar">
+                    <ActivityFeed />
                 </div>
             </div>
         </div>
