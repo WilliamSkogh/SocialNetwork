@@ -3,7 +3,7 @@ import { apiClient } from '../../services/axiosClient';
 import './ActivityFeed.css';
 
 interface Activity {
-    type: 'like' | 'dislike' | 'comment';
+    type: 'like' | 'dislike' | 'comment' | 'follow';
     actorUsername: string;
     createdAt: string;
     commentText?: string;
@@ -38,6 +38,7 @@ export default function ActivityFeed() {
         if (a.type === 'like') return `${a.actorUsername} gillade ditt inlägg`;
         if (a.type === 'dislike') return `${a.actorUsername} tummade ner ditt inlägg`;
         if (a.type === 'comment') return `${a.actorUsername} kommenterade ditt inlägg`;
+        if (a.type === 'follow') return `${a.actorUsername} följer dig`;
         return '';
     };
 
