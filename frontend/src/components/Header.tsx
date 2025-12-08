@@ -90,7 +90,7 @@ export default function Header() {
                 className={`app-header ${theme === 'dark' ? 'is-dark' : 'is-light'}`}
             >
                 <Container fluid className="d-flex justify-content-between align-items-center header-container">
-                    <Navbar.Brand href="/" className="header-brand">
+                    <Navbar.Brand href="/login" className="header-brand">
                         <img
                             src={logo}
                             alt="Social Network Logo"
