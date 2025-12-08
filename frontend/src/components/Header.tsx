@@ -1,5 +1,7 @@
-import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
+import { Container, Nav, Navbar, NavDropdown} from "react-bootstrap";
 import logo from "../assets/sn-high-resolution-logo-transparent.png";
+import { Link } from "react-router-dom";
+
 import { useAuth } from "../AuthContext";
 import { useNavigate } from "react-router-dom";
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -62,6 +64,18 @@ export default function Header() {
                         height="50"
                     />
                 </Navbar.Brand>
+                <Nav className="me-auto">
+                    {user && (
+                        <>
+                            <Nav.Link as={Link} to="/" style={{ color: 'white' }}>
+                                Hem
+                            </Nav.Link>
+                            <Nav.Link as={Link} to="/messages" style={{ color: 'white' }}>
+                                Meddelanden
+                            </Nav.Link>
+                        </>
+                    )}
+                </Nav>
                 <Nav>
                     <NavDropdown 
                         title={<i className="bi bi-person-circle" style={{ fontSize: '1.5rem', color: 'white' }}></i>}

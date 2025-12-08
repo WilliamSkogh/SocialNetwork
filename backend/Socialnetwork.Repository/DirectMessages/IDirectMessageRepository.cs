@@ -13,6 +13,12 @@ namespace SocialNetwork.Repository
         Task<DirectMessage> CreateAsync(DirectMessage message);
         Task<IEnumerable<DirectMessage>> GetConversationAsync(string user1Id, string user2Id);
         Task<IEnumerable<DirectMessage>> GetInboxAsync(string userId);
+        Task MarkAsReadAsync(int messageId, string userId);
+        Task<IEnumerable<DirectMessage>> GetUnreadMessagesAsync(string userId);
+        Task<int> GetUnreadCountAsync(string userId);
+        Task<DirectMessage> GetMessageByIdAsync(int messageId);
+        Task<DirectMessage> GetLatestDirectMessageBetweenUsersAsync(string user1Id, string user2Id);
+
 
     }
 }
