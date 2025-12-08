@@ -12,13 +12,13 @@ export default function PostActions({ hasLiked, hasDisliked, onLike, onDislike }
                 onClick={onLike}
                 className={`like-btn ${hasLiked ? 'active' : ''}`}
             >
-                <i className="bi bi-hand-thumbs-up-fill"></i> Gilla
+                <i className="bi bi-hand-thumbs-up-fill"></i> 
             </button>
             <button 
                 onClick={onDislike}
                 className={`dislike-btn ${hasDisliked ? 'active' : ''}`}
             >
-                <i className="bi bi-hand-thumbs-down-fill"></i> Hata
+                <i className="bi bi-hand-thumbs-down-fill"></i> 
             </button>
         </div>
     );

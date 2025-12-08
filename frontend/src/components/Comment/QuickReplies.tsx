@@ -3,7 +3,7 @@ interface QuickRepliesProps {
 }
 
 export default function QuickReplies({ onQuickReply }: QuickRepliesProps) {
-    const replies = ["Cringe", "L + ratio", "Bror vad sysslar du med?"];
+    const replies = ["🔥","😍","❤️","🏆", "👏", "😠"];
 
     return (
         <div className="quick-replies">
