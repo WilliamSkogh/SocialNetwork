@@ -117,7 +117,7 @@ export default function PostCard({ post, onUpdate }: PostCardProps) {
     };
 
     return (
-        <div className="post-card" style={{ position: 'relative' }}>
+        <div className="post-card" style={{ position: 'relative' }} id={`post-${post.id}`}>
             <PostHeader
                 authorUsername={post.authorUsername}
                 authorProfileImageUrl={post.authorProfileImageUrl}

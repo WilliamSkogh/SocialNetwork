@@ -1,16 +1,22 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../../services/axiosClient';
+import { buildMediaUrl } from '../../utils/media';
 import './ActivityFeed.css';
 
 interface Activity {
     type: 'like' | 'dislike' | 'comment' | 'follow';
     actorUsername: string;
+    actorProfileImageUrl?: string;
+    postId?: number;
+    postImageUrl?: string;
     createdAt: string;
     commentText?: string;
 }
 
 export default function ActivityFeed() {
     const [activities, setActivities] = useState<Activity[]>([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         apiClient.get('/api/activities')
@@ -42,6 +48,57 @@ export default function ActivityFeed() {
         return '';
     };
 
+    const handleClick = (a: Activity) => {
+        if (a.type === 'follow') {
+            navigate(`/profile/${a.actorUsername}`);
+        } else if (a.postId) {
+            navigate('/');
+            setTimeout(() => {
+                const element = document.getElementById(`post-${a.postId}`);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
+        }
+    };
+
+    const getMediaThumbnail = (url?: string) => {
+        if (!url) return null;
+        const fullUrl = buildMediaUrl(url);
+        if (!fullUrl) return null;
+
+        const isVideo = url.toLowerCase().endsWith('.mp4') || url.toLowerCase().endsWith('.webm');
+        
+        if (isVideo) {
+            return (
+                <div style={{ position: 'relative', width: 40, height: 40, marginLeft: 8 }}>
+                    <video 
+                        src={fullUrl} 
+                        style={{ width: 40, height: 40, objectFit: 'cover' }}
+                        muted
+                    />
+                    <i className="bi bi-play-circle-fill" style={{ 
+                        position: 'absolute', 
+                        top: '50%', 
+                        left: '50%', 
+                        transform: 'translate(-50%, -50%)',
+                        color: 'black',
+                        fontSize: '20px',
+                        pointerEvents: 'none'
+                    }}></i>
+                </div>
+            );
+        }
+        
+        return (
+            <img 
+                src={fullUrl} 
+                alt="" 
+                style={{ width: 40, height: 40, marginLeft: 8, objectFit: 'cover' }} 
+            />
+        );
+    };
+
     return (
         <div className="activity-feed">
             <h3>Aktivitet</h3>
@@ -50,9 +107,19 @@ export default function ActivityFeed() {
             ) : (
                 <div>
                     {activities.map((a, i) => (
-                        <div key={i}>
-                            <span>{getText(a)}</span>
-                            <span> - {getTime(a.createdAt)}</span>
+                        <div key={i} onClick={() => handleClick(a)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            {a.actorProfileImageUrl && (
+                                <img 
+                                    src={buildMediaUrl(a.actorProfileImageUrl)} 
+                                    alt="" 
+                                    style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }} 
+                                />
+                            )}
+                            <div style={{ flex: 1 }}>
+                                <span>{getText(a)}</span>
+                                <span> - {getTime(a.createdAt)}</span>
+                            </div>
+                            {getMediaThumbnail(a.postImageUrl)}
                         </div>
                     ))}
                 </div>

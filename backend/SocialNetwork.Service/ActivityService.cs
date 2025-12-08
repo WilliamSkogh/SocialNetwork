@@ -30,6 +30,7 @@ public class ActivityService : IActivityService
                 l.User.ProfileImageUrl,
                 l.PostId,
                 l.Post!.Content,
+                l.Post.ImageUrl,
                 null,
                 l.CreatedAt
             ))
@@ -48,6 +49,7 @@ public class ActivityService : IActivityService
                 d.User.ProfileImageUrl,
                 d.PostId,
                 d.Post!.Content,
+                d.Post.ImageUrl,
                 null,
                 d.CreatedAt
             ))
@@ -66,6 +68,7 @@ public class ActivityService : IActivityService
                 c.User.ProfileImageUrl,
                 c.PostId,
                 c.Post!.Content,
+                c.Post.ImageUrl,
                 c.Text,
                 c.CreatedAt
             ))
@@ -81,6 +84,7 @@ public class ActivityService : IActivityService
                 f.FollowerId,
                 f.Follower!.UserName ?? "Unknown",
                 f.Follower.ProfileImageUrl,
+                null,
                 null,
                 null,
                 null,

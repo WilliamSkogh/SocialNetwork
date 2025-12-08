@@ -7,6 +7,7 @@ public record ActivityDto(
     string? ActorProfileImageUrl,
     int? PostId,
     string? PostContent,
+    string? PostImageUrl,
     string? CommentText,
     DateTime CreatedAt
 );
