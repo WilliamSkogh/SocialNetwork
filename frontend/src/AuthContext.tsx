@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import type { User } from "./types/types";
 import { authService } from "./services/AuthService";
 import { storage } from "./utils/storage";
+import directMessageSignalR from "./services/DirectMessageSignalRService";
 
 interface AuthContextType {
     user: User | null;
@@ -21,6 +22,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const logout = async () => {
         await authService.logout();
+        // Disconnect SignalR on logout
+        await directMessageSignalR.stopConnection();
         setUser(null);
         navigate("/login");
     };
@@ -29,6 +32,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         try {
             const userData = await authService.getProfile();
             setUser(userData);
+            
+            // Connect to SignalR after successful profile load
+            const token = storage.getToken();
+            if (token && !directMessageSignalR.isConnected()) {
+                try {
+                    await directMessageSignalR.startConnection(token);
+                    console.log('SignalR connected in AuthContext');
+                } catch (error) {
+                    console.error('Failed to connect SignalR in AuthContext:', error);
+                }
+            }
         } catch (error) {
             console.error("kunde inte ladda användarprofil:", error);
             setUser(null);
