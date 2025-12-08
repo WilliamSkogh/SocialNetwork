@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 import { directMessageService } from '../services/directMessage/DirectMessageService';
 import { useDirectMessageSignalR } from './useDirectMessageSignalR';
-import type { DirectMessageConversationDto } from '../types/DirectMessage';
+import type { DirectMessageConversationDto, SignalRMessageSent } from '../types/DirectMessage';
 
 export const useConversation = (otherUserId: string | undefined) => {
   const { user } = useAuth();
@@ -25,8 +25,14 @@ export const useConversation = (otherUserId: string | undefined) => {
   }, []);
 
   const onMessageReceived = useCallback((message: DirectMessageConversationDto) => {
-    if (message.senderId === otherUserId || message.receiverId === otherUserId) {
+    // Only process incoming messages from the other user
+    if (message.senderId === otherUserId) {
       setMessages(prev => {
+        // Prevent adding a message if it already exists
+        if (prev.some(m => m.id === message.id)) {
+          return prev;
+        }
+
         const senderProfileImageUrl = prev.find(m => m.senderId === message.senderId)?.senderProfileImageUrl;
         const receiverProfileImageUrl = prev.find(m => m.receiverId === message.receiverId)?.receiverProfileImageUrl;
         
@@ -41,7 +47,7 @@ export const useConversation = (otherUserId: string | undefined) => {
       });
       scrollToBottom();
       
-      if (message.senderId === otherUserId && !message.isRead) {
+      if (!message.isRead) {
         markAsRead(message.id).catch(err =>
           console.error('Failed to auto-mark message as read:', err)
         );
@@ -49,19 +55,29 @@ export const useConversation = (otherUserId: string | undefined) => {
     }
   }, [otherUserId, scrollToBottom]);
 
-  const onMessageSent = useCallback((confirmation: DirectMessageConversationDto) => {
+  const onMessageSent = useCallback((confirmation: SignalRMessageSent) => {
     setMessages(prev => {
+      // Prevent adding a message if it already exists
+      if (prev.some(m => m.id === confirmation.id)) {
+        return prev;
+      }
+      
       const otherUser = prev.find(m => m.senderId === otherUserId || m.receiverId === otherUserId);
       const receiverProfileImageUrl = otherUser?.senderId === otherUserId
         ? otherUser?.senderProfileImageUrl
         : otherUser?.receiverProfileImageUrl;
       
       const newMessages = [...prev, {
-        ...confirmation,
+        id: confirmation.id,
+        senderId: user!.id,
         senderUsername: user!.username,
         senderProfileImageUrl: user!.profileImageUrl,
+        receiverId: confirmation.receiverId,
         receiverUsername: '',
         receiverProfileImageUrl,
+        message: confirmation.message,
+        timestamp: confirmation.timestamp,
+        isRead: confirmation.isRead,
       }];
       return newMessages.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
     });
@@ -121,7 +137,7 @@ export const useConversation = (otherUserId: string | undefined) => {
         console.error('Failed to mark message as read:', msg.id, err);
       }
     }
-  }, [user, otherUserId, isConnected, markAsRead]);
+  }, [user, otherUserId]);
 
   const loadConversation = useCallback(async () => {
     if (!otherUserId) return;
@@ -133,7 +149,8 @@ export const useConversation = (otherUserId: string | undefined) => {
       markUnreadMessagesAsRead(data);
     } catch (err) {
       console.error('Failed to load conversation:', err);
-    } finally {
+    }
+    finally {
       setLoading(false);
     }
   }, [otherUserId, markUnreadMessagesAsRead]);
@@ -175,7 +192,8 @@ export const useConversation = (otherUserId: string | undefined) => {
     } catch (err) {
       console.error('Failed to send message:', err);
       alert('Kunde inte skicka meddelande');
-    } finally {
+    }
+    finally {
       setSending(false);
     }
   };
