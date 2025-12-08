@@ -10,18 +10,19 @@ namespace SocialNetwork.Entity
     public class DirectMessage
     {
         public int Id { get; set; }
-        public string SenderId { get; set; }
-        public string ReceiverId { get; set; }
-        public string Message { get; set; }
+        public required string SenderId { get; set; }
+        public required string ReceiverId { get; set; }
+        public required string Message { get; set; }
         public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+        public DateTime? ReadAt { get; set; } 
         public bool IsRead { get; set; } = false;
 
         [NotMapped]
         public int UnreadCount { get; set; }
 
 
-        public ApplicationUser Sender { get; set; }
-        public ApplicationUser Receiver { get; set; }
+        public ApplicationUser? Sender { get; set; }
+        public ApplicationUser? Receiver { get; set; }
 
     }
 }
