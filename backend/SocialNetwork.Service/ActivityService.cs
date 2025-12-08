@@ -15,6 +15,8 @@ public class ActivityService : IActivityService
 
     public async Task<IEnumerable<ActivityDto>> GetUserActivitiesAsync(string userId, int limit = 20)
     {
+        var activities = new List<ActivityDto>();
+
         var likes = await _context.Set<Like>()
             .Where(l => l.Post!.AuthorId == userId && l.UserId != userId)
             .Include(l => l.User)
@@ -33,6 +35,27 @@ public class ActivityService : IActivityService
             ))
             .ToListAsync();
 
-        return likes.OrderByDescending(a => a.CreatedAt).Take(limit);
+        var dislikes = await _context.Set<Dislike>()
+            .Where(d => d.Post!.AuthorId == userId && d.UserId != userId)
+            .Include(d => d.User)
+            .Include(d => d.Post)
+            .OrderByDescending(d => d.CreatedAt)
+            .Take(limit)
+            .Select(d => new ActivityDto(
+                "dislike",
+                d.UserId,
+                d.User!.UserName ?? "Unknown",
+                d.User.ProfileImageUrl,
+                d.PostId,
+                d.Post!.Content,
+                null,
+                d.CreatedAt
+            ))
+            .ToListAsync();
+
+        activities.AddRange(likes);
+        activities.AddRange(dislikes);
+
+        return activities.OrderByDescending(a => a.CreatedAt).Take(limit);
     }
 }
