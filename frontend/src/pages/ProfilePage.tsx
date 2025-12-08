@@ -65,8 +65,8 @@ export default function ProfilePage() {
                 const data = await profiileService.getProfile(username);
                 setProfile(data);
                 setEditBio(data.bio || "");
-                
-                
+
+
                 const postsResponse = await apiClient.get(`/api/users/${data.userId}/posts`);
                 setPosts(postsResponse.data);
             } catch (err) {
@@ -136,7 +136,7 @@ export default function ProfilePage() {
         <Container className="mt-4 profile-container">
             <header className="mb-5">
                 {isEditing ? (
-                    <div className="p-3 rounded shadow-sm" style={{background: 'var(--bg-secondary)', border: '1px solid var(--border-color)'}}>
+                    <div className="p-3 rounded shadow-sm" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-color)' }}>
                         <div className="text-center mb-4">
                             <Image
                                 src={imageUrl}
@@ -145,34 +145,34 @@ export default function ProfilePage() {
                                 roundedCircle
                             />
                         </div>
-                        <h5 className="mb-3" style={{color: 'var(--text-primary)'}}>Redigera profil</h5>
+                        <h5 className="mb-3" style={{ color: 'var(--text-primary)' }}>Redigera profil</h5>
                         <Form>
                             <Form.Group className="mb-3">
-                                <Form.Label className="small fw-bold" style={{color: 'var(--text-secondary)'}}>Byt profilbild</Form.Label>
+                                <Form.Label className="small fw-bold" style={{ color: 'var(--text-secondary)' }}>Byt profilbild</Form.Label>
                                 <Form.Control size="sm" type="file" onChange={handleFileChange} />
                             </Form.Group>
 
                             <Form.Group className="mb-3">
                                 <div className="d-flex justify-content-between align-items-center mb-1">
-                                    <Form.Label className="small fw-bold mb-0" style={{color: 'var(--text-secondary)'}}>Bio</Form.Label>
+                                    <Form.Label className="small fw-bold mb-0" style={{ color: 'var(--text-secondary)' }}>Bio</Form.Label>
                                     <Button
                                         variant="light"
                                         size="sm"
                                         className="p-0 border-0"
-                                        style={{color: 'var(--text-secondary)'}}
+                                        style={{ color: 'var(--text-secondary)' }}
                                         onClick={() => setShowPicker(!showPicker)}
                                         title="Infoga emoji"
                                     >
                                         <i className="bi bi-emoji-smile fs-5"></i>
                                     </Button>
                                 </div>
-                                <Form.Control 
-                                    as="textarea" 
-                                    rows={3} 
-                                    value={editBio} 
-                                    onChange={e => setEditBio(e.target.value)} 
+                                <Form.Control
+                                    as="textarea"
+                                    rows={3}
+                                    value={editBio}
+                                    onChange={e => setEditBio(e.target.value)}
                                     maxLength={500}
-                                    style={{background: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)'}}
+                                    style={{ background: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)' }}
                                 />
                                 {showPicker && (
                                     <div className="mt-2">
@@ -185,7 +185,7 @@ export default function ProfilePage() {
                                         />
                                     </div>
                                 )}
-                                <div className="text-end small mt-1" style={{color: 'var(--text-secondary)'}}>{editBio.length}/500</div>
+                                <div className="text-end small mt-1" style={{ color: 'var(--text-secondary)' }}>{editBio.length}/500</div>
                             </Form.Group>
 
                             <div className="d-flex gap-2">
@@ -210,9 +210,9 @@ export default function ProfilePage() {
 
                         <div className="ph-stats">
                             <ul className="stats-list">
-                                <li><span className="stats-value">0</span><span className="stats-label">inlÃ¤gg</span></li>
-                                <li><span className="stats-value">{profile.followerCount}</span><span className="stats-label">fÃ¶ljare</span></li>
-                                <li><span className="stats-value">{profile.followingCount}</span><span className="stats-label">fÃ¶ljer</span></li>
+                                <li><span className="stats-value">0</span><span className="stats-label">Inlägg</span></li>
+                                <li><span className="stats-value">{profile.followerCount}</span><span className="stats-label">Följare</span></li>
+                                <li><span className="stats-value">{profile.followingCount}</span><span className="stats-label">Följer</span></li>
                             </ul>
                         </div>
 
@@ -223,9 +223,9 @@ export default function ProfilePage() {
                                 </Button>
                             ) : (
                                 <>
-                                    <Button 
-                                        variant={profile.isFollowing ? "outline-primary" : "primary"} 
-                                        size="sm" 
+                                    <Button
+                                        variant={profile.isFollowing ? "outline-primary" : "primary"}
+                                        size="sm"
                                         className="action-btn flex-grow-1"
                                         onClick={async () => {
                                             try {
@@ -259,7 +259,7 @@ export default function ProfilePage() {
             </header>
 
             {!isMyProfile && (
-                <div className="mb-3" style={{background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '1rem'}}>
+                <div className="mb-3" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '1rem' }}>
                     <CreatePostForm
                         onPostCreated={fetchPosts}
                         recipientUserId={profile.userId}
@@ -272,7 +272,7 @@ export default function ProfilePage() {
 
             <div className="border-top pt-4">
                 {posts.length === 0 ? (
-                    <div className="text-center" style={{color: 'var(--text-secondary)'}}>
+                    <div className="text-center" style={{ color: 'var(--text-secondary)' }}>
                         <i className="bi bi-grid-3x3 fs-3"></i>
                         <p className="mt-2">Inga inlÃ¤gg Ã¤nnu</p>
                     </div>
