@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Microsoft.EntityFrameworkCore;
 using SocialNetwork.Entity;
 using SocialNetwork.Repository;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 
 namespace SocialNetwork.Service
@@ -56,6 +57,47 @@ namespace SocialNetwork.Service
                 throw new ArgumentException("UserId cannot be null or empty");
 
             return _repo.GetInboxAsync(userId);
+        }
+
+        public Task<DirectMessage> GetMessageByIdAsync(int messageId)
+        {
+            if (messageId <= 0)
+                throw new ArgumentException("MessageId must be greater than 0");
+
+            return _repo.GetMessageByIdAsync(messageId);
+        }
+
+        public Task<int> GetUnreadCountAsync(string userId)
+        {
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new ArgumentException("UserId cannot be null or empty");
+
+            return _repo.GetUnreadCountAsync(userId);
+        }
+
+        public Task<IEnumerable<DirectMessage>> GetUnreadMessagesAsync(string userId)
+        {
+            
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new ArgumentException("UserId cannot be null or empty");
+            return _repo.GetUnreadMessagesAsync(userId);
+        }
+
+        public Task MarkMessageAsReadAsync(int messageId, string userId)
+        {
+            if (messageId <= 0)
+                throw new ArgumentException("MessageId must be greater than 0");
+
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new ArgumentException("UserId cannot be null or empty");
+
+            return _repo.MarkAsReadAsync(messageId, userId);
+
+        }
+        public async Task<int> GetLatestDirectMessageIdBetweenUsersAsync(string user1Id, string user2Id)
+        {
+            var directMessage = await _repo.GetLatestDirectMessageBetweenUsersAsync(user1Id, user2Id);
+            return directMessage.Id;
         }
     }
 }

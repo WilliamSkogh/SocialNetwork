@@ -4,6 +4,7 @@ using Socialnetwork.Repository;
 using Socialnetwork.Repository.Profile;
 using SocialNetwork.Api.Endpoints;
 using SocialNetwork.Api.Extensions;
+using SocialNetwork.Api.Hubs;
 using SocialNetwork.Entity;
 using SocialNetwork.Entityframework;
 using SocialNetwork.Repository;
@@ -43,18 +44,18 @@ builder.Services.AddScoped<IDirectMessageService, DirectMessageService>();
 
 builder.Services.AddScoped<IFollowRepository, FollowRepository>();
 builder.Services.AddScoped<FollowService>();
-
 builder.Services.AddScoped<ILikeService, LikeService>();
 builder.Services.AddScoped<IDislikeService, DislikeService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
-
+builder.Services.AddSignalR();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-        policy.WithOrigins("http://localhost:5173") 
+        policy.WithOrigins("http://localhost:5173")
               .AllowAnyMethod()
-              .AllowAnyHeader();
+              .AllowAnyHeader()
+              .AllowCredentials();
     });
 });
 
@@ -103,12 +104,14 @@ app.UseStaticFiles();
 
 app.UseCors("AllowAll");
 
-app.UseAuthentication(); 
+app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseWebSockets();
 
 
 app.MapGroup("/auth").MapIdentityApi<ApplicationUser>();
-
+app.MapHub<DirectMessageHub>("/hubs/direct-messages");
 app.MapEndpoints<Program>();
 
 app.Run();

@@ -21,14 +21,26 @@ public class DirectMessagesEndpoints : IEndpoint
         group.MapGet("/conversation/{otherUserId}", GetConversation)
             .WithName("GetConversation")
             .WithDescription("Hämta en konversation med en annan användare");
-        
+
         group.MapGet("/inbox", GetInbox)
                    .WithName("GetInbox")
                    .WithDescription("Hämta alla mottagna meddelanden");
 
+        group.MapPut("/{messageId}/read", MarkMessageAsRead)
+           .WithName("MarkMessageAsRead")
+           .WithDescription("Markera ett meddelande som läst");
+
+        group.MapGet("/unread/count", GetUnreadCount)
+          .WithName("GetUnreadCount")
+          .WithDescription("Hämta antalet olästa meddelanden");
+
+        group.MapGet("/unread", GetUnreadMessages)
+          .WithName("GetUnreadMessages")
+          .WithDescription("Hämta alla olästa meddelanden");
+
     }
 
-    private static async Task<IResult> SendMessage( DirectMessageCreateDto dto,ClaimsPrincipal user,IDirectMessageService service)
+    private static async Task<IResult> SendMessage(DirectMessageCreateDto dto, ClaimsPrincipal user, IDirectMessageService service)
     {
         try
         {
@@ -47,7 +59,7 @@ public class DirectMessagesEndpoints : IEndpoint
             var createdMessage = await service.CreateMessageAsync(directMessage);
 
 
-            var resultDto = new DirectMessageDto
+            var resultDto = new DirectMessageCreateResultDto
             {
                 Id = createdMessage.Id,
                 SenderId = createdMessage.SenderId,
@@ -69,8 +81,8 @@ public class DirectMessagesEndpoints : IEndpoint
         }
     }
 
-   
-    private static async Task<IResult> GetConversation(string otherUserId,ClaimsPrincipal user,IDirectMessageService service)
+
+    private static async Task<IResult> GetConversation(string otherUserId, ClaimsPrincipal user, IDirectMessageService service)
     {
         try
         {
@@ -80,13 +92,15 @@ public class DirectMessagesEndpoints : IEndpoint
 
             var messages = await service.GetConversationAsync(currentUserId, otherUserId);
 
-            var dtoList = messages.Select(m => new DirectMessageDto
+            var dtoList = messages.Select(m => new DirectMessageConversationDto
             {
                 Id = m.Id,
                 SenderId = m.SenderId,
-                SenderUsername = m.Sender?.UserName,
+                SenderUsername = m.Sender?.UserName ?? string.Empty,
+                SenderProfileImageUrl = m.Sender?.ProfileImageUrl,
                 ReceiverId = m.ReceiverId,
-                ReceiverUsername = m.Receiver?.UserName,
+                ReceiverUsername = m.Receiver?.UserName ?? string.Empty,
+                ReceiverProfileImageUrl = m.Receiver?.ProfileImageUrl,
                 Message = m.Message,
                 Timestamp = m.Timestamp,
                 IsRead = m.IsRead
@@ -116,13 +130,99 @@ public class DirectMessagesEndpoints : IEndpoint
 
             var messages = await service.GetInboxAsync(userId);
 
-            var dtoList = messages.Select(m => new DirectMessageDto
+            var dtoList = messages.Select(m => 
+            {
+                var isOwnMessage = m.SenderId == userId;
+                var otherUser = isOwnMessage ? m.Receiver : m.Sender;
+                
+                return new InboxMessageDto
+                {
+                    Id = m.Id,
+                    SenderId = otherUser?.Id ?? m.SenderId,
+                    SenderUsername = otherUser?.UserName ?? "Unknown",
+                    SenderProfileImageUrl = otherUser?.ProfileImageUrl,
+                    Message = m.Message,
+                    Timestamp = m.Timestamp,
+                    UnreadCount = m.UnreadCount
+                };
+            }).ToList();
+
+            return Results.Ok(dtoList);
+        }
+        catch (ArgumentException ex)
+        {
+            return Results.BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return Results.Problem($"Ett fel uppstod: {ex.Message}");
+        }
+    }
+    private static async Task<IResult> MarkMessageAsRead(int messageId, ClaimsPrincipal user, IDirectMessageService service)
+    {
+        try
+        {
+            var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                return Results.Unauthorized();
+
+            await service.MarkMessageAsReadAsync(messageId, userId);
+
+            return Results.Ok(new { message = "Meddelandet har markerats som läst" });
+        }
+        catch (ArgumentException ex)
+        {
+            return Results.BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return Results.Problem($"Ett fel uppstod: {ex.Message}");
+        }
+    }
+
+    private static async Task<IResult> GetUnreadCount(ClaimsPrincipal user, IDirectMessageService service)
+    {
+        try
+        {
+            var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                return Results.Unauthorized();
+
+            var unreadCount = await service.GetUnreadCountAsync(userId);
+
+            var resultDto = new UnreadCountDto
+            {
+                UnreadCount = unreadCount,
+            };
+            return Results.Ok(resultDto);
+        }
+        catch (ArgumentException ex)
+        {
+            return Results.BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return Results.Problem($"Ett fel uppstod: {ex.Message}");
+        }
+    }
+
+    private static async Task<IResult> GetUnreadMessages(ClaimsPrincipal user, IDirectMessageService service)
+    {
+        try
+        {
+            var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                return Results.Unauthorized();
+
+            var messages = await service.GetUnreadMessagesAsync(userId);
+
+            var dtoList = messages.Select(m => new DirectMessageConversationDto
             {
                 Id = m.Id,
                 SenderId = m.SenderId,
-                SenderUsername = m.Sender?.UserName,
+                SenderUsername = m.Sender?.UserName ?? string.Empty,
                 ReceiverId = m.ReceiverId,
-                ReceiverUsername = m.Receiver?.UserName,
+                ReceiverUsername = m.Receiver?.UserName ?? string.Empty,
                 Message = m.Message,
                 Timestamp = m.Timestamp,
                 IsRead = m.IsRead

@@ -29,7 +29,9 @@ public class GetProfile : IEndpoint
             {
                 Id = appUser.Id,
                 Email = appUser.Email,
-                Username = appUser.UserName
+                Username = appUser.UserName,
+                Bio = appUser.Bio,
+                ProfileImageUrl = appUser.ProfileImageUrl
             });
         })
         .WithTags("Users")         

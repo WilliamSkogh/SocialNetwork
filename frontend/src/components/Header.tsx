@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { Container, Form, Nav, Navbar, NavDropdown, Spinner } from "react-bootstrap";
 import logo from "../assets/sn-high-resolution-logo-transparent.png";
+import { Link } from "react-router-dom";
+
 import { useAuth } from "../AuthContext";
 import { useNavigate } from "react-router-dom";
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -126,6 +128,18 @@ export default function Header() {
                         height="50"
                     />
                 </Navbar.Brand>
+                <Nav className="me-auto">
+                    {user && (
+                        <>
+                            <Nav.Link as={Link} to="/" style={{ color: 'white' }}>
+                                Hem
+                            </Nav.Link>
+                            <Nav.Link as={Link} to="/messages" style={{ color: 'white' }}>
+                                Meddelanden
+                            </Nav.Link>
+                        </>
+                    )}
+                </Nav>
 
                 <div className="header-search" ref={searchBoxRef}>
                     <div className="search-input-wrapper">
