@@ -5,6 +5,13 @@ export interface User {
     email: string;
     profileImageUrl?: string;
 }
+
+export interface UserSearchResult {
+    id: string;
+    username: string;
+    profileImageUrl?: string;
+    bio?: string;
+}
 export interface UserProfile {
     userId: string;
     userName: string;
