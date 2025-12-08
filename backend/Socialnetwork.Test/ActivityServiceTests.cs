@@ -30,7 +30,7 @@ public class ActivityServiceTests
         var post = new Post { Id = 1, AuthorId = "user1", Content = "Test post" };
         context.Posts.Add(post);
         
-        var like = new Like { PostId = 1, UserId = "user2", CreatedAt = DateTime.UtcNow };
+        var like = new Like { PostId = 1, UserId = "user2", CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time")) };
         context.Set<Like>().Add(like);
         
         await context.SaveChangesAsync();
@@ -58,7 +58,7 @@ public class ActivityServiceTests
         var post = new Post { Id = 1, AuthorId = "user1", Content = "Test post" };
         context.Posts.Add(post);
         
-        var dislike = new Dislike { PostId = 1, UserId = "user2", CreatedAt = DateTime.UtcNow };
+        var dislike = new Dislike { PostId = 1, UserId = "user2", CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time")) };
         context.Set<Dislike>().Add(dislike);
         
         await context.SaveChangesAsync();
@@ -86,7 +86,7 @@ public class ActivityServiceTests
         var post = new Post { Id = 1, AuthorId = "user1", Content = "Test post" };
         context.Posts.Add(post);
         
-        var comment = new Comment { PostId = 1, UserId = "user2", Text = "Nice post!", CreatedAt = DateTime.UtcNow };
+        var comment = new Comment { PostId = 1, UserId = "user2", Text = "Nice post!", CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time")) };
         context.Set<Comment>().Add(comment);
         
         await context.SaveChangesAsync();
@@ -99,5 +99,30 @@ public class ActivityServiceTests
         Assert.Equal("user2", activity.ActorId);
         Assert.Equal("commenter", activity.ActorUsername);
         Assert.Equal("Nice post!", activity.CommentText);
+    }
+
+    [Fact]
+    public async Task GetUserActivitiesAsync_ShouldReturnFollows()
+    {
+        var context = GetInMemoryDbContext();
+        var service = new ActivityService(context);
+        
+        var user = new ApplicationUser { Id = "user1", UserName = "testuser" };
+        var follower = new ApplicationUser { Id = "user2", UserName = "follower" };
+        
+        context.Users.AddRange(user, follower);
+        
+        var follow = new Follow { FollowerId = "user2", FollowingId = "user1", CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time")) };
+        context.Set<Follow>().Add(follow);
+        
+        await context.SaveChangesAsync();
+
+        var activities = await service.GetUserActivitiesAsync("user1");
+
+        Assert.Single(activities);
+        var activity = activities.First();
+        Assert.Equal("follow", activity.Type);
+        Assert.Equal("user2", activity.ActorId);
+        Assert.Equal("follower", activity.ActorUsername);
     }
 }
