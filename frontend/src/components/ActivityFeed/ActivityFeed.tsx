@@ -3,7 +3,7 @@ import { apiClient } from '../../services/axiosClient';
 import './ActivityFeed.css';
 
 interface Activity {
-    type: 'like';
+    type: 'like' | 'dislike';
     actorUsername: string;
     createdAt: string;
 }
@@ -33,6 +33,12 @@ export default function ActivityFeed() {
         return activityDate.toLocaleDateString('sv-SE', { month: 'short', day: 'numeric' });
     };
 
+    const getText = (a: Activity) => {
+        if (a.type === 'like') return `${a.actorUsername} gillade ditt inlägg`;
+        if (a.type === 'dislike') return `${a.actorUsername} ogillade ditt inlägg`;
+        return '';
+    };
+
     return (
         <div className="activity-feed">
             <h3>Aktivitet</h3>
@@ -42,7 +48,7 @@ export default function ActivityFeed() {
                 <div>
                     {activities.map((a, i) => (
                         <div key={i}>
-                            <span>{a.actorUsername} gillade ditt inlägg</span>
+                            <span>{getText(a)}</span>
                             <span> - {getTime(a.createdAt)}</span>
                         </div>
                     ))}
