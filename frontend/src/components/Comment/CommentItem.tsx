@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { buildMediaUrl } from "../../utils/media";
 
 interface Comment {
     id: number;
@@ -37,7 +38,7 @@ export default function CommentItem({ comment }: CommentItemProps) {
     return (
         <div className="comment">
             <img 
-                src={comment.profileImageUrl ? `https://localhost:7166${comment.profileImageUrl}` : "https://via.placeholder.com/32"}
+                src={buildMediaUrl(comment.profileImageUrl) ?? "https://via.placeholder.com/32"}
                 alt={comment.username}
                 className="comment-avatar"
             />

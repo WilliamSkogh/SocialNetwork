@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { buildMediaUrl } from "../../utils/media";
 
 interface PostHeaderProps {
     authorUsername: string;
@@ -21,7 +22,7 @@ export default function PostHeader({
         <div className="post-header">
             <div className="post-author">
                 <img 
-                    src={authorProfileImageUrl ? `https://localhost:7166${authorProfileImageUrl}` : `https://ui-avatars.com/api/?name=${authorUsername.charAt(0)}&background=6c757d&color=fff`}
+                    src={buildMediaUrl(authorProfileImageUrl) ?? `https://ui-avatars.com/api/?name=${authorUsername.charAt(0)}&background=6c757d&color=fff&size=40`}
                     alt={authorUsername}
                     style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }}
                 />

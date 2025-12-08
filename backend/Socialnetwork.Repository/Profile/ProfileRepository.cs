@@ -20,6 +20,16 @@ public class ProfileRepository : IProfileRepository
         return await _context.Users
         .FirstOrDefaultAsync(u => u.UserName.ToLower() == userName.ToLower());
     }
+
+    public async Task<List<ApplicationUser>> SearchUsersAsync(string query, int take = 5)
+    {
+        var normalized = query.ToLower();
+        return await _context.Users
+            .Where(u => u.UserName.ToLower().Contains(normalized))
+            .OrderBy(u => u.UserName)
+            .Take(take)
+            .ToListAsync();
+    }
     public async Task UpdateUserAsync(ApplicationUser user)
     {
         _context.Users.Update(user);
