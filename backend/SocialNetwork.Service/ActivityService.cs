@@ -53,8 +53,27 @@ public class ActivityService : IActivityService
             ))
             .ToListAsync();
 
+        var comments = await _context.Set<Comment>()
+            .Where(c => c.Post!.AuthorId == userId && c.UserId != userId)
+            .Include(c => c.User)
+            .Include(c => c.Post)
+            .OrderByDescending(c => c.CreatedAt)
+            .Take(limit)
+            .Select(c => new ActivityDto(
+                "comment",
+                c.UserId,
+                c.User!.UserName ?? "Unknown",
+                c.User.ProfileImageUrl,
+                c.PostId,
+                c.Post!.Content,
+                c.Text,
+                c.CreatedAt
+            ))
+            .ToListAsync();
+
         activities.AddRange(likes);
         activities.AddRange(dislikes);
+        activities.AddRange(comments);
 
         return activities.OrderByDescending(a => a.CreatedAt).Take(limit);
     }
