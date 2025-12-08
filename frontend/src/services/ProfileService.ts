@@ -1,5 +1,6 @@
 import apiClient from "./axiosClient";
-import type { UserProfile } from "../types/types";
+import axios from "axios";
+import type { UserProfile, UserSearchResult } from "../types/types";
 
 export const profiileService = {
     getProfile: async (username: string): Promise<UserProfile> => {
@@ -29,5 +30,26 @@ export const profiileService = {
     unfollowUser: async (userId: string) => {
         const response = await apiClient.delete(`/api/users/${userId}/unfollow`);
         return response.data;
+    },
+
+    searchUsers: async (query: string): Promise<UserSearchResult[]> => {
+        if (!query.trim()) return [];
+
+        try {
+            const response = await apiClient.get<UserSearchResult[]>(`/api/users/search`, {
+                params: { query }
+            });
+            return response.data.map((item: any) => ({
+                id: item.id ?? item.userId ?? "",
+                username: item.username ?? item.userName ?? "",
+                profileImageUrl: item.profileImageUrl,
+                bio: item.bio
+            })).filter(u => u.id && u.username);
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response?.status === 404) {
+                return [];
+            }
+            throw error;
+        }
     }
 };
