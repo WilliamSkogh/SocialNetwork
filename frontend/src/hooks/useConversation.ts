@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
-import { directMessageService } from '../services/DirectMessageService';
+import { directMessageService } from '../services/directMessage/DirectMessageService';
 import { useDirectMessageSignalR } from './useDirectMessageSignalR';
 import type { DirectMessageConversationDto } from '../types/DirectMessage';
 
