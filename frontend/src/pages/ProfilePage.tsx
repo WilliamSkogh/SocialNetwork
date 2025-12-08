@@ -238,11 +238,11 @@ export default function ProfilePage() {
                                                 setProfile(updatedProfile);
                                             } catch (err) {
                                                 console.error(err);
-                                                alert("Kunde inte uppdatera fÃ¶lj-status");
+                                                alert("Kunde inte uppdatera följ-status");
                                             }
                                         }}
                                     >
-                                        {profile.isFollowing ? "FÃ¶ljer" : "FÃ¶lj"}
+                                        {profile.isFollowing ? "Följer" : "Följ"}
                                     </Button>
                                     <Button variant="outline-secondary" size="sm" className="action-btn flex-grow-1" onClick={() => alert("Kommer snart!")}>
                                         Meddelande
