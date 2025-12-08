@@ -152,20 +152,16 @@ export default function ProfilePage() {
     if (error) return <div className="text-center mt-5 text-danger">{error}</div>;
     if (!profile) return <div className="text-center mt-5">Ingen profil hittades.</div>;
 
-    const imageUrl = profile.profileImageUrl ? `${API_BASE_URL}${profile.profileImageUrl}`
-        : "https://via.placeholder.com/150";
-
     return (
         <Container className="mt-4 profile-container">
             <header className="mb-5">
                 {isEditing ? (
                     <div className="p-3 rounded shadow-sm" style={{background: 'var(--bg-secondary)', border: '1px solid var(--border-color)'}}>
                         <div className="text-center mb-4">
-                            <Image
-                                src={imageUrl}
+                            <img
+                                src={profile.profileImageUrl ? `${API_BASE_URL}${profile.profileImageUrl}?t=${Date.now()}` : `https://ui-avatars.com/api/?name=${profile.userName.charAt(0)}&background=6c757d&color=fff&size=100`}
                                 alt={profile.userName}
-                                style={{ width: '100px', height: '100px', objectFit: 'cover' }}
-                                roundedCircle
+                                style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover' }}
                             />
                         </div>
                         <h5 className="mb-3" style={{color: 'var(--text-primary)'}}>Redigera profil</h5>
@@ -220,10 +216,11 @@ export default function ProfilePage() {
                 ) : (
                     <div className="profile-header-grid">
                         <div className="ph-img">
-                            <Image
-                                src={imageUrl}
+                            <img
+                                src={profile.profileImageUrl ? `${API_BASE_URL}${profile.profileImageUrl}?t=${Date.now()}` : `https://ui-avatars.com/api/?name=${profile.userName.charAt(0)}&background=6c757d&color=fff&size=200`}
                                 alt={profile.userName}
                                 className="profileimage"
+                                style={{ objectFit: 'cover' }}
                             />
                         </div>
 
