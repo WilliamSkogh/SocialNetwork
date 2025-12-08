@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { buildMediaUrl } from "../../utils/media";
 
 interface PostImageProps {
     imageUrl: string;
@@ -6,6 +7,7 @@ interface PostImageProps {
 
 export default function PostImage({ imageUrl }: PostImageProps) {
     const isVideo = imageUrl.endsWith('.mp4') || imageUrl.endsWith('.webm');
+    const mediaSrc = buildMediaUrl(imageUrl) ?? imageUrl;
     const videoRef = useRef<HTMLVideoElement>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [isMuted, setIsMuted] = useState(true);
@@ -95,7 +97,7 @@ export default function PostImage({ imageUrl }: PostImageProps) {
                         onDoubleClick={openFullscreen}
                         style={{ cursor: 'pointer' }}
                     >
-                        <source src={`https://localhost:7166${imageUrl}`} type="video/mp4" />
+                        <source src={mediaSrc} type="video/mp4" />
                     </video>
                     
                     {!isPlaying && (
@@ -228,7 +230,7 @@ export default function PostImage({ imageUrl }: PostImageProps) {
                             <i className="bi bi-x"></i>
                         </button>
                         <video
-                            src={`https://localhost:7166${imageUrl}`}
+                            src={mediaSrc}
                             controls
                             autoPlay
                             style={{
@@ -248,7 +250,7 @@ export default function PostImage({ imageUrl }: PostImageProps) {
         <>
             <div style={{ position: 'relative' }}>
                 <img 
-                    src={`https://localhost:7166${imageUrl}`} 
+                    src={mediaSrc} 
                     alt="Post"
                     className="post-image"
                     onClick={openFullscreen}
@@ -316,7 +318,7 @@ export default function PostImage({ imageUrl }: PostImageProps) {
                         <i className="bi bi-x"></i>
                     </button>
                     <img
-                        src={`https://localhost:7166${imageUrl}`}
+                        src={mediaSrc}
                         alt="Post fullscreen"
                         style={{
                             maxWidth: '90vw',
