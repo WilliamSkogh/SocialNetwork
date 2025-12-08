@@ -104,6 +104,8 @@ app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseWebSockets();
+
 
 app.MapGroup("/auth").MapIdentityApi<ApplicationUser>();
 app.MapHub<DirectMessageHub>("/hubs/direct-messages");
