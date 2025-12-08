@@ -1,9 +1,9 @@
 ﻿import { useParams } from "react-router-dom";
 import { useAuth } from "../AuthContext";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
 import { profiileService } from "../services/ProfileService";
 import type { UserProfile } from "../types/types";
-import { Container, Image, Button, Form } from "react-bootstrap";
+import { Container, Button, Form } from "react-bootstrap";
 import EmojiPicker, { type EmojiClickData } from "emoji-picker-react";
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { buildMediaUrl } from "../utils/media";
@@ -130,7 +130,7 @@ export default function ProfilePage() {
     if (error) return <div className="text-center mt-5 text-danger">{error}</div>;
     if (!profile) return <div className="text-center mt-5">Ingen profil hittades.</div>;
 
-    const imageUrl = profilePreviewUrl ?? buildMediaUrl(profile.profileImageUrl) ?? "https://via.placeholder.com/150";
+    const imageUrl = profilePreviewUrl ?? buildMediaUrl(profile.profileImageUrl) ?? `https://ui-avatars.com/api/?name=${profile.userName.charAt(0)}&background=6c757d&color=fff&size=150`;
 
     return (
         <Container className="mt-4 profile-container">
@@ -138,11 +138,10 @@ export default function ProfilePage() {
                 {isEditing ? (
                     <div className="p-3 rounded shadow-sm" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-color)' }}>
                         <div className="text-center mb-4">
-                            <Image
+                            <img
                                 src={imageUrl}
                                 alt={profile.userName}
-                                style={{ width: '100px', height: '100px', objectFit: 'cover' }}
-                                roundedCircle
+                                style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover' }}
                             />
                         </div>
                         <h5 className="mb-3" style={{ color: 'var(--text-primary)' }}>Redigera profil</h5>
@@ -197,10 +196,11 @@ export default function ProfilePage() {
                 ) : (
                     <div className="profile-header-grid">
                         <div className="ph-img">
-                            <Image
+                            <img
                                 src={imageUrl}
                                 alt={profile.userName}
                                 className="profileimage"
+                                style={{ objectFit: 'cover' }}
                             />
                         </div>
 

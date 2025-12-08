@@ -22,8 +22,9 @@ export default function PostHeader({
         <div className="post-header">
             <div className="post-author">
                 <img 
-                    src={buildMediaUrl(authorProfileImageUrl) ?? "https://via.placeholder.com/40"}
+                    src={buildMediaUrl(authorProfileImageUrl) ?? `https://ui-avatars.com/api/?name=${authorUsername.charAt(0)}&background=6c757d&color=fff&size=40`}
                     alt={authorUsername}
+                    style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }}
                 />
                 <div>
                     <span onClick={() => navigate(`/profile/${authorUsername}`)}>
