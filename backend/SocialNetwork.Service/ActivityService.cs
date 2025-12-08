@@ -71,9 +71,27 @@ public class ActivityService : IActivityService
             ))
             .ToListAsync();
 
+        var follows = await _context.Set<Follow>()
+            .Where(f => f.FollowingId == userId)
+            .Include(f => f.Follower)
+            .OrderByDescending(f => f.CreatedAt)
+            .Take(limit)
+            .Select(f => new ActivityDto(
+                "follow",
+                f.FollowerId,
+                f.Follower!.UserName ?? "Unknown",
+                f.Follower.ProfileImageUrl,
+                null,
+                null,
+                null,
+                f.CreatedAt
+            ))
+            .ToListAsync();
+
         activities.AddRange(likes);
         activities.AddRange(dislikes);
         activities.AddRange(comments);
+        activities.AddRange(follows);
 
         return activities.OrderByDescending(a => a.CreatedAt).Take(limit);
     }
