@@ -87,9 +87,7 @@ export const useConversation = (otherUserId: string | undefined) => {
   const onUserTyping = useCallback((senderId: string) => {
     if (senderId === otherUserId) {
       setTypingUserId(senderId);
-      setTimeout(() => {
-        setTypingUserId(prev => prev === senderId ? null : prev);
-      }, 3000);
+     
     }
   }, [otherUserId]);
 
@@ -213,7 +211,7 @@ export const useConversation = (otherUserId: string | undefined) => {
     typingTimeoutRef.current = window.setTimeout(() => {
       notifyStoppedTypingViaSignalR(otherUserId);
       isTypingRef.current = false;
-    }, 3000);
+    }, 1000);
   };
   
   const otherUserDetails = messages.length > 0
