@@ -43,4 +43,32 @@ public class ActivityServiceTests
         Assert.Equal("user2", activity.ActorId);
         Assert.Equal("liker", activity.ActorUsername);
     }
+
+    [Fact]
+    public async Task GetUserActivitiesAsync_ShouldReturnDislikesOnUserPosts()
+    {
+        var context = GetInMemoryDbContext();
+        var service = new ActivityService(context);
+        
+        var author = new ApplicationUser { Id = "user1", UserName = "testuser" };
+        var disliker = new ApplicationUser { Id = "user2", UserName = "disliker" };
+        
+        context.Users.AddRange(author, disliker);
+        
+        var post = new Post { Id = 1, AuthorId = "user1", Content = "Test post" };
+        context.Posts.Add(post);
+        
+        var dislike = new Dislike { PostId = 1, UserId = "user2", CreatedAt = DateTime.UtcNow };
+        context.Set<Dislike>().Add(dislike);
+        
+        await context.SaveChangesAsync();
+
+        var activities = await service.GetUserActivitiesAsync("user1");
+
+        Assert.Single(activities);
+        var activity = activities.First();
+        Assert.Equal("dislike", activity.Type);
+        Assert.Equal("user2", activity.ActorId);
+        Assert.Equal("disliker", activity.ActorUsername);
+    }
 }
