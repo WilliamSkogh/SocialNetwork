@@ -74,7 +74,7 @@ public class ActivityService : IActivityService
         var follows = await _context.Set<Follow>()
             .Where(f => f.FollowingId == userId)
             .Include(f => f.Follower)
-            .OrderByDescending(f => f.CreatedAt)
+            .OrderByDescending(f => f.FollowedAt)
             .Take(limit)
             .Select(f => new ActivityDto(
                 "follow",
@@ -84,7 +84,7 @@ public class ActivityService : IActivityService
                 null,
                 null,
                 null,
-                f.CreatedAt
+                f.FollowedAt
             ))
             .ToListAsync();
 

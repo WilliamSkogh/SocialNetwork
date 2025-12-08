@@ -112,7 +112,7 @@ public class ActivityServiceTests
         
         context.Users.AddRange(user, follower);
         
-        var follow = new Follow { FollowerId = "user2", FollowingId = "user1", CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time")) };
+        var follow = new Follow { FollowerId = "user2", FollowingId = "user1", FollowedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time")) };
         context.Set<Follow>().Add(follow);
         
         await context.SaveChangesAsync();
