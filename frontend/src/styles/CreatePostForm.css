@@ -88,6 +88,10 @@
     font-weight: 600;
     transition: all 0.2s;
     height: 38px;
+    max-width: 250px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .file-select-btn:hover {
