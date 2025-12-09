@@ -5,14 +5,12 @@
 }
 
 .posts-layout {
-    max-width: 1200px;
+    max-width: 1000px;
     margin: 0 auto;
     padding: 0 0.5rem;
 }
 
 .posts-container {
-    max-width: 700px;
-    margin: 0 auto;
     width: 100%;
 }
 
@@ -353,5 +351,21 @@
     100% {
         opacity: 0;
         transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+.sidebar {
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+}
+
+@media (max-width: 1024px) {
+    .posts-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .sidebar {
+        display: none;
     }
 }
