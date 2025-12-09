@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import "../../styles/CreatePostForm.css";
 
 interface CreatePostFormProps {
     onPostCreated: () => void;
@@ -19,6 +20,7 @@ export default function CreatePostForm({
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [isPosting, setIsPosting] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (!selectedImage) {
@@ -76,10 +78,11 @@ export default function CreatePostForm({
     const isVideo = selectedImage?.type.startsWith("video/");
 
     return (
-        <div className="create-post">
-            {title && <h5 className="fw-bold mb-3">{title}</h5>}
+        <div className="create-post-form">
+            {title && <h5>{title}</h5>}
+            
             <textarea
-                className="form-control mb-2"
+                className="create-post-textarea"
                 placeholder={placeholder}
                 value={newPost}
                 onChange={(e) => setNewPost(e.target.value)}
@@ -87,50 +90,23 @@ export default function CreatePostForm({
             />
 
             {previewUrl && (
-                <div style={{ position: "relative", marginBottom: "1rem" }}>
+                <div className="preview-container">
                     {isVideo ? (
                         <video
                             src={previewUrl}
                             controls
-                            style={{
-                                width: "100%",
-                                maxHeight: "400px",
-                                borderRadius: "8px",
-                                objectFit: "contain",
-                                background: "#000",
-                            }}
+                            className="preview-media"
                         />
                     ) : (
                         <img
                             src={previewUrl}
                             alt="Preview"
-                            style={{
-                                width: "100%",
-                                maxHeight: "400px",
-                                borderRadius: "8px",
-                                objectFit: "contain",
-                            }}
+                            className="preview-media"
                         />
                     )}
                     <button
                         onClick={removePreview}
-                        style={{
-                            position: "absolute",
-                            top: "10px",
-                            right: "10px",
-                            background: "rgba(0, 0, 0, 0.7)",
-                            border: "none",
-                            color: "white",
-                            cursor: "pointer",
-                            fontSize: "1.5rem",
-                            padding: "5px 10px",
-                            borderRadius: "50%",
-                            width: "35px",
-                            height: "35px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                        }}
+                        className="preview-remove-btn"
                     >
                         <i className="bi bi-x"></i>
                     </button>
@@ -138,19 +114,30 @@ export default function CreatePostForm({
             )}
 
             <input
+                ref={fileInputRef}
                 type="file"
                 accept="image/*,video/*"
                 onChange={handleImageChange}
-                className="form-control mb-2"
+                className="file-input-hidden"
             />
-            {selectedImage && (
-                <p className="text-success mb-2">
-                    <i className="bi bi-check-circle-fill"></i> {selectedImage.name}
-                </p>
-            )}
-            <button onClick={createPost} className="btn btn-primary" disabled={isPosting}>
-                <i className="bi bi-send-fill"></i> {submitLabel}
-            </button>
+
+            <div className="create-post-actions">
+                <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="file-select-btn"
+                >
+                    <i className="bi bi-image"></i>
+                    {selectedImage ? selectedImage.name : 'Bild/Video'}
+                </button>
+                
+                <button 
+                    onClick={createPost}
+                    disabled={isPosting || !newPost.trim()}
+                    className="submit-btn"
+                >
+                    <i className="bi bi-send-fill"></i> {submitLabel}
+                </button>
+            </div>
         </div>
     );
 }
