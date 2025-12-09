@@ -48,6 +48,7 @@ export default function Header() {
                 const results = await profiileService.searchUsers(searchTerm.trim());
                 setSearchResults(results); setShowResults(true);
             } catch (error) {
+                console.error("Search error:", error);
                 setSearchResults([]); setShowResults(true);
             } finally { setIsSearching(false); }
         }, 300);
