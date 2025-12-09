@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { directMessageService } from '../services/DirectMessageService';
+import { directMessageService } from '../services/directMessage/DirectMessageService';
 import type { InboxMessageDto } from '../types/DirectMessage';
 import { useDirectMessageSignalR } from '../hooks/useDirectMessageSignalR';
 import config from '../config';

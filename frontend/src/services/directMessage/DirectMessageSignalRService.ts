@@ -1,5 +1,5 @@
 import * as signalR from '@microsoft/signalr';
-import config from '../config';
+import config from '../../config';
 
 export interface ReceivedMessage {
   id: number;

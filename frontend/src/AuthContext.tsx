@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import type { User } from "./types/types";
 import { authService } from "./services/AuthService";
 import { storage } from "./utils/storage";
-import directMessageSignalR from "./services/DirectMessageSignalRService";
+import directMessageSignalR from "./services/directMessage/DirectMessageSignalRService";
 
 interface AuthContextType {
     user: User | null;

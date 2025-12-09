@@ -4,7 +4,7 @@ import directMessageSignalR, {
   type SentMessageConfirmation,
   type MessageReadNotification,
   type MessageReadByRecipient,
-} from '../services/DirectMessageSignalRService';
+} from '../services/directMessage/DirectMessageSignalRService';
 
 export interface UseDirectMessageSignalROptions {
   onMessageReceived?: (message: ReceivedMessage) => void;
