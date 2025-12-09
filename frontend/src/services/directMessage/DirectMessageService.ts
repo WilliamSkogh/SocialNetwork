@@ -1,9 +1,9 @@
-import axiosClient from './axiosClient';
+import axiosClient from '../axiosClient';
 import type { 
   DirectMessageCreateDto, 
   DirectMessageConversationDto,
   InboxMessageDto 
-} from '../types/DirectMessage';
+} from '../../types/DirectMessage';
 
 export const directMessageService = {
   /**
