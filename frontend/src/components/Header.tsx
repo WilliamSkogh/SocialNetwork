@@ -1,10 +1,8 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { Container, Form, Nav, Navbar, NavDropdown, Spinner } from "react-bootstrap";
 import logo from "../assets/sn-high-resolution-logo-transparent.png";
-import { Link } from "react-router-dom";
-
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../AuthContext";
-import { useNavigate } from "react-router-dom";
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import '../styles/Header.css'
 import { useTheme } from "../ThemeContext";
@@ -35,89 +33,52 @@ export default function Header() {
                 setShowActivity(false);
             }
         };
-
         document.addEventListener("mousedown", handleOutsideClick);
         return () => document.removeEventListener("mousedown", handleOutsideClick);
     }, []);
 
     useEffect(() => {
-        if (searchDelayRef.current) {
-            clearTimeout(searchDelayRef.current);
-        }
-
+        if (searchDelayRef.current) clearTimeout(searchDelayRef.current);
         if (!searchTerm.trim() || searchTerm.trim().length < 2) {
-            setSearchResults([]);
-            setShowResults(false);
-            return;
+            setSearchResults([]); setShowResults(false); return;
         }
-
         searchDelayRef.current = setTimeout(async () => {
             setIsSearching(true);
             try {
                 const results = await profiileService.searchUsers(searchTerm.trim());
-                setSearchResults(results);
-                setShowResults(true);
+                setSearchResults(results); setShowResults(true);
             } catch (error) {
-                console.error("Failed to search users", error);
-                setSearchResults([]);
-                setShowResults(true);
-            } finally {
-                setIsSearching(false);
-            }
+                setSearchResults([]); setShowResults(true);
+            } finally { setIsSearching(false); }
         }, 300);
-
-        return () => {
-            if (searchDelayRef.current) {
-                clearTimeout(searchDelayRef.current);
-            }
-        };
+        return () => { if (searchDelayRef.current) clearTimeout(searchDelayRef.current); };
     }, [searchTerm]);
 
     const handleSelectUser = (username: string) => {
-        setSearchTerm("");
-        setSearchResults([]);
-        setShowResults(false);
+        setSearchTerm(""); setSearchResults([]); setShowResults(false);
         navigate(`/profile/${username}`);
     };
 
     const handleSearchKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key === "Enter" && searchResults[0]) {
-            event.preventDefault();
-            handleSelectUser(searchResults[0].username);
+            event.preventDefault(); handleSelectUser(searchResults[0].username);
         }
     };
 
+    const handleLogout = async () => await logout();
+
     if (!user) {
         return (
-            <Navbar
-                expand="lg"
-                sticky="top"
-                variant={theme === 'light' ? 'light' : 'dark'}
-                className={`app-header ${theme === 'dark' ? 'is-dark' : 'is-light'}`}
-            >
+            <Navbar expand="lg" sticky="top" variant={theme === 'light' ? 'light' : 'dark'} className={`app-header ${theme === 'dark' ? 'is-dark' : 'is-light'}`}>
                 <Container fluid className="d-flex justify-content-between align-items-center header-container">
                     <Navbar.Brand href="/login" className="header-brand">
-                        <img
-                            src={logo}
-                            alt="Social Network Logo"
-                            height="50"
-                        />
+                        <img src={logo} alt="Logo" height="50" />
                     </Navbar.Brand>
-                    <button
-                        onClick={toggleTheme}
-                        className="theme-toggle"
-                        aria-label="Byt tema"
-                    >
-                        <i className={`bi ${theme === 'light' ? 'bi-moon-stars-fill' : 'bi-sun-fill'}`}></i>
-                    </button>
+                    <button onClick={toggleTheme} className="theme-toggle"><i className={`bi ${theme === 'light' ? 'bi-moon-stars-fill' : 'bi-sun-fill'}`}></i></button>
                 </Container>
-            </Navbar >
+            </Navbar>
         );
     }
-
-    const handleLogout = async () => {
-        await logout();
-    };
 
     return (
         <Navbar
@@ -128,126 +89,51 @@ export default function Header() {
         >
             <Container fluid className="header-container">
                 <Navbar.Brand href="/" className="header-brand">
-                    <img
-                        src={logo}
-                        alt="Social Network Logo"
-                        height="50"
-                    />
+                    <img src={logo} alt="Social Network Logo" height="50" />
                 </Navbar.Brand>
-                <Nav className="me-auto">
-                    {user && (
-                        <>
-                            <Nav.Link as={Link} to="/messages" style={{ color: 'white' }}>
-                                Meddelanden
-                            </Nav.Link>
-                        </>
-                    )}
-                </Nav>
-
                 <div className="header-search" ref={searchBoxRef}>
                     <div className="search-input-wrapper">
                         <i className="bi bi-search search-icon" aria-hidden="true"></i>
                         <Form.Control
                             type="search"
-                            placeholder="Search for users"
+                            placeholder="Sök användare"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             onFocus={() => searchResults.length > 0 && setShowResults(true)}
                             onKeyDown={handleSearchKeyDown}
                             className="search-input"
-                            aria-label="Search users"
                         />
                         {searchTerm && !isSearching && (
-                            <button
-                                type="button"
-                                className="clear-search-btn"
-                                onClick={() => {
-                                    setSearchTerm("");
-                                    setSearchResults([]);
-                                    setShowResults(false);
-                                }}
-                                aria-label="Clear search"
-                            >
+                            <button type="button" className="clear-search-btn" onClick={() => { setSearchTerm(""); setSearchResults([]); setShowResults(false); }}>
                                 <i className="bi bi-x-lg"></i>
                             </button>
                         )}
-                        {isSearching && (
-                            <div className="search-spinner" aria-label="Searching">
-                                <Spinner animation="border" size="sm" />
-                            </div>
-                        )}
+                        {isSearching && <div className="search-spinner"><Spinner animation="border" size="sm" /></div>}
                     </div>
-
                     {showResults && (
                         <div className="search-results">
-                            {isSearching ? (
-                                <div className="search-status">Söker...</div>
-                            ) : searchResults.length === 0 ? (
-                                <div className="search-status">Inga användare hittades</div>
-                            ) : (
+                            {isSearching ? <div className="search-status">Söker...</div> : searchResults.length === 0 ? <div className="search-status">Inga träffar</div> : (
                                 searchResults.map((result) => (
-                                    <button
-                                        type="button"
-                                        key={result.id}
-                                        className="search-result"
-                                        onClick={() => handleSelectUser(result.username)}
-                                    >
-                                        {buildMediaUrl(result.profileImageUrl) ? (
-                                            <img
-                                                src={buildMediaUrl(result.profileImageUrl)}
-                                                alt={`${result.username} avatar`}
-                                                className="result-avatar"
-                                            />
-                                        ) : (
-                                            <div className="result-avatar placeholder" aria-hidden="true">
-                                                <i className="bi bi-person-fill"></i>
-                                            </div>
-                                        )}
-                                        <div className="result-text">
-                                            <span className="result-name">{result.username}</span>
-                                            {result.bio && (
-                                                <span className="result-meta">
-                                                    {result.bio.length > 60 ? `${result.bio.slice(0, 60)}...` : result.bio}
-                                                </span>
-                                            )}
-                                        </div>
+                                    <button type="button" key={result.id} className="search-result" onClick={() => handleSelectUser(result.username)}>
+                                        {buildMediaUrl(result.profileImageUrl) ? <img src={buildMediaUrl(result.profileImageUrl)} alt="" className="result-avatar" /> : <div className="result-avatar placeholder"><i className="bi bi-person-fill"></i></div>}
+                                        <div className="result-text"><span className="result-name">{result.username}</span></div>
                                     </button>
                                 ))
                             )}
                         </div>
                     )}
                 </div>
-
                 <Nav className="header-actions">
-                    <div ref={activityRef} style={{ position: 'relative' }}>
-                        <button
-                            onClick={() => setShowActivity(!showActivity)}
-                            style={{
-                                background: 'transparent',
-                                border: 'none',
-                                color: 'var(--header-text)',
-                                fontSize: '24px',
-                                cursor: 'pointer',
-                                padding: '0 10px'
-                            }}
-                        >
+                    <Nav.Link as={Link} to="/messages" className="message-link icon-btn">
+                        <i className="bi bi-chat"></i>
+                    </Nav.Link>
+
+                    <div ref={activityRef} className="activity-container">
+                        <button onClick={() => setShowActivity(!showActivity)} className="activity-toggle-btn icon-btn">
                             <i className="bi bi-bell"></i>
                         </button>
                         {showActivity && (
-                            <div style={{
-                                position: 'absolute',
-                                top: '100%',
-                                right: 0,
-                                marginTop: '8px',
-                                width: 'min(400px, 90vw)',
-                                maxHeight: '500px',
-                                overflowY: 'auto',
-                                backgroundColor: 'white',
-                                border: '1px solid #dbdbdb',
-                                borderRadius: '8px',
-                                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                                zIndex: 1000
-                            }}>
+                            <div className="activity-dropdown">
                                 <ActivityFeed />
                             </div>
                         )}
@@ -256,8 +142,6 @@ export default function Header() {
                         title={<i className="bi bi-person-circle profile-trigger" aria-hidden="true"></i>}
                         id="user-dropdown"
                         align="end"
-                        drop="down"
-                        autoClose={true}
                     >
                         <NavDropdown.Item onClick={() => navigate(`/profile/${user.username}`)}>
                             <span className="d-flex justify-content-between align-items-center">
@@ -265,14 +149,18 @@ export default function Header() {
                                 <i className="bi bi-person ms-2"></i>
                             </span>
                         </NavDropdown.Item>
+
                         <NavDropdown.Divider />
+
                         <NavDropdown.Item onClick={toggleTheme}>
                             <span className="d-flex justify-content-between align-items-center">
                                 <span>{theme === 'light' ? 'Mörkt läge' : 'Ljust läge'}</span>
                                 <i className={`bi ${theme === 'light' ? 'bi-moon-stars' : 'bi-sun'} ms-2`}></i>
                             </span>
                         </NavDropdown.Item>
+
                         <NavDropdown.Divider />
+
                         <NavDropdown.Item onClick={handleLogout}>
                             <span className="d-flex justify-content-between align-items-center">
                                 <span>Logga ut</span>
@@ -282,6 +170,6 @@ export default function Header() {
                     </NavDropdown>
                 </Nav>
             </Container>
-        </Navbar >
+        </Navbar>
     );
 }
