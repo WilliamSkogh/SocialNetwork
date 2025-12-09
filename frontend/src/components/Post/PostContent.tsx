@@ -18,7 +18,7 @@ export default function PostContent({ authorUsername, content, createdAt }: Post
 
     return (
         <div className="post-content">
-            <p><strong>{authorUsername}</strong> {content}</p>
+            <p>{content}</p>
             <small style={{color: 'var(--text-secondary)'}}>
                 {formatDate(createdAt)}
             </small>

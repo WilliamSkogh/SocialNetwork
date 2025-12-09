@@ -8,7 +8,7 @@ import EmojiPicker, { type EmojiClickData } from "emoji-picker-react";
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { buildMediaUrl } from "../utils/media";
 import '../styles/profilepage.css'
-import '../pages/PostsPage.css'
+import '../styles/PostsPage.css'
 import { apiClient } from "../services/axiosClient";
 import PostCard from "../components/Post/PostCard";
 import CreatePostForm from "../components/CreatePost/CreatePostForm";

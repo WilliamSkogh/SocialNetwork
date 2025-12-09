@@ -174,18 +174,20 @@ export default function PostCard({ post, onUpdate }: PostCardProps) {
                 />
             )}
 
-            <PostActions
-                hasLiked={post.hasLiked}
-                hasDisliked={post.hasDisliked}
-                onLike={handleLike}
-                onDislike={handleDislike}
-            />
+            <div className="post-actions-row">
+                <PostActions
+                    hasLiked={post.hasLiked}
+                    hasDisliked={post.hasDisliked}
+                    onLike={handleLike}
+                    onDislike={handleDislike}
+                />
 
-            <PostStats
-                likesCount={post.likesCount}
-                dislikesCount={post.dislikesCount}
-                commentsCount={post.comments?.length || 0}
-            />
+                <PostStats
+                    likesCount={post.likesCount}
+                    dislikesCount={post.dislikesCount}
+                    commentsCount={post.comments?.length || 0}
+                />
+            </div>
 
             <CommentsList
                 comments={post.comments}

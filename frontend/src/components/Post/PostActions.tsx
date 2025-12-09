@@ -7,26 +7,18 @@ interface PostActionsProps {
 
 export default function PostActions({ hasLiked, hasDisliked, onLike, onDislike }: PostActionsProps) {
     return (
-        <div className="post-actions" style={{ padding: '0.5rem 1rem' }}>
+        <div className="post-actions">
             <button 
                 onClick={onLike}
                 className={`like-btn ${hasLiked ? 'active' : ''}`}
-                style={{ 
-                    padding: '0.5rem',
-                    fontSize: '0.85rem'
-                }}
             >
-                <i className="bi bi-hand-thumbs-up-fill"></i> 
+                <i className={`bi ${hasLiked ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-up'}`}></i>
             </button>
             <button 
                 onClick={onDislike}
                 className={`dislike-btn ${hasDisliked ? 'active' : ''}`}
-                style={{ 
-                    padding: '0.5rem',
-                    fontSize: '0.85rem'
-                }}
             >
-                <i className="bi bi-hand-thumbs-down-fill"></i> 
+                <i className={`bi ${hasDisliked ? 'bi-hand-thumbs-down-fill' : 'bi-hand-thumbs-down'}`}></i>
             </button>
         </div>
     );

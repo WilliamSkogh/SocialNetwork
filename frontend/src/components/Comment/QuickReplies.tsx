@@ -1,5 +1,5 @@
 interface QuickRepliesProps {
-    onQuickReply: (text: string) => void;
+    onQuickReply: (emoji: string) => void;
 }
 
 export default function QuickReplies({ onQuickReply }: QuickRepliesProps) {
@@ -12,6 +12,7 @@ export default function QuickReplies({ onQuickReply }: QuickRepliesProps) {
                     key={reply}
                     onClick={() => onQuickReply(reply)}
                     className="quick-reply-btn"
+                    type="button"
                 >
                     {reply}
                 </button>

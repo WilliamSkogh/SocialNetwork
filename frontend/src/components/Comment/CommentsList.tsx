@@ -1,3 +1,4 @@
+import { useState } from "react";
 import CommentItem from "./CommentItem";
 import QuickReplies from "./QuickReplies";
 import AddComment from "./AddComment";
@@ -24,13 +25,39 @@ export default function CommentsList({
     onCommentTextChange, 
     onAddComment 
 }: CommentsListProps) {
+    const [showAll, setShowAll] = useState(false);
+    const displayedComments = showAll ? comments : comments?.slice(0, 1) || [];
+    const hasMore = comments && comments.length > 1;
+
+    const handleQuickReply = (emoji: string) => {
+        onCommentTextChange(commentText + emoji);
+    };
+
     return (
         <div className="comments-section">
-            {comments?.map((comment) => (
+            {displayedComments.map((comment) => (
                 <CommentItem key={comment.id} comment={comment} />
             ))}
 
-            <QuickReplies onQuickReply={onCommentTextChange} />
+            {hasMore && !showAll && (
+                <button 
+                    onClick={() => setShowAll(true)}
+                    className="view-more-comments"
+                >
+                    Visa alla {comments.length} kommentarer
+                </button>
+            )}
+
+            {hasMore && showAll && (
+                <button 
+                    onClick={() => setShowAll(false)}
+                    className="view-more-comments"
+                >
+                    Dölj kommentarer
+                </button>
+            )}
+
+            <QuickReplies onQuickReply={handleQuickReply} />
 
             <AddComment
                 commentText={commentText}
