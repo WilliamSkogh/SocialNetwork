@@ -1,0 +1,115 @@
+.message-feed {
+    background: var(--bg-secondary);
+}
+
+.message-feed-header {
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.message-feed-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.message-feed-empty {
+    padding: 32px 24px;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.message-item {
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: background-color 0.1s;
+    position: relative;
+}
+
+.message-item:not(:last-child) {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.message-item:hover {
+    background-color: var(--hover-bg);
+}
+
+.message-item.unread {
+    background-color: rgba(0, 132, 255, 0.05);
+}
+
+.message-item.unread:hover {
+    background-color: rgba(0, 132, 255, 0.1);
+}
+
+.message-profile-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.message-profile-image.placeholder {
+    background: var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    font-size: 20px;
+}
+
+.message-content {
+    flex: 1;
+    font-size: 14px;
+    line-height: 18px;
+    min-width: 0;
+}
+
+.message-text {
+    color: var(--text-primary);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.message-username {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.message-preview {
+    color: var(--text-secondary);
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.message-item.unread .message-preview {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.message-time {
+    color: var(--text-secondary);
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+.message-unread-badge {
+    background: #0084ff;
+    color: white;
+    border-radius: 10px;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    min-width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+}

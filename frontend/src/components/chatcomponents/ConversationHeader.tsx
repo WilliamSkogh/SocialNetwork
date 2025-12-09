@@ -23,7 +23,7 @@ const ConversationHeader = ({ otherUserName, otherUserProfileImageUrl }: Convers
       flexShrink: 0
     }}>
       <button
-        onClick={() => navigate('/messages')}
+        onClick={() => navigate('/')}
         style={{
           padding: '8px 15px',
           backgroundColor: 'transparent',

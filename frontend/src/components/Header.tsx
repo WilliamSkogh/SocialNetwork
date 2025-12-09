@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { Container, Form, Nav, Navbar, NavDropdown, Spinner } from "react-bootstrap";
 import logo from "../assets/sn-high-resolution-logo-transparent.png";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../AuthContext";
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import '../styles/Header.css'
@@ -10,6 +10,7 @@ import { profiileService } from "../services/ProfileService";
 import type { UserSearchResult } from "../types/types";
 import { buildMediaUrl } from "../utils/media";
 import ActivityFeed from "./ActivityFeed/ActivityFeed";
+import MessageFeed from "./MessageFeed/MessageFeed";
 
 export default function Header() {
     const { user, logout } = useAuth();
@@ -20,9 +21,11 @@ export default function Header() {
     const [isSearching, setIsSearching] = useState(false);
     const [showResults, setShowResults] = useState(false);
     const [showActivity, setShowActivity] = useState(false);
+    const [showMessages, setShowMessages] = useState(false);
     const searchDelayRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const searchBoxRef = useRef<HTMLDivElement | null>(null);
     const activityRef = useRef<HTMLDivElement | null>(null);
+    const messagesRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
         const handleOutsideClick = (event: MouseEvent) => {
@@ -31,6 +34,9 @@ export default function Header() {
             }
             if (activityRef.current && !activityRef.current.contains(event.target as Node)) {
                 setShowActivity(false);
+            }
+            if (messagesRef.current && !messagesRef.current.contains(event.target as Node)) {
+                setShowMessages(false);
             }
         };
         document.addEventListener("mousedown", handleOutsideClick);
@@ -125,9 +131,16 @@ export default function Header() {
                     )}
                 </div>
                 <Nav className="header-actions">
-                    <Nav.Link as={Link} to="/messages" className="message-link icon-btn">
-                        <i className="bi bi-chat"></i>
-                    </Nav.Link>
+                    <div ref={messagesRef} className="activity-container">
+                        <button onClick={() => setShowMessages(!showMessages)} className="activity-toggle-btn icon-btn">
+                            <i className="bi bi-chat"></i>
+                        </button>
+                        {showMessages && (
+                            <div className="activity-dropdown">
+                                <MessageFeed />
+                            </div>
+                        )}
+                    </div>
 
                     <div ref={activityRef} className="activity-container">
                         <button onClick={() => setShowActivity(!showActivity)} className="activity-toggle-btn icon-btn">
