@@ -1,0 +1,126 @@
+.create-post-form {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 2px var(--shadow);
+}
+
+.create-post-form h5 {
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.create-post-textarea {
+    width: 100%;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.75rem;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 15px;
+    resize: none;
+    font-family: inherit;
+    margin-bottom: 0.75rem;
+}
+
+.create-post-textarea::placeholder {
+    color: var(--text-secondary);
+}
+
+.preview-container {
+    position: relative;
+    margin-bottom: 0.75rem;
+}
+
+.preview-media {
+    width: 100%;
+    height: 400px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: #000;
+}
+
+.preview-remove-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 1.5rem;
+    padding: 5px 10px;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.preview-remove-btn:hover {
+    background: rgba(0, 0, 0, 0.85);
+}
+
+.create-post-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.file-input-hidden {
+    display: none;
+}
+
+.file-select-btn {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s;
+    height: 38px;
+}
+
+.file-select-btn:hover {
+    background: var(--hover-bg);
+}
+
+.file-select-btn i {
+    font-size: 18px;
+}
+
+.submit-btn {
+    flex: 1;
+    background: #0866ff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    transition: opacity 0.2s;
+    height: 38px;
+}
+
+.submit-btn:hover:not(:disabled) {
+    background: #0757d9;
+}
+
+.submit-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}

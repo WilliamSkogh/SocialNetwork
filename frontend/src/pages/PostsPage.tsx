@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { apiClient } from "../services/axiosClient";
 import { useAuth } from "../AuthContext";
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import './PostsPage.css';
+import '../styles/PostsPage.css';
 import PostCard from "../components/Post/PostCard";
 import CreatePostForm from "../components/CreatePost/CreatePostForm";
 

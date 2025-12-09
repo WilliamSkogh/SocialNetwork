@@ -5,16 +5,23 @@ interface AddCommentProps {
 }
 
 export default function AddComment({ commentText, onCommentTextChange, onAddComment }: AddCommentProps) {
+    const handleKeyPress = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' && commentText.trim()) {
+            onAddComment();
+        }
+    };
+
     return (
         <div className="add-comment">
             <input
                 type="text"
                 value={commentText}
                 onChange={(e) => onCommentTextChange(e.target.value)}
-                placeholder="Skriv en kommentar..."
+                onKeyPress={handleKeyPress}
+                placeholder="Lägg till en kommentar..."
             />
-            <button onClick={onAddComment}>
-                <i className="bi bi-send-fill"></i>
+            <button onClick={onAddComment} disabled={!commentText.trim()}>
+                Publicera
             </button>
         </div>
     );
