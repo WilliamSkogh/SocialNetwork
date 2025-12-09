@@ -22,60 +22,61 @@ const ConversationPage = () => {
     otherUserDetails,
   } = useConversation(otherUserId);
 
-  if (!user) {
-    return null; // Or a redirect, which is handled in the hook
-  }
-
-  if (loading) {
+  if (!user) return null;
+  if (loading)
     return (
       <div style={{ padding: '20px', textAlign: 'center' }}>
         <p>Laddar konversation...</p>
       </div>
     );
-  }
 
   return (
     <>
       <style type="text/css">
         {`
           .conversation-container {
-            padding-top: 2rem;
-            padding-bottom: 2rem;
-            height: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
           }
+
           .conversation-card {
-            max-width: 800px;
-            margin: 0 auto;
-            height: 85vh;
             display: flex;
             flex-direction: column;
+            height: 90vh;
+            max-width: 800px;
+            width: 100%;
+            border-radius: 10px;
+            overflow: hidden;
           }
+
           .conversation-body {
-            flex-grow: 1;
+            flex: 1 1 auto;
             overflow-y: auto;
+            background-color: #ffffff;
           }
 
           @media (max-width: 767.98px) {
-            .conversation-container {
-              padding: 0;
-            }
             .conversation-card {
-              max-width: none;
               height: 100%;
-              border: none;
+              max-width: 100%;
               border-radius: 0;
             }
           }
         `}
       </style>
+
       <Container className="conversation-container">
         <Card className="conversation-card">
-          <Card.Header>
+          <Card.Header style={{ flexShrink: 0, padding: 0 }}>
             <ConversationHeader
               otherUserName={otherUserDetails.name}
               otherUserProfileImageUrl={otherUserDetails.profileImageUrl}
             />
           </Card.Header>
+
           <Card.Body className="conversation-body">
             <MessageList
               messages={messages}
@@ -87,7 +88,8 @@ const ConversationPage = () => {
               messagesEndRef={messagesEndRef}
             />
           </Card.Body>
-          <Card.Footer>
+
+          <Card.Footer style={{ flexShrink: 0, padding: 0 }}>
             <MessageInput
               newMessage={newMessage}
               setNewMessage={setNewMessage}
@@ -103,8 +105,3 @@ const ConversationPage = () => {
 };
 
 export default ConversationPage;
-
-
-
-
-
