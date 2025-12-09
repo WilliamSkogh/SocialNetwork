@@ -3,10 +3,11 @@ import { useConversation } from '../hooks/useConversation';
 import ConversationHeader from '../components/chatcomponents/ConversationHeader';
 import MessageList from '../components/chatcomponents/MessageList';
 import MessageInput from '../components/chatcomponents/MessageInput';
+import { Container, Card } from 'react-bootstrap';
 
 const ConversationPage = () => {
   const { userId: otherUserId } = useParams<{ userId: string }>();
-  
+
   const {
     user,
     messages,
@@ -34,37 +35,36 @@ const ConversationPage = () => {
   }
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100vh',
-      maxWidth: '1000px',
-      margin: '0 auto',
-      paddingTop: '60px'
-    }}>
-      <ConversationHeader
-        otherUserName={otherUserDetails.name}
-        otherUserProfileImageUrl={otherUserDetails.profileImageUrl}
-      />
-
-      <MessageList
-        messages={messages}
-        user={user}
-        typingUserId={typingUserId}
-        otherUserId={otherUserId}
-        otherUserName={otherUserDetails.name}
-        otherUserProfileImageUrl={otherUserDetails.profileImageUrl}
-        messagesEndRef={messagesEndRef}
-      />
-
-      <MessageInput
-        newMessage={newMessage}
-        setNewMessage={setNewMessage}
-        handleTyping={handleTyping}
-        handleSendMessage={sendMessage}
-        sending={sending}
-      />
-    </div>
+    <Container style={{marginTop:'4rem', paddingTop: '2rem', paddingBottom: '2rem' }}>
+      <Card style={{ maxWidth: '800px', margin: '0 auto' }}>
+        <Card.Header>
+          <ConversationHeader
+            otherUserName={otherUserDetails.name}
+            otherUserProfileImageUrl={otherUserDetails.profileImageUrl}
+          />
+        </Card.Header>
+        <Card.Body style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+          <MessageList
+            messages={messages}
+            user={user}
+            typingUserId={typingUserId}
+            otherUserId={otherUserId}
+            otherUserName={otherUserDetails.name}
+            otherUserProfileImageUrl={otherUserDetails.profileImageUrl}
+            messagesEndRef={messagesEndRef}
+          />
+        </Card.Body>
+        <Card.Footer>
+          <MessageInput
+            newMessage={newMessage}
+            setNewMessage={setNewMessage}
+            handleTyping={handleTyping}
+            handleSendMessage={sendMessage}
+            sending={sending}
+          />
+        </Card.Footer>
+      </Card>
+    </Container>
   );
 };
 
