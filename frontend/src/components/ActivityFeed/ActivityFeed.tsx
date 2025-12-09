@@ -74,21 +74,12 @@ export default function ActivityFeed() {
         
         if (isVideo) {
             return (
-                <div style={{ position: 'relative', width: 44, height: 44, borderRadius: '4px', overflow: 'hidden', flexShrink: 0 }}>
+                <div className="activity-video-container">
                     <video 
                         src={fullUrl} 
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         muted
                     />
-                    <i className="bi bi-play-circle-fill" style={{ 
-                        position: 'absolute', 
-                        top: '50%', 
-                        left: '50%', 
-                        transform: 'translate(-50%, -50%)',
-                        color: 'black',
-                        fontSize: '20px',
-                        pointerEvents: 'none'
-                    }}></i>
+                    <i className="bi bi-play-circle-fill activity-video-icon"></i>
                 </div>
             );
         }
@@ -97,18 +88,18 @@ export default function ActivityFeed() {
             <img 
                 src={fullUrl} 
                 alt="" 
-                style={{ width: 44, height: 44, borderRadius: '4px', objectFit: 'cover', flexShrink: 0 }} 
+                className="activity-thumbnail"
             />
         );
     };
 
     return (
-        <div>
-            <div style={{ padding: '16px', borderBottom: '1px solid #dbdbdb' }}>
-                <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: '#262626' }}>Aktivitet</h3>
+        <div className="activity-feed">
+            <div className="activity-feed-header">
+                <h3 className="activity-feed-title">Aktivitet</h3>
             </div>
             {activities.length === 0 ? (
-                <div style={{ padding: '32px 24px', textAlign: 'center', color: '#8e8e8e', fontSize: '14px' }}>
+                <div className="activity-feed-empty">
                     Inga aktiviteter än
                 </div>
             ) : (
@@ -117,39 +108,29 @@ export default function ActivityFeed() {
                         <div 
                             key={i} 
                             onClick={() => handleClick(a)} 
-                            style={{ 
-                                padding: '12px 16px',
-                                display: 'flex', 
-                                alignItems: 'center', 
-                                gap: '12px',
-                                cursor: 'pointer',
-                                borderBottom: i < activities.length - 1 ? '1px solid #efefef' : 'none',
-                                transition: 'background-color 0.1s'
-                            }}
-                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#fafafa'}
-                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                            className="activity-item"
                         >
                             {a.actorProfileImageUrl && (
                                 <img 
                                     src={buildMediaUrl(a.actorProfileImageUrl)} 
                                     alt="" 
                                     onClick={(e) => handleProfileClick(e, a.actorUsername)}
-                                    style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} 
+                                    className="activity-profile-image"
                                 />
                             )}
-                            <div style={{ flex: 1, fontSize: '14px', lineHeight: '18px', minWidth: 0 }}>
-                                <div>
+                            <div className="activity-content">
+                                <div className="activity-text">
                                     <span 
                                         onClick={(e) => handleProfileClick(e, a.actorUsername)}
-                                        style={{ fontWeight: 600, color: '#262626', cursor: 'pointer' }}
+                                        className="activity-username"
                                     >
                                         {a.actorUsername}
                                     </span>
-                                    <span style={{ fontWeight: 400, color: '#262626' }}>
+                                    <span>
                                         {' '}{getText(a).substring(a.actorUsername.length)}
                                     </span>
                                 </div>
-                                <div style={{ color: '#8e8e8e', fontSize: '12px', marginTop: '2px' }}>
+                                <div className="activity-time">
                                     {getTime(a.createdAt)}
                                 </div>
                             </div>
