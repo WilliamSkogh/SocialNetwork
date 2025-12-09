@@ -34,8 +34,7 @@ public class FollowService
         var follow = new Follow
         {
             FollowerId = followerId,
-            FollowingId = followingId,
-            FollowedAt = DateTime.UtcNow
+            FollowingId = followingId
         };
         await _repo.AddFollowAsync(follow);
     }
