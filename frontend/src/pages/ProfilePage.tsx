@@ -1,4 +1,4 @@
-﻿import { useParams } from "react-router-dom";
+﻿import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../AuthContext";
 import { useEffect, useState, type ChangeEvent } from "react";
 import { profiileService } from "../services/ProfileService";
@@ -42,6 +42,7 @@ interface Post {
 
 export default function ProfilePage() {
     const { username } = useParams<{ username: string }>();
+    const navigate = useNavigate();
     const { user: currentUser } = useAuth();
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
@@ -244,7 +245,7 @@ export default function ProfilePage() {
                                     >
                                         {profile.isFollowing ? "Följer" : "Följ"}
                                     </Button>
-                                    <Button variant="outline-secondary" size="sm" className="action-btn flex-grow-1" onClick={() => alert("Kommer snart!")}>
+                                    <Button variant="outline-secondary" size="sm" className="action-btn flex-grow-1" onClick={() => navigate(`/messages/${profile.userId}`)}>
                                         Meddelande
                                     </Button>
                                 </>
@@ -287,5 +288,4 @@ export default function ProfilePage() {
         </Container>
     );
 }
-
 
