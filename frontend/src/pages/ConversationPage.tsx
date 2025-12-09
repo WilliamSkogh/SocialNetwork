@@ -35,36 +35,70 @@ const ConversationPage = () => {
   }
 
   return (
-    <Container style={{marginTop:'4rem', paddingTop: '2rem', paddingBottom: '2rem' }}>
-      <Card style={{ maxWidth: '800px', margin: '0 auto' }}>
-        <Card.Header>
-          <ConversationHeader
-            otherUserName={otherUserDetails.name}
-            otherUserProfileImageUrl={otherUserDetails.profileImageUrl}
-          />
-        </Card.Header>
-        <Card.Body style={{ maxHeight: '60vh', overflowY: 'auto' }}>
-          <MessageList
-            messages={messages}
-            user={user}
-            typingUserId={typingUserId}
-            otherUserId={otherUserId}
-            otherUserName={otherUserDetails.name}
-            otherUserProfileImageUrl={otherUserDetails.profileImageUrl}
-            messagesEndRef={messagesEndRef}
-          />
-        </Card.Body>
-        <Card.Footer>
-          <MessageInput
-            newMessage={newMessage}
-            setNewMessage={setNewMessage}
-            handleTyping={handleTyping}
-            handleSendMessage={sendMessage}
-            sending={sending}
-          />
-        </Card.Footer>
-      </Card>
-    </Container>
+    <>
+      <style type="text/css">
+        {`
+          .conversation-container {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+            height: 100%;
+          }
+          .conversation-card {
+            max-width: 800px;
+            margin: 0 auto;
+            height: 85vh;
+            display: flex;
+            flex-direction: column;
+          }
+          .conversation-body {
+            flex-grow: 1;
+            overflow-y: auto;
+          }
+
+          @media (max-width: 767.98px) {
+            .conversation-container {
+              padding: 0;
+            }
+            .conversation-card {
+              max-width: none;
+              height: 100%;
+              border: none;
+              border-radius: 0;
+            }
+          }
+        `}
+      </style>
+      <Container className="conversation-container">
+        <Card className="conversation-card">
+          <Card.Header>
+            <ConversationHeader
+              otherUserName={otherUserDetails.name}
+              otherUserProfileImageUrl={otherUserDetails.profileImageUrl}
+            />
+          </Card.Header>
+          <Card.Body className="conversation-body">
+            <MessageList
+              messages={messages}
+              user={user}
+              typingUserId={typingUserId}
+              otherUserId={otherUserId}
+              otherUserName={otherUserDetails.name}
+              otherUserProfileImageUrl={otherUserDetails.profileImageUrl}
+              messagesEndRef={messagesEndRef}
+            />
+          </Card.Body>
+          <Card.Footer>
+            <MessageInput
+              newMessage={newMessage}
+              setNewMessage={setNewMessage}
+              handleTyping={handleTyping}
+              handleSendMessage={sendMessage}
+              sending={sending}
+            />
+          </Card.Footer>
+        </Card>
+      </Container>
+    </>
   );
 };
 
