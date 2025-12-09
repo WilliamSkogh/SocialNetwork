@@ -13,7 +13,8 @@ namespace SocialNetwork.Entity
         public required string SenderId { get; set; }
         public required string ReceiverId { get; set; }
         public required string Message { get; set; }
-        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+        public DateTime Timestamp { get; set; } = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time"));
+        public Post? Post { get; set; }
         public DateTime? ReadAt { get; set; } 
         public bool IsRead { get; set; } = false;
 

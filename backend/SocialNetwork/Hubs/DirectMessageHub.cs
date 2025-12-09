@@ -46,7 +46,7 @@ public class DirectMessageHub : Hub
                 SenderId = senderId,
                 ReceiverId = receiverId,
                 Message = message,
-                Timestamp = DateTime.UtcNow,
+                Timestamp = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time")),
                 IsRead = false
             };
 

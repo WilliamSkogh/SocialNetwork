@@ -5,6 +5,8 @@ import { authService } from "./services/AuthService";
 import { storage } from "./utils/storage";
 import directMessageSignalR from "./services/directMessage/DirectMessageSignalRService";
 
+export type { User };
+
 interface AuthContextType {
     user: User | null;
     loading: boolean;
