@@ -23,7 +23,7 @@ namespace SocialNetwork.Repository
                 throw new ArgumentNullException(nameof(message));
 
             if (message.Timestamp == default)
-                message.Timestamp = DateTime.UtcNow;
+                message.Timestamp = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time"));
 
             _context.DirectMessages.Add(message);
 
